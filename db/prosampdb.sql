@@ -22,7 +22,6 @@ CREATE TABLE users
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Ensure at least one default user exists
 INSERT INTO users (id, username, email, role, created_at, updated_at)
 VALUES ('11111111-1111-1111-1111-111111111111', 'anonymous', 'anonymous@example.com', 'manager', NOW(), NOW())
 ON CONFLICT (id) DO NOTHING;
@@ -61,9 +60,8 @@ CREATE TABLE locations
     postal_code    VARCHAR(20),
     created_at     TIMESTAMP DEFAULT NOW(),
     updated_at     TIMESTAMP DEFAULT NOW(),
-    -- Foreign Key Constraint (Enforcing Referential Integrity)
     CONSTRAINT fk_locations_company FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE RESTRICT,
-    UNIQUE (company_id, name) -- Prevent duplicate location names within the same company
+    UNIQUE (company_id, name)
 );
 
 
@@ -137,7 +135,7 @@ CREATE TABLE clients
     country        VARCHAR(100),
     city           VARCHAR(100),
     postal_code    VARCHAR(20),
-    tax_number     VARCHAR(50) UNIQUE, -- Ensuring tax compliance
+    tax_number     VARCHAR(50) UNIQUE,
     created_at     TIMESTAMP DEFAULT NOW(),
     updated_at     TIMESTAMP DEFAULT NOW()
 );
@@ -342,16 +340,16 @@ CREATE TABLE sample_analytical_results
     id                       BIGSERIAL PRIMARY KEY,
     sample_id                INT                                                            NOT NULL,
     contaminant_id           INT                                                            NOT NULL,
-    result_main              NUMERIC(10, 4) CHECK (result_main IS NULL OR result_main >= 0) NOT NULL,                                                          -- Main zone value (always required)
-    result_control           NUMERIC(10, 4) CHECK (result_control IS NULL OR result_control >= 0)           DEFAULT NULL,                                      -- Control zone (optional)
-    result_main_control      NUMERIC(10, 4) CHECK (result_main_control IS NULL OR result_main_control >= 0) DEFAULT NULL,                                      -- Combined zone (optional)
-    measurement_unit         INT                                                            NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,     -- Links to predefined measurement units
+    result_main              NUMERIC(10, 4) CHECK (result_main IS NULL OR result_main >= 0) NOT NULL,
+    result_control           NUMERIC(10, 4) CHECK (result_control IS NULL OR result_control >= 0)           DEFAULT NULL,
+    result_main_control      NUMERIC(10, 4) CHECK (result_main_control IS NULL OR result_main_control >= 0) DEFAULT NULL,
+    measurement_unit         INT                                                            NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
     detection_limit          NUMERIC(10, 4) CHECK (detection_limit IS NULL OR detection_limit >= 0),
     measurement_uncertainty  NUMERIC(5, 2) CHECK (measurement_uncertainty IS NULL OR
                                                   measurement_uncertainty BETWEEN 0 AND 100),
-    analysis_method          VARCHAR(255) CHECK (LENGTH(analysis_method) > 3),                                                                                 -- Prevents empty method names
-    lab_report_id            INT                                                            NOT NULL REFERENCES analytical_lab_reports (id) ON DELETE CASCADE, -- New reference
-    analysis_date            TIMESTAMP CHECK (analysis_date <= CURRENT_TIMESTAMP),                                                                             -- Prevents future-dated analysis
+    analysis_method          VARCHAR(255) CHECK (LENGTH(analysis_method) > 3),
+    lab_report_id            INT                                                            NOT NULL REFERENCES analytical_lab_reports (id) ON DELETE CASCADE,
+    analysis_date            TIMESTAMP CHECK (analysis_date <= CURRENT_TIMESTAMP),
     calculated_concentration NUMERIC(10, 4) CHECK (calculated_concentration >= 0),
     created_at               TIMESTAMP                                                                      DEFAULT NOW(),
     updated_at               TIMESTAMP                                                                      DEFAULT NOW(),
@@ -367,31 +365,30 @@ CREATE TABLE sample_analytical_results
 CREATE TABLE test_reports
 (
     id                                       SERIAL PRIMARY KEY,
-    report_number                            VARCHAR(50) UNIQUE NOT NULL,                                              -- Unique identifier for the report
-    title                                    VARCHAR(255)       NOT NULL,                                              -- Title of the report
+    report_number                            VARCHAR(50) UNIQUE NOT NULL,
+    title                                    VARCHAR(255)       NOT NULL,
     approved_by                              UUID,
     prepared_by                              UUID,
     checked_by                               UUID,
     aim_of_test                              TEXT,
-    project_id                               INT                NOT NULL REFERENCES projects (id) ON DELETE RESTRICT,  -- Related project
-    client_id                                INT                NOT NULL REFERENCES clients (id) ON DELETE RESTRICT,   -- Related client
-    location_id                              INT                NOT NULL REFERENCES locations (id) ON DELETE RESTRICT, -- Inspection location
+    project_id                               INT                NOT NULL REFERENCES projects (id) ON DELETE RESTRICT,
+    client_id                                INT                NOT NULL REFERENCES clients (id) ON DELETE RESTRICT,
+    location_id                              INT                NOT NULL REFERENCES locations (id) ON DELETE RESTRICT,
     sampling_record_id                       INT                NOT NULL REFERENCES sampling_records_dat_m200 (id) ON DELETE RESTRICT,
     technology                               TEXT,
     sampling_conditions_dates                TEXT,
     determination_of_pollutant_concentration TEXT,
-    issue_date DATE NOT NULL,  -- Date the report was issued
+    issue_date DATE NOT NULL,
     report_status VARCHAR(20) DEFAULT 'draft' CHECK (report_status IN ('draft', 'finalized', 'approved', 'rejected')), -- Status of report
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Create a junction table to establish many-to-many relationship
 CREATE TABLE test_report_standards
 (
     test_report_id INT NOT NULL REFERENCES test_reports(id) ON DELETE RESTRICT,
     standard_id    INT NOT NULL REFERENCES standards(id) ON DELETE RESTRICT,
-    PRIMARY KEY (test_report_id, standard_id) -- Composite Primary Key
+    PRIMARY KEY (test_report_id, standard_id)
 );
 
 
@@ -411,7 +408,6 @@ CREATE OR REPLACE FUNCTION update_timestamp()
     RETURNS TRIGGER AS
 $$
 BEGIN
-    -- Ensure `updated_at` exists before updating
     IF NEW.updated_at IS DISTINCT FROM OLD.updated_at THEN
         NEW.updated_at = NOW();
     END IF;
@@ -431,9 +427,9 @@ DECLARE
 BEGIN
     FOR tbl IN
         SELECT table_name
-        FROM information_schema.columns  -- ✅ Correct table for column checks
+        FROM information_schema.columns
         WHERE table_schema = 'public'
-          AND column_name = 'updated_at' -- ✅ This now works correctly
+          AND column_name = 'updated_at'
           AND table_name NOT IN ('audit_logs', 'pgaudit')
           AND table_name NOT IN (SELECT event_object_table
                                  FROM information_schema.triggers
@@ -463,38 +459,30 @@ EXECUTE FUNCTION apply_update_timestamp_trigger();
 -- INDICES
 -- #############################################################################
 
--- Ensures fast lookup of locations by company
 CREATE INDEX idx_locations_company ON locations (company_id);
 
--- Optimized for filtering sampling records by location and company
 CREATE INDEX idx_sampling_records_location_company ON sampling_records_dat_m200 (site_location_id, company_id);
 
--- Optimized for looking up samples by their related sampling record
 CREATE INDEX idx_samples_sampling_record ON samples (sampling_record_id);
 
--- Ensures efficient filtering for contaminants linked to a sample
 CREATE INDEX idx_sample_contaminants_sample ON sample_contaminants (sample_id);
 
--- Ensures efficient filtering for contaminants linked to a contaminant
 CREATE INDEX idx_sample_contaminants_contaminant ON sample_contaminants (contaminant_id);
 
--- Optimized for quick searches based on email (email should be UNIQUE)
 CREATE UNIQUE INDEX idx_users_email ON users (email);
 
--- Ensures fast lookup for equipment by its identifier (should be UNIQUE)
 CREATE UNIQUE INDEX idx_equipments_identifier ON equipments (identifier);
 
--- Optimized for time-based queries on sampling records
 CREATE INDEX idx_sampling_records_date ON sampling_records_dat_m200 (sampling_date DESC);
 
 CREATE INDEX idx_projects_client ON projects (client_id);
+
 CREATE INDEX idx_sampling_records_project ON sampling_records_dat_m200 (project_number);
 
 
 -- #############################################################################
 -- LOGGING
 -- #############################################################################
-
 ALTER SYSTEM SET pgaudit.log = 'write, ddl';
 
 CREATE TABLE audit_logs
