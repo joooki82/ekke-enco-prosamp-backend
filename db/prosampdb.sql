@@ -412,6 +412,7 @@ BEGIN
     IF NEW.updated_at IS DISTINCT FROM OLD.updated_at THEN
         NEW.updated_at = NOW();
     END IF;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
