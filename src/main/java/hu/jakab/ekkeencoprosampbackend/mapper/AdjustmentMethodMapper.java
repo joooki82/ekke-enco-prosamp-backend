@@ -3,8 +3,7 @@ package hu.jakab.ekkeencoprosampbackend.mapper;
 import hu.jakab.ekkeencoprosampbackend.dto.request.AdjustmentMethodRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.response.AdjustmentMethodResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.model.AdjustmentMethod;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")

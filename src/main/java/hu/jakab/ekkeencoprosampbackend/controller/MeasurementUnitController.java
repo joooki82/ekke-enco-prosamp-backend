@@ -1,6 +1,8 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
 import hu.jakab.ekkeencoprosampbackend.dto.*;
+import hu.jakab.ekkeencoprosampbackend.dto.request.MeasurementUnitRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.response.MeasurementUnitResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,23 +21,23 @@ public class MeasurementUnitController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MeasurementUnitDTO>> getAll() {
-        List<MeasurementUnitDTO> units = service.getAll();
+    public ResponseEntity<List<MeasurementUnitResponseDTO>> getAll() {
+        List<MeasurementUnitResponseDTO> units = service.getAll();
         return units.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(units);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MeasurementUnitDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<MeasurementUnitResponseDTO> getById(@PathVariable Long id) {
         return service.getById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<MeasurementUnitDTO> create(@RequestBody @Valid MeasurementUnitDTO dto) {
+    public ResponseEntity<MeasurementUnitResponseDTO> create(@RequestBody @Valid MeasurementUnitRequestDTO dto) {
         return ResponseEntity.ok(service.save(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MeasurementUnitDTO> update(@PathVariable Long id, @RequestBody @Valid MeasurementUnitDTO dto) {
+    public ResponseEntity<MeasurementUnitResponseDTO> update(@PathVariable Long id, @RequestBody @Valid MeasurementUnitRequestDTO dto) {
         return service.update(id, dto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
