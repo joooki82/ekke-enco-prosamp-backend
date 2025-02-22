@@ -1,5 +1,7 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
+import hu.jakab.ekkeencoprosampbackend.dto.request.AdjustmentMethodRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.response.AdjustmentMethodResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.model.*;
 import hu.jakab.ekkeencoprosampbackend.service.*;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +21,8 @@ public class AdjustmentMethodController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AdjustmentMethodDTO>> getAll() {
-        List<AdjustmentMethodDTO> methods = service.getAll();
+    public ResponseEntity<List<AdjustmentMethodResponseDTO>> getAll() {
+        List<AdjustmentMethodResponseDTO> methods = service.getAll();
         if (methods.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -28,19 +30,19 @@ public class AdjustmentMethodController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AdjustmentMethodDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<AdjustmentMethodResponseDTO> getById(@PathVariable Long id) {
         return service.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<AdjustmentMethodDTO> create(@RequestBody @Valid AdjustmentMethodDTO dto) {
+    public ResponseEntity<AdjustmentMethodResponseDTO> create(@RequestBody @Valid AdjustmentMethodRequestDTO dto) {
         return ResponseEntity.ok(service.save(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AdjustmentMethodDTO> update(@PathVariable Long id, @RequestBody @Valid AdjustmentMethodDTO dto) {
+    public ResponseEntity<AdjustmentMethodResponseDTO> update(@PathVariable Long id, @RequestBody @Valid AdjustmentMethodRequestDTO dto) {
         return service.update(id, dto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
