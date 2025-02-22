@@ -1,7 +1,10 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
+import hu.jakab.ekkeencoprosampbackend.dto.request.ClientRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.response.ClientResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.model.*;
 import hu.jakab.ekkeencoprosampbackend.service.*;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +21,8 @@ public class ClientController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ClientDTO>> getAll() {
-        List<ClientDTO> clients = service.getAll();
+    public ResponseEntity<List<ClientResponseDTO>> getAll() {
+        List<ClientResponseDTO> clients = service.getAll();
         if (clients.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -27,19 +30,19 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClientDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<ClientResponseDTO> getById(@PathVariable Long id) {
         return service.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<ClientDTO> create(@RequestBody @Valid ClientDTO dto) {
+    public ResponseEntity<ClientResponseDTO> create(@RequestBody @Valid ClientRequestDTO dto) {
         return ResponseEntity.ok(service.save(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClientDTO> update(@PathVariable Long id, @RequestBody @Valid ClientDTO dto) {
+    public ResponseEntity<ClientResponseDTO> update(@PathVariable Long id, @RequestBody @Valid ClientRequestDTO  dto) {
         return service.update(id, dto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
