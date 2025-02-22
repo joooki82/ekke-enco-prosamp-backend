@@ -21,7 +21,7 @@ public class Standard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
-    private Long id; // Auto-incremented primary key
+    private Long id;
 
     @Column(name = "standard_number", length = 255, nullable = false)
     private String standardNumber;

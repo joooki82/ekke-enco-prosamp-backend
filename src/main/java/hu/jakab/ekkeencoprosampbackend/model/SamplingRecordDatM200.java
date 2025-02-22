@@ -93,11 +93,16 @@ public class SamplingRecordDatM200 {
     @JoinColumn(name = "project_number", nullable = false, foreignKey = @ForeignKey(name = "fk_project_number"))
     private Project project;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 50, nullable = false)
-    private String status = "active";
+    private SamplingRecordStatus status = SamplingRecordStatus.ACTIVE;
+
 
     @Column(name = "remarks", columnDefinition = "TEXT")
     private String remarks;
+
+    @OneToMany(mappedBy = "samplingRecord", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<SamplingRecordEquipment> samplingRecordEquipments = new HashSet<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

@@ -8,7 +8,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "test_report_samplers")
+@Table(name = "test_report_samplers", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"fk_test_report_id", "fk_user_id"})
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,11 +24,11 @@ public class TestReportSampler {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "test_report_id", nullable = false, foreignKey = @ForeignKey(name = "fk_test_report"))
+    @JoinColumn(name = "fk_test_report_id", nullable = false, foreignKey = @ForeignKey(name = "fk_test_report"))
     private TestReport testReport;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_user"))
+    @JoinColumn(name = "fk_user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_user"))
     private User user;
 
     @CreationTimestamp

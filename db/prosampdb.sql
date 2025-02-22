@@ -204,14 +204,13 @@ CREATE TABLE sampling_records_dat_m200
 -- #############################################################################
 CREATE TABLE sampling_record_equipments
 (
-    sampling_record_id INT NOT NULL,
-    equipment_id       INT NOT NULL,
-    PRIMARY KEY (sampling_record_id, equipment_id),
-    CONSTRAINT fk_sampling_record FOREIGN KEY (sampling_record_id)
-        REFERENCES sampling_records_dat_m200 (id) ON DELETE CASCADE,
-    CONSTRAINT fk_equipment FOREIGN KEY (equipment_id)
-        REFERENCES equipments (id) ON DELETE RESTRICT
+    id SERIAL PRIMARY KEY,
+    fk_sampling_record_id INT NOT NULL REFERENCES sampling_records_dat_m200(id) ON DELETE CASCADE,
+    fk_equipment_id INT NOT NULL REFERENCES equipments(id) ON DELETE RESTRICT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (fk_sampling_record_id, fk_equipment_id)
 );
+
 
 -- #############################################################################
 -- TABLE: Contaminant Groups
@@ -386,18 +385,20 @@ CREATE TABLE test_reports
 
 CREATE TABLE test_report_standards
 (
-    test_report_id INT NOT NULL REFERENCES test_reports(id) ON DELETE RESTRICT,
-    standard_id    INT NOT NULL REFERENCES standards(id) ON DELETE RESTRICT,
-    PRIMARY KEY (test_report_id, standard_id)
+    id SERIAL PRIMARY KEY,
+    fk_test_report_id INT NOT NULL REFERENCES test_reports(id) ON DELETE RESTRICT,
+    fk_standard_id INT NOT NULL REFERENCES standards(id) ON DELETE RESTRICT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (fk_test_report_id, fk_standard_id)
 );
-
-
 
 CREATE TABLE test_report_samplers
 (
-    test_report_id INT  NOT NULL REFERENCES test_reports (id) ON DELETE CASCADE,
-    user_id        UUID NOT NULL REFERENCES users (id) ON DELETE RESTRICT,
-    PRIMARY KEY (test_report_id, user_id)
+    id SERIAL PRIMARY KEY,
+    fk_test_report_id INT NOT NULL REFERENCES test_reports(id) ON DELETE CASCADE,
+    fk_user_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (fk_test_report_id, fk_user_id)
 );
 
 

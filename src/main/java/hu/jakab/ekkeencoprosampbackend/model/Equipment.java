@@ -46,6 +46,9 @@ public class Equipment {
     @Column(name = "identifier", length = 255, nullable = false, unique = true)
     private String identifier;
 
+    @OneToMany(mappedBy = "equipment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<SamplingRecordEquipment> samplingRecordEquipments = new HashSet<>();
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

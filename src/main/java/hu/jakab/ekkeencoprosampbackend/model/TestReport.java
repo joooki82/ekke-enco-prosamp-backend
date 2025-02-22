@@ -7,6 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -47,6 +49,12 @@ public class TestReport {
     @JoinColumn(name = "project_id", nullable = false, foreignKey = @ForeignKey(name = "fk_project"))
     private Project project;
 
+    @OneToMany(mappedBy = "testReport", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TestReportStandard> testReportStandards = new HashSet<>();
+
+    @OneToMany(mappedBy = "testReport", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TestReportSampler> testReportSamplers = new HashSet<>();
+
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false, foreignKey = @ForeignKey(name = "fk_client"))
     private Client client;
@@ -71,8 +79,9 @@ public class TestReport {
     @Column(name = "issue_date", nullable = false)
     private LocalDate issueDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "report_status", length = 20, nullable = false)
-    private String reportStatus = "draft";
+    private TestReportStatus reportStatus = TestReportStatus.DRAFT;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
