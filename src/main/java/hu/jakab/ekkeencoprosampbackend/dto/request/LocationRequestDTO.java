@@ -17,3 +17,13 @@ public class LocationRequestDTO {
     private String address;
 
     @NotBlank(message = "Contact person cannot be empty")
+    private String contactPerson;
+
+    @Email(message = "Invalid email format")
+    private String email;
+
+    private String phone;
+    private String country;
+    private String city;
+    private String postalCode;
+}
