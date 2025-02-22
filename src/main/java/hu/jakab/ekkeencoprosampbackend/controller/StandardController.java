@@ -1,6 +1,8 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
 import hu.jakab.ekkeencoprosampbackend.dto.*;
+import hu.jakab.ekkeencoprosampbackend.dto.request.StandardRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.response.StandardResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,23 +21,23 @@ public class StandardController {
     }
 
     @GetMapping
-    public ResponseEntity<List<StandardDTO>> getAll() {
-        List<StandardDTO> standards = service.getAll();
+    public ResponseEntity<List<StandardResponseDTO>> getAll() {
+        List<StandardResponseDTO> standards = service.getAll();
         return standards.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(standards);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StandardDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<StandardResponseDTO> getById(@PathVariable Long id) {
         return service.getById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<StandardDTO> create(@RequestBody @Valid StandardDTO dto) {
+    public ResponseEntity<StandardResponseDTO> create(@RequestBody @Valid StandardRequestDTO dto) {
         return ResponseEntity.ok(service.save(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StandardDTO> update(@PathVariable Long id, @RequestBody @Valid StandardDTO dto) {
+    public ResponseEntity<StandardResponseDTO> update(@PathVariable Long id, @RequestBody @Valid StandardRequestDTO  dto) {
         return service.update(id, dto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
