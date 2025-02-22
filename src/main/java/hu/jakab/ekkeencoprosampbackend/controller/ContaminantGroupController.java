@@ -1,6 +1,8 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
 import hu.jakab.ekkeencoprosampbackend.dto.*;
+import hu.jakab.ekkeencoprosampbackend.dto.request.ContaminantGroupRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.response.ContaminantGroupResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,23 +21,23 @@ public class ContaminantGroupController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ContaminantGroupDTO>> getAll() {
-        List<ContaminantGroupDTO> groups = service.getAll();
+    public ResponseEntity<List<ContaminantGroupResponseDTO>> getAll() {
+        List<ContaminantGroupResponseDTO> groups = service.getAll();
         return groups.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(groups);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ContaminantGroupDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<ContaminantGroupResponseDTO> getById(@PathVariable Long id) {
         return service.getById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<ContaminantGroupDTO> create(@RequestBody @Valid ContaminantGroupDTO dto) {
+    public ResponseEntity<ContaminantGroupResponseDTO> create(@RequestBody @Valid ContaminantGroupRequestDTO dto) {
         return ResponseEntity.ok(service.save(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ContaminantGroupDTO> update(@PathVariable Long id, @RequestBody @Valid ContaminantGroupDTO dto) {
+    public ResponseEntity<ContaminantGroupResponseDTO> update(@PathVariable Long id, @RequestBody @Valid ContaminantGroupRequestDTO dto) {
         return service.update(id, dto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
