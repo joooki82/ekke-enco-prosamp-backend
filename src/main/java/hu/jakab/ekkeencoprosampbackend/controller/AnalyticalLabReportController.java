@@ -1,6 +1,8 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
 import hu.jakab.ekkeencoprosampbackend.dto.*;
+import hu.jakab.ekkeencoprosampbackend.dto.request.AnalyticalLabReportRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.response.AnalyticalLabReportResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,23 +21,23 @@ public class AnalyticalLabReportController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AnalyticalLabReportDTO>> getAll() {
-        List<AnalyticalLabReportDTO> reports = service.getAll();
+    public ResponseEntity<List<AnalyticalLabReportResponseDTO>> getAll() {
+        List<AnalyticalLabReportResponseDTO> reports = service.getAll();
         return reports.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(reports);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AnalyticalLabReportDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<AnalyticalLabReportResponseDTO> getById(@PathVariable Long id) {
         return service.getById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<AnalyticalLabReportDTO> create(@RequestBody @Valid AnalyticalLabReportDTO dto) {
+    public ResponseEntity<AnalyticalLabReportResponseDTO> create(@RequestBody @Valid AnalyticalLabReportRequestDTO dto) {
         return ResponseEntity.ok(service.save(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AnalyticalLabReportDTO> update(@PathVariable Long id, @RequestBody @Valid AnalyticalLabReportDTO dto) {
+    public ResponseEntity<AnalyticalLabReportResponseDTO> update(@PathVariable Long id, @RequestBody @Valid AnalyticalLabReportRequestDTO dto) {
         return service.update(id, dto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
