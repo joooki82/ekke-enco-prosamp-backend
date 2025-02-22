@@ -1,6 +1,9 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
 import hu.jakab.ekkeencoprosampbackend.dto.*;
+import hu.jakab.ekkeencoprosampbackend.dto.request.AssignEquipmentDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.request.SamplingRecordEquipmentRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.response.SamplingRecordEquipmentResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,23 +22,23 @@ public class SamplingRecordEquipmentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SamplingRecordEquipmentDTO>> getAll() {
-        List<SamplingRecordEquipmentDTO> records = service.getAll();
+    public ResponseEntity<List<SamplingRecordEquipmentRequestDTO>> getAll() {
+        List<SamplingRecordEquipmentRequestDTO> records = service.getAll();
         return records.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(records);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SamplingRecordEquipmentDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<SamplingRecordEquipmentRequestDTO> getById(@PathVariable Long id) {
         return service.getById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<SamplingRecordEquipmentDTO> create(@RequestBody @Valid SamplingRecordEquipmentDTO dto) {
+    public ResponseEntity<SamplingRecordEquipmentRequestDTO> create(@RequestBody @Valid SamplingRecordEquipmentResponseDTO dto) {
         return ResponseEntity.ok(service.save(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SamplingRecordEquipmentDTO> update(@PathVariable Long id, @RequestBody @Valid SamplingRecordEquipmentDTO dto) {
+    public ResponseEntity<SamplingRecordEquipmentRequestDTO> update(@PathVariable Long id, @RequestBody @Valid SamplingRecordEquipmentResponseDTO dto) {
         return service.update(id, dto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
@@ -45,7 +48,7 @@ public class SamplingRecordEquipmentController {
     }
 
     @PostMapping("/assign")
-    public ResponseEntity<SamplingRecordEquipmentDTO> assignEquipment(@RequestBody @Valid AssignEquipmentDTO dto) {
+    public ResponseEntity<SamplingRecordEquipmentRequestDTO> assignEquipment(@RequestBody @Valid AssignEquipmentDTO dto) {
         return ResponseEntity.ok(service.assignEquipment(dto));
     }
 
