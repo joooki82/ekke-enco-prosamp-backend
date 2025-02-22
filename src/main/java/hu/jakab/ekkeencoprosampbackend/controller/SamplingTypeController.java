@@ -1,6 +1,8 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
 import hu.jakab.ekkeencoprosampbackend.dto.*;
+import hu.jakab.ekkeencoprosampbackend.dto.request.SamplingTypeRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.response.SamplingTypeResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,23 +21,23 @@ public class SamplingTypeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SamplingTypeDTO>> getAll() {
-        List<SamplingTypeDTO> samplingTypes = service.getAll();
+    public ResponseEntity<List<SamplingTypeResponseDTO>> getAll() {
+        List<SamplingTypeResponseDTO> samplingTypes = service.getAll();
         return samplingTypes.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(samplingTypes);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SamplingTypeDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<SamplingTypeResponseDTO> getById(@PathVariable Long id) {
         return service.getById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<SamplingTypeDTO> create(@RequestBody @Valid SamplingTypeDTO dto) {
+    public ResponseEntity<SamplingTypeResponseDTO> create(@RequestBody @Valid SamplingTypeRequestDTO dto) {
         return ResponseEntity.ok(service.save(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SamplingTypeDTO> update(@PathVariable Long id, @RequestBody @Valid SamplingTypeDTO dto) {
+    public ResponseEntity<SamplingTypeResponseDTO> update(@PathVariable Long id, @RequestBody @Valid SamplingTypeRequestDTO  dto) {
         return service.update(id, dto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
