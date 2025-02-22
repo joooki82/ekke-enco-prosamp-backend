@@ -1,6 +1,8 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
 import hu.jakab.ekkeencoprosampbackend.dto.*;
+import hu.jakab.ekkeencoprosampbackend.dto.request.CompanyRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.response.CompanyResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +21,8 @@ public class CompanyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CompanyDTO>> getAll() {
-        List<CompanyDTO> companies = service.getAll();
+    public ResponseEntity<List<CompanyResponseDTO>> getAll() {
+        List<CompanyResponseDTO> companies = service.getAll();
         if (companies.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -28,19 +30,19 @@ public class CompanyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CompanyDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<CompanyResponseDTO> getById(@PathVariable Long id) {
         return service.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<CompanyDTO> create(@RequestBody @Valid CompanyDTO dto) {
+    public ResponseEntity<CompanyResponseDTO> create(@RequestBody @Valid CompanyRequestDTO dto) {
         return ResponseEntity.ok(service.save(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CompanyDTO> update(@PathVariable Long id, @RequestBody @Valid CompanyDTO dto) {
+    public ResponseEntity<CompanyResponseDTO> update(@PathVariable Long id, @RequestBody @Valid CompanyRequestDTO dto) {
         return service.update(id, dto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
