@@ -21,10 +21,13 @@ public class ContaminantGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
-    private Long id; // Auto-incremented primary key
+    private Long id;
 
     @Column(name = "name", length = 255, nullable = false, unique = true)
     private String name;
+
+    @Column(name = "description", nullable = false)
+    private String description;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

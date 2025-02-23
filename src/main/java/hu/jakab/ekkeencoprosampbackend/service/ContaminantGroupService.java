@@ -43,6 +43,7 @@ public class ContaminantGroupService {
     public Optional<ContaminantGroupResponseDTO> update(Long id, ContaminantGroupRequestDTO dto) {
         return repository.findById(id).map(existing -> {
             existing.setName(dto.getName());
+            existing.setDescription(dto.getDescription());
             repository.save(existing);
             return mapper.toResponseDTO(existing);
         });
