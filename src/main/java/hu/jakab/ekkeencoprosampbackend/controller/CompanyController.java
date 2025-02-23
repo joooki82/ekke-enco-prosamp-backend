@@ -1,18 +1,23 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
-import hu.jakab.ekkeencoprosampbackend.dto.*;
+import hu.jakab.ekkeencoprosampbackend.controller.base.BaseController;
 import hu.jakab.ekkeencoprosampbackend.dto.request.CompanyRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.response.CompanyResponseDTO;
-import hu.jakab.ekkeencoprosampbackend.service.*;
-import org.springframework.http.ResponseEntity;
+import hu.jakab.ekkeencoprosampbackend.service.CompanyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import jakarta.validation.Valid;
+
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/companies")
-public class CompanyController {
+public class CompanyController extends BaseController<CompanyRequestDTO, CompanyResponseDTO, Long> {
+
+    private static final Logger logger = LoggerFactory.getLogger(CompanyController.class);
+
     private final CompanyService service;
 
     @Autowired
@@ -20,40 +25,33 @@ public class CompanyController {
         this.service = service;
     }
 
-    @GetMapping
-    public ResponseEntity<List<CompanyResponseDTO>> getAll() {
-        List<CompanyResponseDTO> companies = service.getAll();
-        if (companies.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(companies);
+    @Override
+    public List<CompanyResponseDTO> getAllEntities() {
+        logger.info("Fetching all companies");
+        return service.getAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CompanyResponseDTO> getById(@PathVariable Long id) {
-        return service.getById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @Override
+    public Optional<CompanyResponseDTO> getEntityById(Long id) {
+        logger.info("Fetching company by ID: {}", id);
+        return service.getById(id);
     }
 
-    @PostMapping
-    public ResponseEntity<CompanyResponseDTO> create(@RequestBody @Valid CompanyRequestDTO dto) {
-        return ResponseEntity.ok(service.save(dto));
+    @Override
+    public CompanyResponseDTO createEntity(CompanyRequestDTO dto) {
+        logger.info("Creating a new company: {}", dto.getName());
+        return service.save(dto);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<CompanyResponseDTO> update(@PathVariable Long id, @RequestBody @Valid CompanyRequestDTO dto) {
-        return service.update(id, dto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @Override
+    public Optional<CompanyResponseDTO> updateEntity(Long id, CompanyRequestDTO dto) {
+        logger.info("Updating company with ID: {}", id);
+        return service.update(id, dto);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (service.delete(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @Override
+    public boolean deleteEntity(Long id) {
+        logger.info("Deleting company with ID: {}", id);
+        return service.delete(id);
     }
 }
