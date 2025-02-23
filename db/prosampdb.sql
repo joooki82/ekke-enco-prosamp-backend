@@ -175,7 +175,7 @@ CREATE TABLE sampling_records_dat_m200
     technology                     VARCHAR(255),
     shift_count_and_duration       INT CHECK (shift_count_and_duration > 0),
     workers_per_shift              INT CHECK (workers_per_shift > 0),
-    exposure_time                  INTERVAL  NOT NULL,
+    exposure_time                  INT CHECK (exposure_time > 0),
     temperature                    NUMERIC(5, 2),
     humidity                       NUMERIC(5, 2) CHECK (humidity >= 0 AND humidity <= 100),
     wind_speed                     NUMERIC(5, 2),
@@ -204,10 +204,10 @@ CREATE TABLE sampling_records_dat_m200
 -- #############################################################################
 CREATE TABLE sampling_record_equipments
 (
-    id SERIAL PRIMARY KEY,
-    fk_sampling_record_id INT NOT NULL REFERENCES sampling_records_dat_m200(id) ON DELETE CASCADE,
-    fk_equipment_id INT NOT NULL REFERENCES equipments(id) ON DELETE RESTRICT,
-    created_at TIMESTAMP DEFAULT NOW(),
+    id                    SERIAL PRIMARY KEY,
+    fk_sampling_record_id INT NOT NULL REFERENCES sampling_records_dat_m200 (id) ON DELETE CASCADE,
+    fk_equipment_id       INT NOT NULL REFERENCES equipments (id) ON DELETE RESTRICT,
+    created_at            TIMESTAMP DEFAULT NOW(),
     UNIQUE (fk_sampling_record_id, fk_equipment_id)
 );
 
@@ -377,27 +377,27 @@ CREATE TABLE test_reports
     technology                               TEXT,
     sampling_conditions_dates                TEXT,
     determination_of_pollutant_concentration TEXT,
-    issue_date DATE NOT NULL,
-    report_status VARCHAR(20) DEFAULT 'draft' CHECK (report_status IN ('draft', 'finalized', 'approved', 'rejected')), -- Status of report
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    issue_date                               DATE               NOT NULL,
+    report_status                            VARCHAR(20) DEFAULT 'draft' CHECK (report_status IN ('draft', 'finalized', 'approved', 'rejected')), -- Status of report
+    created_at                               TIMESTAMP   DEFAULT NOW(),
+    updated_at                               TIMESTAMP   DEFAULT NOW()
 );
 
 CREATE TABLE test_report_standards
 (
-    id SERIAL PRIMARY KEY,
-    fk_test_report_id INT NOT NULL REFERENCES test_reports(id) ON DELETE RESTRICT,
-    fk_standard_id INT NOT NULL REFERENCES standards(id) ON DELETE RESTRICT,
-    created_at TIMESTAMP DEFAULT NOW(),
+    id                SERIAL PRIMARY KEY,
+    fk_test_report_id INT NOT NULL REFERENCES test_reports (id) ON DELETE RESTRICT,
+    fk_standard_id    INT NOT NULL REFERENCES standards (id) ON DELETE RESTRICT,
+    created_at        TIMESTAMP DEFAULT NOW(),
     UNIQUE (fk_test_report_id, fk_standard_id)
 );
 
 CREATE TABLE test_report_samplers
 (
-    id SERIAL PRIMARY KEY,
-    fk_test_report_id INT NOT NULL REFERENCES test_reports(id) ON DELETE CASCADE,
-    fk_user_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
-    created_at TIMESTAMP DEFAULT NOW(),
+    id                SERIAL PRIMARY KEY,
+    fk_test_report_id INT  NOT NULL REFERENCES test_reports (id) ON DELETE CASCADE,
+    fk_user_id        UUID NOT NULL REFERENCES users (id) ON DELETE RESTRICT,
+    created_at        TIMESTAMP DEFAULT NOW(),
     UNIQUE (fk_test_report_id, fk_user_id)
 );
 
