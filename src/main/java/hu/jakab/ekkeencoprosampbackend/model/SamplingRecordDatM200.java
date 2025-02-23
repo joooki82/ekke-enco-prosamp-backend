@@ -54,7 +54,7 @@ public class SamplingRecordDatM200 {
     private Integer workersPerShift;
 
     @Column(name = "exposure_time", nullable = false)
-    private Duration exposureTime;
+    private Long exposureTime;
 
     @Column(name = "temperature", precision = 5, scale = 2)
     private BigDecimal temperature;

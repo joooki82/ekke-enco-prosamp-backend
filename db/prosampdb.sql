@@ -31,7 +31,7 @@ ON CONFLICT (id) DO NOTHING;
 -- #############################################################################
 CREATE TABLE companies
 (
-    id             SERIAL PRIMARY KEY,
+    id             BIGSERIAL PRIMARY KEY,
     name           VARCHAR(255) UNIQUE NOT NULL,
     address        TEXT,
     contact_person VARCHAR(255)        NOT NULL,
@@ -48,8 +48,8 @@ CREATE TABLE companies
 -- #############################################################################
 CREATE TABLE locations
 (
-    id             SERIAL PRIMARY KEY,
-    company_id     INT          NOT NULL REFERENCES companies (id),
+    id             BIGSERIAL PRIMARY KEY,
+    company_id     BIGINT       NOT NULL REFERENCES companies (id),
     name           VARCHAR(255) NOT NULL,
     address        TEXT,
     contact_person VARCHAR(255) NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE locations
 -- #############################################################################
 CREATE TABLE equipments
 (
-    id              SERIAL PRIMARY KEY,
+    id              BIGSERIAL PRIMARY KEY,
     name            VARCHAR(255)        NOT NULL,
     description     TEXT,
     producer        VARCHAR(255),
@@ -87,7 +87,7 @@ CREATE TABLE equipments
 -- #############################################################################
 CREATE TABLE standards
 (
-    id              SERIAL PRIMARY KEY,
+    id              BIGSERIAL PRIMARY KEY,
     standard_number VARCHAR(255)        NOT NULL,
     description     TEXT,
     standard_type   VARCHAR(255),
@@ -101,7 +101,7 @@ CREATE TABLE standards
 -- #############################################################################
 CREATE TABLE sampling_types
 (
-    id          SERIAL PRIMARY KEY,
+    id          BIGSERIAL PRIMARY KEY,
     code        VARCHAR(10) UNIQUE NOT NULL,
     description TEXT               NOT NULL,
     created_at  TIMESTAMP DEFAULT NOW(),
@@ -113,7 +113,7 @@ CREATE TABLE sampling_types
 -- #############################################################################
 CREATE TABLE adjustment_methods
 (
-    id          SERIAL PRIMARY KEY,
+    id          BIGSERIAL PRIMARY KEY,
     code        VARCHAR(10) UNIQUE NOT NULL,
     description TEXT               NOT NULL,
     created_at  TIMESTAMP DEFAULT NOW(),
@@ -126,7 +126,7 @@ CREATE TABLE adjustment_methods
 -- #############################################################################
 CREATE TABLE clients
 (
-    id             SERIAL PRIMARY KEY,
+    id             BIGSERIAL PRIMARY KEY,
     name           VARCHAR(255) UNIQUE NOT NULL,
     contact_person VARCHAR(255)        NOT NULL,
     email          VARCHAR(255) UNIQUE,
@@ -145,9 +145,9 @@ CREATE TABLE clients
 -- #############################################################################
 CREATE TABLE projects
 (
-    id             SERIAL PRIMARY KEY,
+    id             BIGSERIAL PRIMARY KEY,
     project_number VARCHAR(50) UNIQUE NOT NULL, -- Unique project identifier
-    client_id      INT                NOT NULL,
+    client_id      BIGINT             NOT NULL,
     project_name   VARCHAR(255)       NOT NULL,
     start_date     DATE               NOT NULL,
     end_date       DATE,
@@ -166,16 +166,16 @@ CREATE TABLE projects
 -- #############################################################################
 CREATE TABLE sampling_records_dat_m200
 (
-    id                             SERIAL PRIMARY KEY,
+    id                             BIGSERIAL PRIMARY KEY,
     sampling_date                  TIMESTAMP NOT NULL,
     conducted_by                   UUID      NOT NULL,
-    site_location_id               INT       NOT NULL,
-    company_id                     INT       NOT NULL,
+    site_location_id               BIGINT    NOT NULL,
+    company_id                     BIGINT    NOT NULL,
     tested_plant                   VARCHAR(255),
     technology                     VARCHAR(255),
-    shift_count_and_duration       INT CHECK (shift_count_and_duration > 0),
-    workers_per_shift              INT CHECK (workers_per_shift > 0),
-    exposure_time                  INT CHECK (exposure_time > 0),
+    shift_count_and_duration       BIGINT CHECK (shift_count_and_duration > 0),
+    workers_per_shift              BIGINT CHECK (workers_per_shift > 0),
+    exposure_time                  BIGINT CHECK (exposure_time > 0),
     temperature                    NUMERIC(5, 2),
     humidity                       NUMERIC(5, 2) CHECK (humidity >= 0 AND humidity <= 100),
     wind_speed                     NUMERIC(5, 2),
@@ -187,7 +187,7 @@ CREATE TABLE sampling_records_dat_m200
     operation_break                VARCHAR(255),
     local_air_extraction           VARCHAR(255),
     serial_numbers_of_samples      VARCHAR(255),
-    project_number                 INT       NOT NULL,
+    project_number                 BIGINT    NOT NULL,
     status                         VARCHAR(50) DEFAULT 'active', -- Státusz: 'active', 'lost', 'broken', 'invalid'
     remarks                        TEXT,
     created_at                     TIMESTAMP   DEFAULT NOW(),
@@ -204,9 +204,9 @@ CREATE TABLE sampling_records_dat_m200
 -- #############################################################################
 CREATE TABLE sampling_record_equipments
 (
-    id                    SERIAL PRIMARY KEY,
-    fk_sampling_record_id INT NOT NULL REFERENCES sampling_records_dat_m200 (id) ON DELETE CASCADE,
-    fk_equipment_id       INT NOT NULL REFERENCES equipments (id) ON DELETE RESTRICT,
+    id                    BIGSERIAL PRIMARY KEY,
+    fk_sampling_record_id BIGINT NOT NULL REFERENCES sampling_records_dat_m200 (id) ON DELETE CASCADE,
+    fk_equipment_id       BIGINT NOT NULL REFERENCES equipments (id) ON DELETE RESTRICT,
     created_at            TIMESTAMP DEFAULT NOW(),
     UNIQUE (fk_sampling_record_id, fk_equipment_id)
 );
@@ -217,10 +217,11 @@ CREATE TABLE sampling_record_equipments
 -- #############################################################################
 CREATE TABLE contaminant_groups
 (
-    id         SERIAL PRIMARY KEY,
-    name       VARCHAR(255) UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    id          BIGSERIAL PRIMARY KEY,
+    name        VARCHAR(255) UNIQUE NOT NULL,
+    description VARCHAR(255) UNIQUE NOT NULL,
+    created_at  TIMESTAMP DEFAULT NOW(),
+    updated_at  TIMESTAMP DEFAULT NOW()
 );
 
 -- #############################################################################
@@ -228,9 +229,9 @@ CREATE TABLE contaminant_groups
 -- #############################################################################
 CREATE TABLE contaminants
 (
-    id                   SERIAL PRIMARY KEY,
+    id                   BIGSERIAL PRIMARY KEY,
     name                 VARCHAR(255) UNIQUE NOT NULL,
-    contaminant_group_id INT                 NOT NULL,
+    contaminant_group_id BIGINT              NOT NULL,
     created_at           TIMESTAMP DEFAULT NOW(),
     updated_at           TIMESTAMP DEFAULT NOW(),
     CONSTRAINT fk_contaminant_group FOREIGN KEY (contaminant_group_id) REFERENCES contaminant_groups (id) ON DELETE RESTRICT
@@ -242,13 +243,13 @@ CREATE TABLE contaminants
 -- #############################################################################
 CREATE TABLE measurement_units
 (
-    id                SERIAL PRIMARY KEY,
-    unit_code         VARCHAR(20) UNIQUE NOT NULL,           -- e.g., "mg/m³", "ppm", "µg/L"
-    description       TEXT               NOT NULL,           -- e.g., "Milligrams per cubic meter"
-    unit_category     VARCHAR(50)        NOT NULL,           -- e.g., "Concentration", "Mass", "Volume"
-    base_unit_id      INT REFERENCES measurement_units (id), -- For unit conversion reference
-    conversion_factor DOUBLE PRECISION,                      -- Factor to convert to base unit
-    standard_body     VARCHAR(50),                           -- e.g., "SI", "ISO", "ASTM", "EPA"
+    id                BIGSERIAL PRIMARY KEY,
+    unit_code         VARCHAR(20) UNIQUE NOT NULL,              -- e.g., "mg/m³", "ppm", "µg/L"
+    description       TEXT               NOT NULL,              -- e.g., "Milligrams per cubic meter"
+    unit_category     VARCHAR(50)        NOT NULL,              -- e.g., "Concentration", "Mass", "Volume"
+    base_unit_id      BIGINT REFERENCES measurement_units (id), -- For unit conversion reference
+    conversion_factor DOUBLE PRECISION,                         -- Factor to convert to base unit
+    standard_body     VARCHAR(50),                              -- e.g., "SI", "ISO", "ASTM", "EPA"
     created_at        TIMESTAMP DEFAULT NOW(),
     updated_at        TIMESTAMP DEFAULT NOW()
 );
@@ -259,8 +260,8 @@ CREATE TABLE measurement_units
 -- #############################################################################
 CREATE TABLE samples
 (
-    id                           SERIAL PRIMARY KEY,
-    sampling_record_id           INT         NOT NULL,
+    id                           BIGSERIAL PRIMARY KEY,
+    sampling_record_id           BIGINT      NOT NULL,
     sample_identifier            VARCHAR(50) NOT NULL,
     location                     VARCHAR(255),
     employee_name                VARCHAR(255),
@@ -268,14 +269,14 @@ CREATE TABLE samples
     humidity                     NUMERIC(5, 2),
     pressure                     NUMERIC(7, 2),
     sample_volume_flow_rate      NUMERIC(5, 4),
-    sample_volume_flow_rate_unit INT         NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
+    sample_volume_flow_rate_unit BIGINT      NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
     start_time                   TIMESTAMP,
     end_time                     TIMESTAMP,
     sample_type                  VARCHAR(10) CHECK (sample_type IN ('AK', 'CK')) DEFAULT 'AK',
     status                       VARCHAR(50)                                     DEFAULT 'active', -- Státusz: 'active', 'lost', 'broken', 'invalid'
     remarks                      VARCHAR(255),
-    sampling_type_id             INT,
-    adjustment_method_id         INT,
+    sampling_type_id             BIGINT,
+    adjustment_method_id         BIGINT,
     sampling_flow_rate           NUMERIC(6, 3) CHECK (sampling_flow_rate > 0),
     created_at                   TIMESTAMP                                       DEFAULT NOW(),
     updated_at                   TIMESTAMP                                       DEFAULT NOW(),
@@ -290,15 +291,11 @@ CREATE TABLE samples
 -- #############################################################################
 CREATE TABLE sample_contaminants
 (
-    sample_id      INT NOT NULL,
-    contaminant_id INT NOT NULL,
-    created_at     TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (sample_id, contaminant_id),
-    CONSTRAINT fk_sample_contaminants_sample FOREIGN KEY (sample_id)
-        REFERENCES samples (id) ON DELETE CASCADE,
-    CONSTRAINT fk_sample_contaminants_contaminant FOREIGN KEY (contaminant_id)
-        REFERENCES contaminants (id) ON DELETE RESTRICT
-
+    id                BIGSERIAL PRIMARY KEY,
+    fk_sample_id      BIGINT NOT NULL REFERENCES samples (id) ON DELETE CASCADE,
+    fk_contaminant_id BIGINT NOT NULL REFERENCES contaminants (id) ON DELETE RESTRICT,
+    created_at        TIMESTAMP DEFAULT NOW(),
+    UNIQUE (fk_sample_id, fk_contaminant_id)
 );
 
 -- #############################################################################
@@ -306,7 +303,7 @@ CREATE TABLE sample_contaminants
 -- #############################################################################
 CREATE TABLE laboratories
 (
-    id            SERIAL PRIMARY KEY,
+    id            BIGSERIAL PRIMARY KEY,
     name          VARCHAR(255) UNIQUE NOT NULL,
     accreditation VARCHAR(255), -- Accreditation ID (e.g., NAH-1-1666/2019)
     contact_email VARCHAR(255),
@@ -322,10 +319,10 @@ CREATE TABLE laboratories
 -- #############################################################################
 CREATE TABLE analytical_lab_reports
 (
-    id            SERIAL PRIMARY KEY,
+    id            BIGSERIAL PRIMARY KEY,
     report_number VARCHAR(50) UNIQUE NOT NULL,                                                 -- External lab report identifier
     issue_date    DATE               NOT NULL,                                                 -- The date when the lab issued the report
-    laboratory_id INT                NOT NULL REFERENCES laboratories (id) ON DELETE RESTRICT, -- Which lab performed the tests
+    laboratory_id BIGINT             NOT NULL REFERENCES laboratories (id) ON DELETE RESTRICT, -- Which lab performed the tests
     created_at    TIMESTAMP DEFAULT NOW(),
     updated_at    TIMESTAMP DEFAULT NOW()
 );
@@ -337,17 +334,17 @@ CREATE TABLE analytical_lab_reports
 CREATE TABLE sample_analytical_results
 (
     id                       BIGSERIAL PRIMARY KEY,
-    sample_id                INT                                                            NOT NULL,
-    contaminant_id           INT                                                            NOT NULL,
+    sample_id                BIGINT                                                         NOT NULL,
+    contaminant_id           BIGINT                                                         NOT NULL,
     result_main              NUMERIC(10, 4) CHECK (result_main IS NULL OR result_main >= 0) NOT NULL,
     result_control           NUMERIC(10, 4) CHECK (result_control IS NULL OR result_control >= 0)           DEFAULT NULL,
     result_main_control      NUMERIC(10, 4) CHECK (result_main_control IS NULL OR result_main_control >= 0) DEFAULT NULL,
-    measurement_unit         INT                                                            NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
+    measurement_unit         BIGINT                                                         NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
     detection_limit          NUMERIC(10, 4) CHECK (detection_limit IS NULL OR detection_limit >= 0),
     measurement_uncertainty  NUMERIC(5, 2) CHECK (measurement_uncertainty IS NULL OR
                                                   measurement_uncertainty BETWEEN 0 AND 100),
     analysis_method          VARCHAR(255) CHECK (LENGTH(analysis_method) > 3),
-    lab_report_id            INT                                                            NOT NULL REFERENCES analytical_lab_reports (id) ON DELETE CASCADE,
+    lab_report_id            BIGINT                                                         NOT NULL REFERENCES analytical_lab_reports (id) ON DELETE CASCADE,
     analysis_date            TIMESTAMP CHECK (analysis_date <= CURRENT_TIMESTAMP),
     calculated_concentration NUMERIC(10, 4) CHECK (calculated_concentration >= 0),
     created_at               TIMESTAMP                                                                      DEFAULT NOW(),
@@ -363,17 +360,17 @@ CREATE TABLE sample_analytical_results
 -- #############################################################################
 CREATE TABLE test_reports
 (
-    id                                       SERIAL PRIMARY KEY,
+    id                                       BIGSERIAL PRIMARY KEY,
     report_number                            VARCHAR(50) UNIQUE NOT NULL,
     title                                    VARCHAR(255)       NOT NULL,
     approved_by                              UUID,
     prepared_by                              UUID,
     checked_by                               UUID,
     aim_of_test                              TEXT,
-    project_id                               INT                NOT NULL REFERENCES projects (id) ON DELETE RESTRICT,
-    client_id                                INT                NOT NULL REFERENCES clients (id) ON DELETE RESTRICT,
-    location_id                              INT                NOT NULL REFERENCES locations (id) ON DELETE RESTRICT,
-    sampling_record_id                       INT                NOT NULL REFERENCES sampling_records_dat_m200 (id) ON DELETE RESTRICT,
+    project_id                               BIGINT             NOT NULL REFERENCES projects (id) ON DELETE RESTRICT,
+    client_id                                BIGINT             NOT NULL REFERENCES clients (id) ON DELETE RESTRICT,
+    location_id                              BIGINT             NOT NULL REFERENCES locations (id) ON DELETE RESTRICT,
+    sampling_record_id                       BIGINT             NOT NULL REFERENCES sampling_records_dat_m200 (id) ON DELETE RESTRICT,
     technology                               TEXT,
     sampling_conditions_dates                TEXT,
     determination_of_pollutant_concentration TEXT,
@@ -385,18 +382,18 @@ CREATE TABLE test_reports
 
 CREATE TABLE test_report_standards
 (
-    id                SERIAL PRIMARY KEY,
-    fk_test_report_id INT NOT NULL REFERENCES test_reports (id) ON DELETE RESTRICT,
-    fk_standard_id    INT NOT NULL REFERENCES standards (id) ON DELETE RESTRICT,
+    id                BIGSERIAL PRIMARY KEY,
+    fk_test_report_id BIGINT NOT NULL REFERENCES test_reports (id) ON DELETE RESTRICT,
+    fk_standard_id    BIGINT NOT NULL REFERENCES standards (id) ON DELETE RESTRICT,
     created_at        TIMESTAMP DEFAULT NOW(),
     UNIQUE (fk_test_report_id, fk_standard_id)
 );
 
 CREATE TABLE test_report_samplers
 (
-    id                SERIAL PRIMARY KEY,
-    fk_test_report_id INT  NOT NULL REFERENCES test_reports (id) ON DELETE CASCADE,
-    fk_user_id        UUID NOT NULL REFERENCES users (id) ON DELETE RESTRICT,
+    id                BIGSERIAL PRIMARY KEY,
+    fk_test_report_id BIGINT NOT NULL REFERENCES test_reports (id) ON DELETE CASCADE,
+    fk_user_id        UUID   NOT NULL REFERENCES users (id) ON DELETE RESTRICT,
     created_at        TIMESTAMP DEFAULT NOW(),
     UNIQUE (fk_test_report_id, fk_user_id)
 );
@@ -467,9 +464,9 @@ CREATE INDEX idx_sampling_records_location_company ON sampling_records_dat_m200 
 
 CREATE INDEX idx_samples_sampling_record ON samples (sampling_record_id);
 
-CREATE INDEX idx_sample_contaminants_sample ON sample_contaminants (sample_id);
+CREATE INDEX idx_sample_contaminants_sample ON sample_contaminants (fk_sample_id);
 
-CREATE INDEX idx_sample_contaminants_contaminant ON sample_contaminants (contaminant_id);
+CREATE INDEX idx_sample_contaminants_contaminant ON sample_contaminants (fk_contaminant_id);
 
 CREATE UNIQUE INDEX idx_users_email ON users (email);
 

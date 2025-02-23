@@ -7,7 +7,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "sample_contaminants")
+@Table(
+        name = "sample_contaminants",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"fk_sample_id", "fk_contaminant_id"})
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,11 +24,11 @@ public class SampleContaminant {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "sample_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sample_contaminants_sample"))
+    @JoinColumn(name = "fk_sample_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sample_contaminants_sample"))
     private Sample sample;
 
     @ManyToOne
-    @JoinColumn(name = "contaminant_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sample_contaminants_contaminant"))
+    @JoinColumn(name = "fk_contaminant_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sample_contaminants_contaminant"))
     private Contaminant contaminant;
 
     @CreationTimestamp
