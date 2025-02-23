@@ -2,6 +2,7 @@ package hu.jakab.ekkeencoprosampbackend.service;
 
 import hu.jakab.ekkeencoprosampbackend.dto.request.CompanyRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.response.CompanyResponseDTO;
+import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.mapper.CompanyMapper;
 import hu.jakab.ekkeencoprosampbackend.model.Company;
 import hu.jakab.ekkeencoprosampbackend.repository.CompanyRepository;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CompanyService {
@@ -25,40 +25,33 @@ public class CompanyService {
     }
 
     public List<CompanyResponseDTO> getAll() {
-        return repository.findAll().stream()
-                .map(mapper::toResponseDTO)
-                .collect(Collectors.toList());
+        return mapper.toResponseDtoList(repository.findAll());
     }
 
     public Optional<CompanyResponseDTO> getById(Long id) {
-        return repository.findById(id).map(mapper::toResponseDTO);
+        return repository.findById(id).map(mapper::toResponseDto);
     }
 
     public CompanyResponseDTO save(CompanyRequestDTO dto) {
         Company company = mapper.toEntity(dto);
         Company savedCompany = repository.save(company);
-        return mapper.toResponseDTO(savedCompany);
+        return mapper.toResponseDto(savedCompany);
     }
 
     public Optional<CompanyResponseDTO> update(Long id, CompanyRequestDTO dto) {
-        return repository.findById(id).map(existing -> {
-            existing.setName(dto.getName());
-            existing.setAddress(dto.getAddress());
-            existing.setContactPerson(dto.getContactPerson());
-            existing.setEmail(dto.getEmail());
-            existing.setPhone(dto.getPhone());
-            existing.setCountry(dto.getCountry());
-            existing.setCity(dto.getCity());
-            repository.save(existing);
-            return mapper.toResponseDTO(existing);
+        return repository.findById(id).map(existingCompany -> {
+            mapper.updateEntityFromDto(dto, existingCompany);
+            existingCompany.setUpdatedAt(java.time.LocalDateTime.now());
+            Company updatedCompany = repository.save(existingCompany);
+            return mapper.toResponseDto(updatedCompany);
         });
     }
 
     public boolean delete(Long id) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id);
-            return true;
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Company with ID " + id + " not found.");
         }
-        return false;
+        repository.deleteById(id);
+        return true;
     }
 }

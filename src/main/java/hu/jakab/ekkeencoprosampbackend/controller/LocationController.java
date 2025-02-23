@@ -1,18 +1,23 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
-import hu.jakab.ekkeencoprosampbackend.dto.*;
+import hu.jakab.ekkeencoprosampbackend.controller.base.BaseController;
 import hu.jakab.ekkeencoprosampbackend.dto.request.LocationRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.response.LocationResponseDTO;
-import hu.jakab.ekkeencoprosampbackend.service.*;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import hu.jakab.ekkeencoprosampbackend.service.LocationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/locations")
-public class LocationController {
+public class LocationController extends BaseController<LocationRequestDTO, LocationResponseDTO, Long> {
+
+    private static final Logger logger = LoggerFactory.getLogger(LocationController.class);
+
     private final LocationService service;
 
     @Autowired
@@ -20,29 +25,33 @@ public class LocationController {
         this.service = service;
     }
 
-    @GetMapping
-    public ResponseEntity<List<LocationResponseDTO>> getAll() {
-        List<LocationResponseDTO> locations = service.getAll();
-        return locations.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(locations);
+    @Override
+    public List<LocationResponseDTO> getAllEntities() {
+        logger.info("Fetching all locations");
+        return service.getAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<LocationResponseDTO> getById(@PathVariable Long id) {
-        return service.getById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    @Override
+    public Optional<LocationResponseDTO> getEntityById(Long id) {
+        logger.info("Fetching location by ID: {}", id);
+        return service.getById(id);
     }
 
-    @PostMapping
-    public ResponseEntity<LocationResponseDTO> create(@RequestBody @Valid LocationRequestDTO dto) {
-        return ResponseEntity.ok(service.save(dto));
+    @Override
+    public LocationResponseDTO createEntity(LocationRequestDTO dto) {
+        logger.info("Creating a new location");
+        return service.save(dto);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<LocationResponseDTO> update(@PathVariable Long id, @RequestBody @Valid LocationRequestDTO  dto) {
-        return service.update(id, dto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    @Override
+    public Optional<LocationResponseDTO> updateEntity(Long id, LocationRequestDTO dto) {
+        logger.info("Updating location with ID: {}", id);
+        return service.update(id, dto);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        return service.delete(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    @Override
+    public boolean deleteEntity(Long id) {
+        logger.info("Deleting location with ID: {}", id);
+        return service.delete(id);
     }
 }

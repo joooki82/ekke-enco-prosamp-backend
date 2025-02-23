@@ -2,6 +2,7 @@ package hu.jakab.ekkeencoprosampbackend.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Data
@@ -9,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class LocationRequestDTO {
+    @NotNull(message = "Company ID cannot be null")
     private Long companyId;
 
     @NotBlank(message = "Location name cannot be empty")

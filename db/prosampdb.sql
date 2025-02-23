@@ -219,7 +219,7 @@ CREATE TABLE contaminant_groups
 (
     id          BIGSERIAL PRIMARY KEY,
     name        VARCHAR(255) UNIQUE NOT NULL,
-    description VARCHAR(255) UNIQUE NOT NULL,
+    description VARCHAR(255)        NOT NULL,
     created_at  TIMESTAMP DEFAULT NOW(),
     updated_at  TIMESTAMP DEFAULT NOW()
 );
@@ -231,6 +231,7 @@ CREATE TABLE contaminants
 (
     id                   BIGSERIAL PRIMARY KEY,
     name                 VARCHAR(255) UNIQUE NOT NULL,
+    description          VARCHAR(255),
     contaminant_group_id BIGINT              NOT NULL,
     created_at           TIMESTAMP DEFAULT NOW(),
     updated_at           TIMESTAMP DEFAULT NOW(),
