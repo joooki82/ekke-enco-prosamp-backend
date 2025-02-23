@@ -1,5 +1,7 @@
 package hu.jakab.ekkeencoprosampbackend.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,85 +17,54 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Handle resource not found errors
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex) {
-        return new ResponseEntity<>(
-                Map.of("error", "Resource Not Found", "message", ex.getMessage()),
-                HttpStatus.NOT_FOUND
-        );
+    public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        logger.error("Resource not found: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "error", "Resource Not Found",
+                "message", ex.getMessage()
+        ));
     }
 
-    // Handle validation errors
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Object> handleValidationException(ValidationException ex) {
-        return new ResponseEntity<>(
-                Map.of("error", "Validation Error", "message", ex.getMessage()),
-                HttpStatus.BAD_REQUEST
-        );
-    }
-
-    // Handle duplicate resource errors (e.g., unique constraints)
     @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<Object> handleDuplicateResourceException(DuplicateResourceException ex) {
-        return new ResponseEntity<>(
-                Map.of("error", "Duplicate Resource", "message", ex.getMessage()),
-                HttpStatus.CONFLICT // 409 Conflict
-        );
+    public ResponseEntity<Map<String, String>> handleDuplicateResourceException(DuplicateResourceException ex) {
+        logger.error("Duplicate resource error: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "error", "Duplicate Resource",
+                "message", ex.getMessage()
+        ));
     }
 
-    // Handle database constraint violations
-    @ExceptionHandler(DatabaseConstraintException.class)
-    public ResponseEntity<Object> handleDatabaseConstraintException(DatabaseConstraintException ex) {
-        return new ResponseEntity<>(
-                Map.of("error", "Database Constraint Violation", "message", ex.getMessage()),
-                HttpStatus.CONFLICT
-        );
-    }
-
-    // Handle generic validation exceptions
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(
                 error -> errors.put(error.getField(), error.getDefaultMessage())
         );
-
-        return new ResponseEntity<>(
-                Map.of("error", "Validation Failed", "details", errors),
-                HttpStatus.BAD_REQUEST
-        );
+        logger.error("Validation failed: {}", errors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "error", "Validation Failed",
+                "details", errors
+        ));
     }
 
-    // Handle general database integrity violation
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        String message = "Database constraint violation occurred.";
-        if (ex.getRootCause() != null) {
-            message = ex.getRootCause().getMessage();
-        }
-
-        return new ResponseEntity<>(
-                Map.of("error", "Constraint Violation", "message", message),
-                HttpStatus.CONFLICT
-        );
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        logger.error("Database constraint violation: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "error", "Constraint Violation",
+                "message", ex.getRootCause() != null ? ex.getRootCause().getMessage() : "Database constraint violation occurred."
+        ));
     }
 
-    // Handle other unexpected errors
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleGlobalException(Exception ex, WebRequest request) {
-        return new ResponseEntity<>(
-                Map.of("error", "Internal Server Error", "message", ex.getMessage()),
-                HttpStatus.INTERNAL_SERVER_ERROR
-        );
+    public ResponseEntity<Map<String, String>> handleGlobalException(Exception ex, WebRequest request) {
+        logger.error("Internal Server Error: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "error", "Internal Server Error",
+                "message", ex.getMessage()
+        ));
     }
-
-    @ExceptionHandler(MissingPathVariableException.class)
-    public ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex) {
-        return new ResponseEntity<>(
-                Map.of("error", "Missing Path Variable", "message", ex.getMessage()),
-                HttpStatus.BAD_REQUEST
-        );
-    }
-
 }
