@@ -26,6 +26,9 @@ public class Contaminant {
     @Column(name = "name", length = 255, nullable = false, unique = true)
     private String name;
 
+    @Column(name = "description", length = 255)
+    private String description;
+
     @ManyToOne
     @JoinColumn(name = "contaminant_group_id", nullable = false, foreignKey = @ForeignKey(name = "fk_contaminant_group"))
     private ContaminantGroup contaminantGroup;

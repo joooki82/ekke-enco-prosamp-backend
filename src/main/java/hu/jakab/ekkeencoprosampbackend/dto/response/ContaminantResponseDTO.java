@@ -11,8 +11,10 @@ import java.time.LocalDateTime;
 public class ContaminantResponseDTO {
     private Long id;
     private String name;
-    private String chemicalFormula;
     private String description;
+
+    private ContaminantGroupResponseDTO contaminantGroup;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
