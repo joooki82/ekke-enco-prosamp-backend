@@ -5,6 +5,7 @@ import hu.jakab.ekkeencoprosampbackend.dto.response.AdjustmentMethodResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.mapper.AdjustmentMethodMapper;
 import hu.jakab.ekkeencoprosampbackend.model.AdjustmentMethod;
 import hu.jakab.ekkeencoprosampbackend.repository.AdjustmentMethodRepository;
+import org.mapstruct.Qualifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class AdjustmentMethodService {
     private final AdjustmentMethodRepository repository;
+
     private final AdjustmentMethodMapper mapper;
 
     @Autowired

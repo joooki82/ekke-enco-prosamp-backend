@@ -4,7 +4,6 @@ import hu.jakab.ekkeencoprosampbackend.dto.request.AdjustmentMethodRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.response.AdjustmentMethodResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.model.AdjustmentMethod;
 import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface AdjustmentMethodMapper {

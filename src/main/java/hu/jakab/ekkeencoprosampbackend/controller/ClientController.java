@@ -1,18 +1,23 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
+import hu.jakab.ekkeencoprosampbackend.controller.base.BaseController;
 import hu.jakab.ekkeencoprosampbackend.dto.request.ClientRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.response.ClientResponseDTO;
-import hu.jakab.ekkeencoprosampbackend.model.*;
-import hu.jakab.ekkeencoprosampbackend.service.*;
-import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
+import hu.jakab.ekkeencoprosampbackend.service.ClientService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/clients")
-public class ClientController {
+public class ClientController extends BaseController<ClientRequestDTO, ClientResponseDTO, Long> {
+
+    private static final Logger logger = LoggerFactory.getLogger(ClientController.class);
+
     private final ClientService service;
 
     @Autowired
@@ -20,40 +25,33 @@ public class ClientController {
         this.service = service;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ClientResponseDTO>> getAll() {
-        List<ClientResponseDTO> clients = service.getAll();
-        if (clients.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(clients);
+    @Override
+    public List<ClientResponseDTO> getAllEntities() {
+        logger.info("Fetching all clients");
+        return service.getAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ClientResponseDTO> getById(@PathVariable Long id) {
-        return service.getById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @Override
+    public Optional<ClientResponseDTO> getEntityById(Long id) {
+        logger.info("Fetching client by ID: {}", id);
+        return service.getById(id);
     }
 
-    @PostMapping
-    public ResponseEntity<ClientResponseDTO> create(@RequestBody @Valid ClientRequestDTO dto) {
-        return ResponseEntity.ok(service.save(dto));
+    @Override
+    public ClientResponseDTO createEntity(ClientRequestDTO dto) {
+        logger.info("Creating a new client: {}", dto.getName());
+        return service.save(dto);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ClientResponseDTO> update(@PathVariable Long id, @RequestBody @Valid ClientRequestDTO  dto) {
-        return service.update(id, dto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @Override
+    public Optional<ClientResponseDTO> updateEntity(Long id, ClientRequestDTO dto) {
+        logger.info("Updating client with ID: {}", id);
+        return service.update(id, dto);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (service.delete(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @Override
+    public boolean deleteEntity(Long id) {
+        logger.info("Deleting client with ID: {}", id);
+        return service.delete(id);
     }
 }
