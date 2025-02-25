@@ -9,8 +9,10 @@ import hu.jakab.ekkeencoprosampbackend.repository.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CompanyService {
@@ -25,11 +27,17 @@ public class CompanyService {
     }
 
     public List<CompanyResponseDTO> getAll() {
-        return mapper.toResponseDtoList(repository.findAll());
-    }
+        
+        return repository.findAll()
+                .stream()
+                .map(mapper::toResponseDto)
+                .collect(Collectors.toList());
+      }
 
     public Optional<CompanyResponseDTO> getById(Long id) {
-        return repository.findById(id).map(mapper::toResponseDto);
+
+        return repository.findById(id)
+                .map(mapper::toResponseDto);
     }
 
     public CompanyResponseDTO save(CompanyRequestDTO dto) {
@@ -40,8 +48,8 @@ public class CompanyService {
 
     public Optional<CompanyResponseDTO> update(Long id, CompanyRequestDTO dto) {
         return repository.findById(id).map(existingCompany -> {
-            mapper.updateEntityFromDto(dto, existingCompany);
-            existingCompany.setUpdatedAt(java.time.LocalDateTime.now());
+            existingCompany = mapper.toEntity(dto);
+            existingCompany.setUpdatedAt(LocalDateTime.now());
             Company updatedCompany = repository.save(existingCompany);
             return mapper.toResponseDto(updatedCompany);
         });
