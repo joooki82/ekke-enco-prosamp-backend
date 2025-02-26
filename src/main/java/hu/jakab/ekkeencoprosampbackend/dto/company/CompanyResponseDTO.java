@@ -1,6 +1,7 @@
-package hu.jakab.ekkeencoprosampbackend.dto.response;
+package hu.jakab.ekkeencoprosampbackend.dto.company;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import hu.jakab.ekkeencoprosampbackend.dto.location.LocationListItemDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.location.LocationResponseDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -21,5 +22,5 @@ public class CompanyResponseDTO {
     private String city;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<LocationResponseDTO> locations;
+    private List<LocationListItemDTO> locations;
 }

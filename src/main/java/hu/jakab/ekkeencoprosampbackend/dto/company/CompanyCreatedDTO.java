@@ -1,11 +1,11 @@
-package hu.jakab.ekkeencoprosampbackend.dto.response;
+package hu.jakab.ekkeencoprosampbackend.dto.company;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class CompanyBasicInfoDTO {
+public class CompanyCreatedDTO {
 
     private Long id;
     private String name;

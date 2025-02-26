@@ -1,4 +1,4 @@
-package hu.jakab.ekkeencoprosampbackend.dto.request;
+package hu.jakab.ekkeencoprosampbackend.dto.company;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

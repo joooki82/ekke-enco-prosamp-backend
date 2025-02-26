@@ -1,7 +1,8 @@
 package hu.jakab.ekkeencoprosampbackend.service;
 
-import hu.jakab.ekkeencoprosampbackend.dto.request.CompanyRequestDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.response.CompanyResponseDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.company.CompanyRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.company.CompanyCreatedDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.company.CompanyResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.mapper.CompanyMapper;
 import hu.jakab.ekkeencoprosampbackend.model.Company;
@@ -40,10 +41,10 @@ public class CompanyService {
                 .map(mapper::toResponseDto);
     }
 
-    public CompanyResponseDTO save(CompanyRequestDTO dto) {
+    public CompanyCreatedDTO save(CompanyRequestDTO dto) {
         Company company = mapper.toEntity(dto);
         Company savedCompany = repository.save(company);
-        return mapper.toResponseDto(savedCompany);
+        return mapper.toCreatedDto(savedCompany);
     }
 
     public Optional<CompanyResponseDTO> update(Long id, CompanyRequestDTO dto) {

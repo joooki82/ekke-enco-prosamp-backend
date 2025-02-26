@@ -1,8 +1,9 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
 import hu.jakab.ekkeencoprosampbackend.controller.base.BaseController;
-import hu.jakab.ekkeencoprosampbackend.dto.request.CompanyRequestDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.response.CompanyResponseDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.company.CompanyRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.company.CompanyCreatedDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.company.CompanyResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.service.CompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/companies")
-public class CompanyController extends BaseController<CompanyRequestDTO, CompanyResponseDTO, Long> {
+public class CompanyController extends BaseController<CompanyRequestDTO, CompanyResponseDTO, CompanyCreatedDTO, Long> {
 
     private static final Logger logger = LoggerFactory.getLogger(CompanyController.class);
 
@@ -38,7 +39,7 @@ public class CompanyController extends BaseController<CompanyRequestDTO, Company
     }
 
     @Override
-    public CompanyResponseDTO createEntity(CompanyRequestDTO dto) {
+    public CompanyCreatedDTO createEntity(CompanyRequestDTO dto) {
         logger.info("Creating a new company: {}", dto.getName());
         return service.save(dto);
     }

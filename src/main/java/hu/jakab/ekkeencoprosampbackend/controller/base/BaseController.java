@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class BaseController<REQ, RES, ID>
+public abstract class BaseController<REQ, RES, RES_CREATE, ID>
         implements ReadController<RES, ID>,
-        CreateController<REQ, RES>,
+        CreateController<REQ, RES_CREATE>,
         UpdateController<REQ, RES, ID>,
         DeleteController<ID> {
 
@@ -28,8 +28,8 @@ public abstract class BaseController<REQ, RES, ID>
     }
 
     @PostMapping
-    public ResponseEntity<RES> create(@RequestBody @Valid REQ dto) {
-        RES createdEntity = createEntity(dto);
+    public ResponseEntity<RES_CREATE> create(@RequestBody @Valid REQ dto) {
+        RES_CREATE createdEntity = createEntity(dto);
         return ResponseEntity.status(201).body(createdEntity);
     }
 
