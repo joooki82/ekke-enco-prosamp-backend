@@ -1,6 +1,9 @@
-package hu.jakab.ekkeencoprosampbackend.dto.response;
+package hu.jakab.ekkeencoprosampbackend.dto.sample;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -9,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SampleResponseDTO {
+public class SampleCreatedDTO {
     
     private Long id;
     private Long samplingRecordId;
@@ -29,6 +32,4 @@ public class SampleResponseDTO {
     private Long samplingTypeId;
     private Long adjustmentMethodId;
     private BigDecimal samplingFlowRate;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

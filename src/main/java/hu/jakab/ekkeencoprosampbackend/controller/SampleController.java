@@ -1,59 +1,68 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
-import hu.jakab.ekkeencoprosampbackend.dto.request.SampleRequestDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.response.SampleResponseDTO;
-import hu.jakab.ekkeencoprosampbackend.model.*;
-import hu.jakab.ekkeencoprosampbackend.service.*;
+
+import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleCreatedDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleResponseDTO;
+import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
+import hu.jakab.ekkeencoprosampbackend.service.SampleService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/samples")
 public class SampleController {
+
+    private static final Logger logger = LoggerFactory.getLogger(SampleController.class);
     private final SampleService service;
 
-    @Autowired
     public SampleController(SampleService service) {
         this.service = service;
     }
 
     @GetMapping
     public ResponseEntity<List<SampleResponseDTO>> getAll() {
-        List<SampleResponseDTO> samples = service.getAll();
-        if (samples.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(samples);
+        logger.info("Fetching all samples");
+        List<SampleResponseDTO> entities = service.getAll();
+        return entities.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(entities);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<SampleResponseDTO> getById(@PathVariable Long id) {
+        logger.info("Fetching sample by ID: {}", id);
         return service.getById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Resource with ID " + id + " not found"));
     }
 
     @PostMapping
-    public ResponseEntity<SampleResponseDTO> create(@RequestBody @Valid SampleRequestDTO dto) {
-        return ResponseEntity.ok(service.save(dto));
+    public ResponseEntity<SampleCreatedDTO> create(@RequestBody @Valid SampleRequestDTO dto) {
+        logger.info("Creating a new sample");
+        SampleCreatedDTO createdEntity = service.save(dto);
+        return ResponseEntity.status(201).body(createdEntity);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SampleResponseDTO> update(@PathVariable Long id, @RequestBody @Valid SampleRequestDTO dto) {
+    public ResponseEntity<SampleResponseDTO> update(
+            @PathVariable Long id, @RequestBody @Valid SampleRequestDTO dto) {
+        logger.info("Updating sample with ID: {}", id);
         return service.update(id, dto)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot update: Resource with ID " + id + " not found"));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (service.delete(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+        logger.info("Deleting sample with ID: {}", id);
+        boolean deleted = service.delete(id);
+        if (!deleted) {
+            throw new ResourceNotFoundException("Cannot delete: Resource with ID " + id + " not found.");
         }
+        return ResponseEntity.noContent().build();
     }
 }

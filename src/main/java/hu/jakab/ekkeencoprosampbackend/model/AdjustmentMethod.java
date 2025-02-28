@@ -6,6 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "adjustment_methods", uniqueConstraints = {
@@ -29,6 +31,9 @@ public class AdjustmentMethod {
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     private String description;
 
+    @OneToMany(mappedBy = "adjustmentMethod", cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<Sample> samples = new ArrayList<>();
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -36,4 +41,6 @@ public class AdjustmentMethod {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+
 }

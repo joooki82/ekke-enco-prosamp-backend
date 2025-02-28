@@ -7,7 +7,6 @@ import hu.jakab.ekkeencoprosampbackend.model.Contaminant;
 import hu.jakab.ekkeencoprosampbackend.model.ContaminantGroup;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface ContaminantMapper {

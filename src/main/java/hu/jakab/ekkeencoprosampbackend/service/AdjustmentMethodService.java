@@ -1,11 +1,11 @@
 package hu.jakab.ekkeencoprosampbackend.service;
 
-import hu.jakab.ekkeencoprosampbackend.dto.request.AdjustmentMethodRequestDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.response.AdjustmentMethodResponseDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodCreatedDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.mapper.AdjustmentMethodMapper;
 import hu.jakab.ekkeencoprosampbackend.model.AdjustmentMethod;
 import hu.jakab.ekkeencoprosampbackend.repository.AdjustmentMethodRepository;
-import org.mapstruct.Qualifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,10 +35,10 @@ public class AdjustmentMethodService {
         return repository.findById(id).map(mapper::toResponseDTO);
     }
 
-    public AdjustmentMethodResponseDTO save(AdjustmentMethodRequestDTO dto) {
+    public AdjustmentMethodCreatedDTO save(AdjustmentMethodRequestDTO dto) {
         AdjustmentMethod adjustmentMethod = mapper.toEntity(dto);
         AdjustmentMethod savedMethod = repository.save(adjustmentMethod);
-        return mapper.toResponseDTO(savedMethod);
+        return mapper.toCreatedDTO(savedMethod);
     }
 
     public Optional<AdjustmentMethodResponseDTO> update(Long id, AdjustmentMethodRequestDTO dto) {
@@ -50,6 +50,7 @@ public class AdjustmentMethodService {
         });
     }
 
+
     public boolean delete(Long id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
@@ -57,4 +58,6 @@ public class AdjustmentMethodService {
         }
         return false;
     }
+
+
 }

@@ -3,7 +3,6 @@ package hu.jakab.ekkeencoprosampbackend.mapper;
 import hu.jakab.ekkeencoprosampbackend.dto.request.LocationRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.response.LocationResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.response.CompanyBasicInfoDTO;
-import hu.jakab.ekkeencoprosampbackend.model.Company;
 import hu.jakab.ekkeencoprosampbackend.model.Location;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;

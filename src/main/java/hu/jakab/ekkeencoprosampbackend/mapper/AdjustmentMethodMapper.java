@@ -1,7 +1,8 @@
 package hu.jakab.ekkeencoprosampbackend.mapper;
 
-import hu.jakab.ekkeencoprosampbackend.dto.request.AdjustmentMethodRequestDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.response.AdjustmentMethodResponseDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodCreatedDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.model.AdjustmentMethod;
 import org.mapstruct.*;
 
@@ -14,4 +15,7 @@ public interface AdjustmentMethodMapper {
     AdjustmentMethod toEntity(AdjustmentMethodRequestDTO dto);
 
     AdjustmentMethodResponseDTO toResponseDTO(AdjustmentMethod entity);
+
+    AdjustmentMethodCreatedDTO toCreatedDTO(AdjustmentMethod entity);
+
 }

@@ -1,7 +1,6 @@
 package hu.jakab.ekkeencoprosampbackend.dto.company;
 
 import hu.jakab.ekkeencoprosampbackend.dto.location.LocationListItemDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.location.LocationResponseDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
