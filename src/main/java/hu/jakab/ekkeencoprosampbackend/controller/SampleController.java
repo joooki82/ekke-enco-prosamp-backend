@@ -42,7 +42,7 @@ public class SampleController {
 
     @PostMapping
     public ResponseEntity<SampleCreatedDTO> create(@RequestBody @Valid SampleRequestDTO dto) {
-        logger.info("Creating a new sample");
+        logger.info("Creating a new sample {}", dto.toString());
         SampleCreatedDTO createdEntity = service.save(dto);
         return ResponseEntity.status(201).body(createdEntity);
     }
