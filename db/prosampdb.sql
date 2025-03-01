@@ -146,12 +146,12 @@ CREATE TABLE clients
 CREATE TABLE projects
 (
     id             BIGSERIAL PRIMARY KEY,
-    project_number VARCHAR(50) UNIQUE NOT NULL, -- Unique project identifier
+    project_number VARCHAR(50) UNIQUE NOT NULL,
     client_id      BIGINT             NOT NULL,
     project_name   VARCHAR(255)       NOT NULL,
     start_date     DATE               NOT NULL,
     end_date       DATE,
-    status         VARCHAR(50) DEFAULT 'ongoing' CHECK (status IN ('ongoing', 'completed', 'cancelled')),
+    status         VARCHAR(50) DEFAULT 'ONGOING' CHECK (status IN ('ONGOING', 'COMPLETED', 'CANCELLED')),
     description    TEXT,
     created_at     TIMESTAMP   DEFAULT NOW(),
     updated_at     TIMESTAMP   DEFAULT NOW(),
@@ -612,8 +612,8 @@ VALUES
 -- Insert Projects
 INSERT INTO projects (project_number, client_id, project_name, start_date, end_date, status, description)
 VALUES
-    ('PROJ-001', 1, 'Air Quality Testing', '2024-01-01', '2024-12-31', 'ongoing', 'Testing air quality at industrial sites.'),
-    ('PROJ-002', 2, 'Safety Compliance Audit', '2024-03-01', NULL, 'ongoing', 'Ensuring safety standards are met.');
+    ('PROJ-001', 1, 'Air Quality Testing', '2024-01-01', '2024-12-31', 'ONGOING', 'Testing air quality at industrial sites.'),
+    ('PROJ-002', 2, 'Safety Compliance Audit', '2024-03-01', NULL, 'ONGOING', 'Ensuring safety standards are met.');
 
 -- Insert Equipments
 INSERT INTO equipments (name, description, producer, measuring_range, resolution, accuracy, identifier)
