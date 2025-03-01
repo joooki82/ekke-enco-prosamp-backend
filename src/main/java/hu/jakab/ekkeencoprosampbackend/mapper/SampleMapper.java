@@ -23,6 +23,9 @@ public interface SampleMapper {
     Sample toEntity(SampleRequestDTO dto);
 
     @Mapping(target = "samplingRecordId", source = "samplingRecord.id")
+    @Mapping(target = "sampleVolumeFlowRateUnitId", source = "sampleVolumeFlowRateUnit.id")
+    @Mapping(target = "samplingTypeId", source = "samplingType.id")
+    @Mapping(target = "adjustmentMethodId", source = "adjustmentMethod.id")
     SampleResponseDTO toResponseDTO(Sample entity);
 
     SampleCreatedDTO toCreatedDTO(Sample entity);
