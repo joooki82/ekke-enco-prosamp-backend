@@ -1,6 +1,7 @@
 package hu.jakab.ekkeencoprosampbackend.mapper;
 
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleCreatedDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.model.Sample;
@@ -8,7 +9,7 @@ import hu.jakab.ekkeencoprosampbackend.model.SamplingRecordDatM200;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring", uses = {EntityMapperHelper.class, SamplingRecordDatM200.class})
+@Mapper(componentModel = "spring", uses = {EntityMapperHelper.class})
 public interface SampleMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -25,5 +26,8 @@ public interface SampleMapper {
     SampleResponseDTO toResponseDTO(Sample entity);
 
     SampleCreatedDTO toCreatedDTO(Sample entity);
+
+    @Mapping(target = "samplingRecordId", source = "samplingRecord.id")
+    SampleListItemDTO toListItemDTO(Sample entity);
 
 }
