@@ -3,7 +3,6 @@ package hu.jakab.ekkeencoprosampbackend.controller;
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodCreatedDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodResponseDTO;
-import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.service.AdjustmentMethodService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

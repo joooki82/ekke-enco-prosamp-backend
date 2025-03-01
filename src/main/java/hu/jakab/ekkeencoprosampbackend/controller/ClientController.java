@@ -37,9 +37,7 @@ public class ClientController  {
     @GetMapping("/{id}")
     public ResponseEntity<ClientResponseDTO> getClientById(@PathVariable Long id) {
         logger.info("Fetching client by ID: {}", id);
-        return service.getById(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException("Client with ID " + id + " not found"));
+        return ResponseEntity.ok(service.getById(id));
     }
 
     @PostMapping
@@ -51,17 +49,14 @@ public class ClientController  {
 
     @PutMapping("/{id}")
     public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable Long id, @RequestBody @Valid ClientRequestDTO dto) {
-        logger.info("Updating client (ID: {}) with new details: {}", id, dto);
-        return service.update(id, dto)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException("Cannot update: Client with ID " + id + " not found"));
+        logger.info("Updating client (ID: {}) with new details", id);
+        return ResponseEntity.ok(service.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
-        logger.info("Attempting to delete client with ID: {}", id);
-        boolean deleted = service.delete(id);
-        return deleted ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        logger.info("Deleting client with ID: {}", id);
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
