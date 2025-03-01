@@ -27,41 +27,35 @@ public class AdjustmentMethodController {
     @GetMapping
     public ResponseEntity<List<AdjustmentMethodResponseDTO>> getAll() {
         logger.info("Fetching all adjustment methods");
-        List<AdjustmentMethodResponseDTO> entities = service.getAll();
-        return entities.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(entities);
+        List<AdjustmentMethodResponseDTO> methods = service.getAll();
+        return methods.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(methods);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<AdjustmentMethodResponseDTO> getById(@PathVariable Long id) {
         logger.info("Fetching adjustment method by ID: {}", id);
-        return service.getById(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException("Resource with ID " + id + " not found"));
+        return ResponseEntity.ok(service.getById(id));
     }
 
     @PostMapping
     public ResponseEntity<AdjustmentMethodCreatedDTO> create(@RequestBody @Valid AdjustmentMethodRequestDTO dto) {
         logger.info("Creating a new adjustment method");
-        AdjustmentMethodCreatedDTO createdEntity = service.save(dto);
-        return ResponseEntity.status(201).body(createdEntity);
+        AdjustmentMethodCreatedDTO createdMethod = service.save(dto);
+        return ResponseEntity.status(201).body(createdMethod);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<AdjustmentMethodResponseDTO> update(
             @PathVariable Long id, @RequestBody @Valid AdjustmentMethodRequestDTO dto) {
         logger.info("Updating adjustment method with ID: {}", id);
-        return service.update(id, dto)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException("Cannot update: Resource with ID " + id + " not found"));
+        return ResponseEntity.ok(service.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         logger.info("Deleting adjustment method with ID: {}", id);
-        boolean deleted = service.delete(id);
-        if (!deleted) {
-            throw new ResourceNotFoundException("Cannot delete: Resource with ID " + id + " not found.");
-        }
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
 }
