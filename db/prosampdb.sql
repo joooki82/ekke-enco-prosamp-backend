@@ -129,7 +129,7 @@ CREATE TABLE clients
     id             BIGSERIAL PRIMARY KEY,
     name           VARCHAR(255) UNIQUE NOT NULL,
     contact_person VARCHAR(255)        NOT NULL,
-    email          VARCHAR(255) UNIQUE,
+    email          VARCHAR(255),
     phone          VARCHAR(50),
     address        TEXT,
     country        VARCHAR(100),
@@ -188,7 +188,7 @@ CREATE TABLE sampling_records_dat_m200
     local_air_extraction           VARCHAR(255),
     serial_numbers_of_samples      VARCHAR(255),
     project_number                 BIGINT    NOT NULL,
-    status                         VARCHAR(50) DEFAULT 'active', -- Státusz: 'active', 'lost', 'broken', 'invalid'
+    status                         VARCHAR(50) DEFAULT 'ACTIVE', -- Státusz: 'active', 'lost', 'broken', 'invalid'
     remarks                        TEXT,
     created_at                     TIMESTAMP   DEFAULT NOW(),
     updated_at                     TIMESTAMP   DEFAULT NOW(),
@@ -274,7 +274,7 @@ CREATE TABLE samples
     start_time                   TIMESTAMP,
     end_time                     TIMESTAMP,
     sample_type                  VARCHAR(10) CHECK (sample_type IN ('AK', 'CK')) DEFAULT 'AK',
-    status                       VARCHAR(50)                                     DEFAULT 'active', -- Státusz: 'active', 'lost', 'broken', 'invalid'
+    status                       VARCHAR(50)                                     DEFAULT 'ACTIVE', -- Státusz: 'active', 'lost', 'broken', 'invalid'
     remarks                      VARCHAR(255),
     sampling_type_id             BIGINT,
     adjustment_method_id         BIGINT,
@@ -369,7 +369,6 @@ CREATE TABLE test_reports
     checked_by                               UUID,
     aim_of_test                              TEXT,
     project_id                               BIGINT             NOT NULL REFERENCES projects (id) ON DELETE RESTRICT,
-    client_id                                BIGINT             NOT NULL REFERENCES clients (id) ON DELETE RESTRICT,
     location_id                              BIGINT             NOT NULL REFERENCES locations (id) ON DELETE RESTRICT,
     sampling_record_id                       BIGINT             NOT NULL REFERENCES sampling_records_dat_m200 (id) ON DELETE RESTRICT,
     technology                               TEXT,
@@ -564,3 +563,121 @@ CREATE EVENT TRIGGER trigger_auto_audit
     ON ddl_command_end
     WHEN TAG IN ('CREATE TABLE')
 EXECUTE FUNCTION apply_audit_trigger();
+
+
+-- #####################################################
+-- INSERT TEST DATA
+-- #####################################################
+
+-- Insert Users
+
+INSERT INTO contaminant_groups (name, description)
+VALUES
+    ('Volatile Organic Compounds', 'Group of organic chemicals that evaporate easily'),
+    ('Heavy Metals', 'Metallic elements that can be toxic at low concentrations')
+RETURNING id;
+
+INSERT INTO contaminants (name, description, contaminant_group_id, created_at, updated_at)
+VALUES
+    ('Benzene', 'A volatile organic compound found in industrial emissions', 1, NOW(), NOW()),
+    ('Lead', 'A heavy metal that can cause serious health problems', 2, NOW(), NOW())
+RETURNING id;
+
+
+INSERT INTO users (id, username, email, role, created_at, updated_at)
+VALUES
+    ('22222222-2222-2222-2222-222222222222', 'john_doe', 'john.doe@example.com', 'admin', NOW(), NOW()),
+    ('33333333-3333-3333-3333-333333333333', 'jane_smith', 'jane.smith@example.com', 'technician', NOW(), NOW());
+
+-- Insert Companies
+INSERT INTO companies (name, address, contact_person, email, phone, country, city)
+VALUES
+    ('Tech Solutions Ltd.', '123 Tech Street', 'Alice Johnson', 'contact@techsolutions.com', '+123456789', 'USA', 'New York'),
+    ('Industrial Safety Inc.', '456 Safety Ave', 'Bob Brown', 'info@safetyinc.com', '+987654321', 'Germany', 'Berlin')
+RETURNING id;
+
+-- Insert Locations
+INSERT INTO locations (company_id, name, address, contact_person, email, phone, country, city, postal_code)
+VALUES
+    (1, 'Tech Solutions HQ', '123 Tech Street', 'Alice Johnson', 'alice.johnson@techsolutions.com', '+123456789', 'USA', 'New York', '10001'),
+    (2, 'Industrial Safety Branch', '456 Safety Ave', 'Bob Brown', 'bob.brown@safetyinc.com', '+987654321', 'Germany', 'Berlin', '10115')
+RETURNING id;
+
+-- Insert Clients
+INSERT INTO clients (name, contact_person, email, phone, address, country, city, postal_code, tax_number)
+VALUES
+    ('Global Engineering', 'Michael Scott', 'michael.scott@globaleng.com', '+1122334455', '789 Industrial Road', 'USA', 'Los Angeles', '90001', 'TAX123456'),
+    ('Green Energy Ltd.', 'Sarah Connor', 'sarah.connor@greenenergy.com', '+2233445566', '321 Eco Street', 'UK', 'London', 'E1 6AN', 'TAX987654');
+
+-- Insert Projects
+INSERT INTO projects (project_number, client_id, project_name, start_date, end_date, status, description)
+VALUES
+    ('PROJ-001', 1, 'Air Quality Testing', '2024-01-01', '2024-12-31', 'ongoing', 'Testing air quality at industrial sites.'),
+    ('PROJ-002', 2, 'Safety Compliance Audit', '2024-03-01', NULL, 'ongoing', 'Ensuring safety standards are met.');
+
+-- Insert Equipments
+INSERT INTO equipments (name, description, producer, measuring_range, resolution, accuracy, identifier)
+VALUES
+    ('Air Quality Monitor', 'Detects air pollutants', 'EnviroTech', '0-500 ppm', '0.01 ppm', '±2%', 'AQM-001'),
+    ('Gas Analyzer', 'Analyzes gas composition', 'SafeAir', '0-100%', '0.1%', '±1%', 'GA-002');
+
+-- Insert Standards
+INSERT INTO standards (standard_number, description, standard_type, identifier)
+VALUES
+    ('ISO 9001', 'Quality Management System', 'ISO', 'ISO-9001'),
+    ('OSHA 1910.1000', 'Occupational Safety and Health Standards', 'OSHA', 'OSHA-1910');
+
+-- Insert Sampling Types
+INSERT INTO sampling_types (code, description)
+VALUES
+    ('ST1', 'Air sampling'),
+    ('ST2', 'Gas sampling');
+
+-- Insert Adjustment Methods
+INSERT INTO adjustment_methods (code, description)
+VALUES
+    ('AM1', 'Manual adjustment'),
+    ('AM2', 'Automatic adjustment');
+
+-- Insert Sampling Records
+INSERT INTO sampling_records_dat_m200 (sampling_date, conducted_by, site_location_id, company_id, tested_plant, technology, shift_count_and_duration, workers_per_shift, exposure_time, temperature, humidity, wind_speed, pressure1, pressure2, other_environmental_conditions, air_flow_conditions, operation_mode, operation_break, local_air_extraction, serial_numbers_of_samples, project_number)
+VALUES
+    ('2024-02-15 08:00:00', '22222222-2222-2222-2222-222222222222', 1, 1, 'Factory 1', 'Modern Tech', 3, 50, 8, 22.5, 45.0, 3.5, 1013.2, 1012.8, 'None', 'Good', 'Normal', 'None', 'Yes', 'SN001, SN002', 1),
+    ('2024-02-16 09:00:00', '33333333-3333-3333-3333-333333333333', 2, 2, 'Plant 2', 'Traditional Tech', 2, 40, 6, 18.0, 50.0, 2.5, 1012.5, 1011.7, 'Slight dust', 'Moderate', 'High', 'Frequent', 'No', 'SN003, SN004', 2);
+
+-- Insert Measurement Units
+INSERT INTO measurement_units (unit_code, description, unit_category)
+VALUES
+    ('mg/m³', 'Milligrams per cubic meter', 'Concentration'),
+    ('ppm', 'Parts per million', 'Concentration');
+
+-- Insert Samples
+INSERT INTO samples (sampling_record_id, sample_identifier, location, employee_name, temperature, humidity, pressure, sample_volume_flow_rate, sample_volume_flow_rate_unit, start_time, end_time, sample_type, status, sampling_type_id, adjustment_method_id, sampling_flow_rate)
+VALUES
+    (1, 'SMP-001', 'Factory 1 - Zone A', 'Worker A', 22.5, 45.0, 1013.2, 2.5, 1, '2024-02-15 08:30:00', '2024-02-15 10:00:00', 'AK', 'ACTIVE', 1, 1, 1.5),
+    (2, 'SMP-002', 'Plant 2 - Zone B', 'Worker B', 18.0, 50.0, 1012.5, 3.0, 2, '2024-02-16 09:30:00', '2024-02-16 11:00:00', 'CK', 'ACTIVE', 2, 2, 2.0);
+
+-- Insert Analytical Laboratories
+INSERT INTO laboratories (name, accreditation, contact_email, phone, address, website)
+VALUES
+    ('National Lab', 'NAH-1-1666/2019', 'lab@nationallab.com', '+4455667788', 'Lab Street 1, Berlin', 'www.nationallab.com'),
+    ('EcoLab', 'ISO-17025', 'contact@ecolab.com', '+3355667788', 'Eco Road 5, London', 'www.ecolab.com');
+
+-- Insert Analytical Lab Reports
+INSERT INTO analytical_lab_reports (report_number, issue_date, laboratory_id)
+VALUES
+    ('LAB-001', '2024-02-17', 1),
+    ('LAB-002', '2024-02-18', 2);
+
+-- Insert Sample Analytical Results
+INSERT INTO sample_analytical_results (sample_id, contaminant_id, result_main, measurement_unit, detection_limit, measurement_uncertainty, analysis_method, lab_report_id, analysis_date, calculated_concentration)
+VALUES
+    (1, 1, 0.35, 1, 0.1, 5.0, 'GC-MS', 1, '2024-02-17 12:00:00', 0.35),
+    (2, 2, 1.25, 2, 0.2, 4.5, 'HPLC', 2, '2024-02-18 14:00:00', 1.25);
+
+-- Insert Test Reports
+INSERT INTO test_reports (report_number, title, approved_by, prepared_by, checked_by, aim_of_test, project_id, location_id, sampling_record_id, technology, sampling_conditions_dates, determination_of_pollutant_concentration, issue_date, report_status)
+VALUES
+    ('TR-001', 'Air Quality Test Report', '22222222-2222-2222-2222-222222222222', '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222', 'Evaluate air quality in factory', 1, 1, 1, 'Modern Tech', '2024-02-15', 'Detailed analysis', '2024-02-20', 'finalized');
+
+

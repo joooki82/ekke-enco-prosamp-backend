@@ -1,8 +1,14 @@
-package hu.jakab.ekkeencoprosampbackend.dto.response;
+package hu.jakab.ekkeencoprosampbackend.dto.client;
 
+import hu.jakab.ekkeencoprosampbackend.dto.project.ProjectListItemDTO;
+import hu.jakab.ekkeencoprosampbackend.model.Project;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -19,6 +25,7 @@ public class ClientResponseDTO {
     private String city;
     private String postalCode;
     private String taxNumber;
+    private List<ProjectListItemDTO> projects = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

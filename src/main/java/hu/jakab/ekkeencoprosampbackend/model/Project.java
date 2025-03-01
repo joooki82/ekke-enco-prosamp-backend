@@ -41,7 +41,7 @@ public class Project {
     private LocalDate endDate;
 
     @Column(name = "status", length = 50, nullable = false)
-    private String status = "ongoing"; // Default value 'ongoing'
+    private String status = "ongoing";
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;

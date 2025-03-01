@@ -3,10 +3,12 @@ package hu.jakab.ekkeencoprosampbackend.service;
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodCreatedDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodResponseDTO;
+import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.mapper.AdjustmentMethodMapper;
 import hu.jakab.ekkeencoprosampbackend.model.AdjustmentMethod;
 import hu.jakab.ekkeencoprosampbackend.repository.AdjustmentMethodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,10 +45,18 @@ public class AdjustmentMethodService {
 
     public Optional<AdjustmentMethodResponseDTO> update(Long id, AdjustmentMethodRequestDTO dto) {
         return repository.findById(id).map(existing -> {
-            existing.setCode(dto.getCode());
-            existing.setDescription(dto.getDescription());
-            repository.save(existing);
-            return mapper.toResponseDTO(existing);
+            // Prevent overwriting fields with null values
+            if (dto.getCode() != null) existing.setCode(dto.getCode());
+            if (dto.getDescription() != null) existing.setDescription(dto.getDescription());
+
+            try {
+                AdjustmentMethod updatedMethod = repository.save(existing);
+                return mapper.toResponseDTO(updatedMethod);
+            } catch (DataIntegrityViolationException e) {
+                throw new RuntimeException("Update failed: Duplicate 'code' value");
+            }
+        }).or(() -> {
+            throw new ResourceNotFoundException("Adjustment method with ID " + id + " not found");
         });
     }
 

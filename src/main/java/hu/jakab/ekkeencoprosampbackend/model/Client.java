@@ -6,11 +6,14 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "clients", uniqueConstraints = {
         @UniqueConstraint(columnNames = "name"),
-        @UniqueConstraint(columnNames = "email"),
         @UniqueConstraint(columnNames = "tax_number")
 })
 @Getter
@@ -31,7 +34,7 @@ public class Client {
     @Column(name = "contact_person", length = 255, nullable = false)
     private String contactPerson;
 
-    @Column(name = "email", length = 255, unique = true)
+    @Column(name = "email", length = 255)
     private String email;
 
     @Column(name = "phone", length = 50)
@@ -51,6 +54,9 @@ public class Client {
 
     @Column(name = "tax_number", length = 50, unique = true)
     private String taxNumber;
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Project> projects = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

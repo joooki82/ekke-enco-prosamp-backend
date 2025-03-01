@@ -97,7 +97,6 @@ public class SamplingRecordDatM200 {
     @Column(name = "status", length = 50, nullable = false)
     private SamplingRecordStatus status = SamplingRecordStatus.ACTIVE;
 
-
     @Column(name = "remarks", columnDefinition = "TEXT")
     private String remarks;
 

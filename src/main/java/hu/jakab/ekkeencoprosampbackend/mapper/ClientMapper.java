@@ -1,7 +1,8 @@
 package hu.jakab.ekkeencoprosampbackend.mapper;
 
-import hu.jakab.ekkeencoprosampbackend.dto.request.ClientRequestDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.response.ClientResponseDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.client.ClientCreatedDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.client.ClientRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.client.ClientResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.model.Client;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,4 +16,6 @@ public interface ClientMapper {
     Client toEntity(ClientRequestDTO dto);
 
     ClientResponseDTO toResponseDTO(Client entity);
+
+    ClientCreatedDTO toCreatedDTO(Client entity);
 }

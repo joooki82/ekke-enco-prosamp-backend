@@ -1,7 +1,8 @@
 package hu.jakab.ekkeencoprosampbackend.mapper;
 
-import hu.jakab.ekkeencoprosampbackend.dto.request.SamplingRecordDatM200RequestDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.response.SamplingRecordDatM200ResponseDTO;
+
+import hu.jakab.ekkeencoprosampbackend.dto.samplingRecordDatM200.SamplingRecordDatM200RequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.samplingRecordDatM200.SamplingRecordDatM200ResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.model.SamplingRecordDatM200;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;

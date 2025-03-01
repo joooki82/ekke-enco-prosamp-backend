@@ -56,10 +56,6 @@ public class TestReport {
     private Set<TestReportSampler> testReportSamplers = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false, foreignKey = @ForeignKey(name = "fk_client"))
-    private Client client;
-
-    @ManyToOne
     @JoinColumn(name = "location_id", nullable = false, foreignKey = @ForeignKey(name = "fk_location"))
     private Location location;
 

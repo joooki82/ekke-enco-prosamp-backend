@@ -1,11 +1,13 @@
 package hu.jakab.ekkeencoprosampbackend.service;
 
-import hu.jakab.ekkeencoprosampbackend.dto.request.ClientRequestDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.response.ClientResponseDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.client.ClientCreatedDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.client.ClientRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.client.ClientResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.mapper.ClientMapper;
 import hu.jakab.ekkeencoprosampbackend.model.Client;
 import hu.jakab.ekkeencoprosampbackend.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,25 +36,31 @@ public class ClientService {
         return repository.findById(id).map(mapper::toResponseDTO);
     }
 
-    public ClientResponseDTO save(ClientRequestDTO dto) {
+    public ClientCreatedDTO save(ClientRequestDTO dto) {
         Client client = mapper.toEntity(dto);
         Client savedClient = repository.save(client);
-        return mapper.toResponseDTO(savedClient);
+        return mapper.toCreatedDTO(savedClient);
     }
 
     public Optional<ClientResponseDTO> update(Long id, ClientRequestDTO dto) {
         return repository.findById(id).map(existing -> {
-            existing.setName(dto.getName());
-            existing.setContactPerson(dto.getContactPerson());
-            existing.setEmail(dto.getEmail());
-            existing.setPhone(dto.getPhone());
-            existing.setAddress(dto.getAddress());
-            existing.setCountry(dto.getCountry());
-            existing.setCity(dto.getCity());
-            existing.setPostalCode(dto.getPostalCode());
-            existing.setTaxNumber(dto.getTaxNumber());
-            repository.save(existing);
-            return mapper.toResponseDTO(existing);
+            // Prevent overwriting with null values
+            if (dto.getName() != null) existing.setName(dto.getName());
+            if (dto.getContactPerson() != null) existing.setContactPerson(dto.getContactPerson());
+            if (dto.getEmail() != null) existing.setEmail(dto.getEmail());
+            if (dto.getPhone() != null) existing.setPhone(dto.getPhone());
+            if (dto.getAddress() != null) existing.setAddress(dto.getAddress());
+            if (dto.getCountry() != null) existing.setCountry(dto.getCountry());
+            if (dto.getCity() != null) existing.setCity(dto.getCity());
+            if (dto.getPostalCode() != null) existing.setPostalCode(dto.getPostalCode());
+            if (dto.getTaxNumber() != null) existing.setTaxNumber(dto.getTaxNumber());
+
+            try {
+                Client updatedClient = repository.save(existing);
+                return mapper.toResponseDTO(updatedClient);
+            } catch (DataIntegrityViolationException e) {
+                throw new RuntimeException("Cannot update client: Duplicate name or tax number");
+            }
         });
     }
 

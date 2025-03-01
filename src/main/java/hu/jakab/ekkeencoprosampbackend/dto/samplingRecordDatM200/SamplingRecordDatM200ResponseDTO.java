@@ -1,4 +1,4 @@
-package hu.jakab.ekkeencoprosampbackend.dto.response;
+package hu.jakab.ekkeencoprosampbackend.dto.samplingRecordDatM200;
 
 import lombok.*;
 
