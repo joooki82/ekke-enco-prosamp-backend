@@ -3,6 +3,7 @@ package hu.jakab.ekkeencoprosampbackend.service;
 import hu.jakab.ekkeencoprosampbackend.dto.client.ClientCreatedDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.client.ClientRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.client.ClientResponseDTO;
+import hu.jakab.ekkeencoprosampbackend.exception.DuplicateResourceException;
 import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.mapper.ClientMapper;
 import hu.jakab.ekkeencoprosampbackend.model.Client;
@@ -55,7 +56,7 @@ public class ClientService {
             return mapper.toCreatedDTO(savedClient);
         } catch (DataIntegrityViolationException e) {
             logger.error("Error saving client: Duplicate name or tax number");
-            throw new RuntimeException("Failed to create client: Duplicate name or tax number");
+            throw new DuplicateResourceException("Failed to create client: Duplicate name or tax number");
         }
     }
 
@@ -80,7 +81,7 @@ public class ClientService {
             return mapper.toResponseDTO(updatedClient);
         } catch (DataIntegrityViolationException e) {
             logger.error("Failed to update client: Duplicate name or tax number detected");
-            throw new RuntimeException("Update failed: Duplicate name or tax number");
+            throw new DuplicateResourceException("Update failed: Duplicate name or tax number");
         }
     }
 

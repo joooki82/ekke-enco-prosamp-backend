@@ -7,6 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "projects", uniqueConstraints = {
@@ -29,7 +31,7 @@ public class Project {
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false, foreignKey = @ForeignKey(name = "fk_project_client"))
-    private Client client; // Reference to Client entity
+    private Client client;
 
     @Column(name = "project_name", length = 255, nullable = false)
     private String projectName;
@@ -45,6 +47,9 @@ public class Project {
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<TestReport> testReports = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

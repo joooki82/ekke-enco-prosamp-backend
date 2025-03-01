@@ -45,7 +45,7 @@ public class TestReport {
     @Column(name = "aim_of_test", columnDefinition = "TEXT")
     private String aimOfTest;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false, foreignKey = @ForeignKey(name = "fk_project"))
     private Project project;
 

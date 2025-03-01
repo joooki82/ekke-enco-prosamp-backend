@@ -375,7 +375,7 @@ CREATE TABLE test_reports
     sampling_conditions_dates                TEXT,
     determination_of_pollutant_concentration TEXT,
     issue_date                               DATE               NOT NULL,
-    report_status                            VARCHAR(20) DEFAULT 'draft' CHECK (report_status IN ('draft', 'finalized', 'approved', 'rejected')), -- Status of report
+    report_status                            VARCHAR(20) DEFAULT 'DRAFT' CHECK (report_status IN ('DRAFT', 'FINALIZED', 'APPROVED', 'REJECTED')), -- Status of report
     created_at                               TIMESTAMP   DEFAULT NOW(),
     updated_at                               TIMESTAMP   DEFAULT NOW()
 );
@@ -678,6 +678,6 @@ VALUES
 -- Insert Test Reports
 INSERT INTO test_reports (report_number, title, approved_by, prepared_by, checked_by, aim_of_test, project_id, location_id, sampling_record_id, technology, sampling_conditions_dates, determination_of_pollutant_concentration, issue_date, report_status)
 VALUES
-    ('TR-001', 'Air Quality Test Report', '22222222-2222-2222-2222-222222222222', '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222', 'Evaluate air quality in factory', 1, 1, 1, 'Modern Tech', '2024-02-15', 'Detailed analysis', '2024-02-20', 'finalized');
+    ('TR-001', 'Air Quality Test Report', '22222222-2222-2222-2222-222222222222', '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222', 'Evaluate air quality in factory', 1, 1, 1, 'Modern Tech', '2024-02-15', 'Detailed analysis', '2024-02-20', 'FINALIZED');
 
 

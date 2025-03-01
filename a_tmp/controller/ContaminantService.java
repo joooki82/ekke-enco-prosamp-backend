@@ -40,7 +40,7 @@ public class ContaminantService {
 
     public ContaminantResponseDTO save(ContaminantRequestDTO dto) {
         ContaminantGroup contaminantGroup = groupRepository.findById(dto.getContaminantGroupId())
-                .orElseThrow(() -> new RuntimeException("Contaminant group not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Contaminant group not found"));
 
         Contaminant contaminant = mapper.toEntity(dto);
         contaminant.setContaminantGroup(contaminantGroup);
@@ -55,7 +55,7 @@ public class ContaminantService {
             existing.setDescription(dto.getDescription());
 
             ContaminantGroup contaminantGroup = groupRepository.findById(dto.getContaminantGroupId())
-                    .orElseThrow(() -> new RuntimeException("Contaminant group not found"));
+                    .orElseThrow(() -> new ResourceNot("Contaminant group not found"));
             existing.setContaminantGroup(contaminantGroup);
 
             repository.save(existing);

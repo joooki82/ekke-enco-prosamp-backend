@@ -4,7 +4,6 @@ import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodCrea
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.model.AdjustmentMethod;
-import hu.jakab.ekkeencoprosampbackend.model.SamplingRecordDatM200;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses = {SampleMapper.class})

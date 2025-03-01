@@ -3,6 +3,7 @@ package hu.jakab.ekkeencoprosampbackend.service;
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodCreatedDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodResponseDTO;
+import hu.jakab.ekkeencoprosampbackend.exception.DuplicateResourceException;
 import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.mapper.AdjustmentMethodMapper;
 import hu.jakab.ekkeencoprosampbackend.model.AdjustmentMethod;
@@ -54,7 +55,7 @@ public class AdjustmentMethodService {
             return mapper.toCreatedDTO(savedMethod);
         } catch (DataIntegrityViolationException e) {
             logger.error("Error saving adjustment method: Duplicate 'code' detected");
-            throw new RuntimeException("Failed to create adjustment method: Duplicate 'code' detected");
+            throw new DuplicateResourceException("Failed to create adjustment method: Duplicate 'code' detected");
         }
     }
 
@@ -73,7 +74,7 @@ public class AdjustmentMethodService {
             return mapper.toResponseDTO(updatedMethod);
         } catch (DataIntegrityViolationException e) {
             logger.error("Failed to update adjustment method: Duplicate 'code' detected");
-            throw new RuntimeException("Update failed: Duplicate 'code' value");
+            throw new DuplicateResourceException("Update failed: Duplicate 'code' value");
         }
     }
 
