@@ -34,9 +34,7 @@ public class SampleController {
     @GetMapping("/{id}")
     public ResponseEntity<SampleResponseDTO> getSampleById(@PathVariable Long id) {
         logger.info("Fetching sample by ID: {}", id);
-        return service.getById(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + id + " not found"));
+        return ResponseEntity.ok(service.getById(id));
     }
 
     @PostMapping
@@ -49,15 +47,13 @@ public class SampleController {
     @PutMapping("/{id}")
     public ResponseEntity<SampleResponseDTO> updateSample(@PathVariable Long id, @RequestBody @Valid SampleRequestDTO dto) {
         logger.info("Updating sample with ID: {}, New Data: {}", id, dto);
-        return service.update(id, dto)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException("Cannot update: Sample with ID " + id + " not found"));
+        return ResponseEntity.ok(service.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSample(@PathVariable Long id) {
-        logger.info("Attempting to delete sample with ID: {}", id);
-        return service.delete(id) ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        logger.info("Deleting sample with ID: {}", id);
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
