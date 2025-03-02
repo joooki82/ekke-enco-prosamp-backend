@@ -1,5 +1,6 @@
-package hu.jakab.ekkeencoprosampbackend.dto.response;
+package hu.jakab.ekkeencoprosampbackend.dto.analyticalLabReport;
 
+import hu.jakab.ekkeencoprosampbackend.dto.laboratory.LaboratoryListItemDTO;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -13,7 +14,7 @@ public class AnalyticalLabReportResponseDTO {
     private Long id;
     private String reportNumber;
     private LocalDate issueDate;
-    private Long laboratoryId;
+    private LaboratoryListItemDTO laboratory;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -25,6 +25,9 @@ public class EntityMapperHelper {
     @Autowired
     private CompanyRepository companyRepository;
 
+    @Autowired
+    private LaboratoryRepository laboratoryRepository;
+
     @Named("mapSamplingRecord")
     public SamplingRecordDatM200 mapSamplingRecord(Long id) {
         return id == null ? null : samplingRecordRepository.findById(id)
@@ -53,5 +56,11 @@ public class EntityMapperHelper {
     public Company mapCompany(Long id) {
         return id == null ? null : companyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found with ID: " + id));
+    }
+
+    @Named("mapLaboratory")
+    public Laboratory mapLaboratory(Long id) {
+        return id == null ? null : laboratoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Laboratory not found with ID: " + id));
     }
 }

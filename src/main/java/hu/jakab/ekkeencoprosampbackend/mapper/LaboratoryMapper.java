@@ -4,6 +4,7 @@ import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodCrea
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.laboratory.LaboratoryCreatedDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.laboratory.LaboratoryListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.laboratory.LaboratoryRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.laboratory.LaboratoryResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.model.AdjustmentMethod;
@@ -11,7 +12,7 @@ import hu.jakab.ekkeencoprosampbackend.model.Laboratory;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {SampleMapper.class})
+@Mapper(componentModel = "spring", uses = {SampleMapper.class, AnalyticalLabReportMapper.class})
 public interface LaboratoryMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -22,5 +23,7 @@ public interface LaboratoryMapper {
     LaboratoryResponseDTO toResponseDTO(Laboratory entity);
 
     LaboratoryCreatedDTO toCreatedDTO(Laboratory entity);
+
+    LaboratoryListItemDTO toListItemDTO(Laboratory entity);
 
 }

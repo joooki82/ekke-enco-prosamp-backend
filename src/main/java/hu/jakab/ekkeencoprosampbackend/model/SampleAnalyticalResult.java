@@ -1,5 +1,6 @@
 package hu.jakab.ekkeencoprosampbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -54,6 +55,7 @@ public class SampleAnalyticalResult {
 
     @ManyToOne
     @JoinColumn(name = "lab_report_id", nullable = false, foreignKey = @ForeignKey(name = "fk_lab_report"))
+    @JsonBackReference
     private AnalyticalLabReport labReport;
 
     @Column(name = "analysis_date")

@@ -1,5 +1,6 @@
 package hu.jakab.ekkeencoprosampbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -43,8 +44,9 @@ public class Laboratory {
     @Column(name = "website", length = 255)
     private String website;
 
-//    @OneToMany(mappedBy = "laboratory", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<AnalyticalLabReportListItemDTO> reports = new ArrayList<>();
+    @OneToMany(mappedBy = "laboratory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<AnalyticalLabReport> reports = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

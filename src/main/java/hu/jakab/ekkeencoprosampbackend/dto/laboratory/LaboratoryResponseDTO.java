@@ -1,8 +1,12 @@
 package hu.jakab.ekkeencoprosampbackend.dto.laboratory;
 
+import hu.jakab.ekkeencoprosampbackend.dto.analyticalLabReport.AnalyticalLabReportListItemDTO;
+import hu.jakab.ekkeencoprosampbackend.model.AnalyticalLabReport;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +20,7 @@ public class LaboratoryResponseDTO {
     private String phone;
     private String address;
     private String website;
+    private List<AnalyticalLabReportListItemDTO> reports = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
