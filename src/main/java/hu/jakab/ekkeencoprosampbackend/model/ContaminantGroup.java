@@ -1,5 +1,6 @@
 package hu.jakab.ekkeencoprosampbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,13 +26,14 @@ public class ContaminantGroup {
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
-    @Column(name = "name", length = 255, nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "description", nullable = false)
     private String description;
 
     @OneToMany(mappedBy = "contaminantGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Contaminant> contaminants = new ArrayList<>();
 
     @CreationTimestamp

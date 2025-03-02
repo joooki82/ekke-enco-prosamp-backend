@@ -1,5 +1,6 @@
 package hu.jakab.ekkeencoprosampbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,14 +24,15 @@ public class Contaminant {
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
-    @Column(name = "name", length = 255, nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column(name = "description", length = 255)
+    @Column(name = "description")
     private String description;
 
     @ManyToOne
     @JoinColumn(name = "contaminant_group_id", nullable = false, foreignKey = @ForeignKey(name = "fk_contaminant_group"))
+    @JsonBackReference
     private ContaminantGroup contaminantGroup;
 
     @CreationTimestamp

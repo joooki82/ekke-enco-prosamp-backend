@@ -1,6 +1,6 @@
 package hu.jakab.ekkeencoprosampbackend.dto.contaminant;
 
-import hu.jakab.ekkeencoprosampbackend.dto.contaminantGroup.ContaminantGroupResponseDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.contaminantGroup.ContaminantGroupListItemDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,9 +13,7 @@ public class ContaminantResponseDTO {
     private Long id;
     private String name;
     private String description;
-
-    private ContaminantGroupResponseDTO contaminantGroup;
-
+    private ContaminantGroupListItemDTO contaminantGroup;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
