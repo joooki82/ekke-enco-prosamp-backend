@@ -6,6 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "laboratories", uniqueConstraints = {
@@ -40,6 +42,9 @@ public class Laboratory {
 
     @Column(name = "website", length = 255)
     private String website;
+
+//    @OneToMany(mappedBy = "laboratory", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<AnalyticalLabReportListItemDTO> reports = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
