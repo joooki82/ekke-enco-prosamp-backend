@@ -26,6 +26,7 @@ public class Location {
 
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false, foreignKey = @ForeignKey(name = "fk_locations_company"))
+    @JsonBackReference
     private Company company;
 
     @Column(name = "name", length = 255, nullable = false)

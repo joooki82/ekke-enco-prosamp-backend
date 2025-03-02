@@ -1,14 +1,8 @@
 package hu.jakab.ekkeencoprosampbackend.mapper;
 
 import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
-import hu.jakab.ekkeencoprosampbackend.model.AdjustmentMethod;
-import hu.jakab.ekkeencoprosampbackend.model.MeasurementUnit;
-import hu.jakab.ekkeencoprosampbackend.model.SamplingRecordDatM200;
-import hu.jakab.ekkeencoprosampbackend.model.SamplingType;
-import hu.jakab.ekkeencoprosampbackend.repository.AdjustmentMethodRepository;
-import hu.jakab.ekkeencoprosampbackend.repository.MeasurementUnitRepository;
-import hu.jakab.ekkeencoprosampbackend.repository.SamplingRecordDatM200Repository;
-import hu.jakab.ekkeencoprosampbackend.repository.SamplingTypeRepository;
+import hu.jakab.ekkeencoprosampbackend.model.*;
+import hu.jakab.ekkeencoprosampbackend.repository.*;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,6 +21,9 @@ public class EntityMapperHelper {
 
     @Autowired
     private AdjustmentMethodRepository adjustmentMethodRepository;
+
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @Named("mapSamplingRecord")
     public SamplingRecordDatM200 mapSamplingRecord(Long id) {
@@ -50,5 +47,11 @@ public class EntityMapperHelper {
     public AdjustmentMethod mapAdjustmentMethod(Long id) {
         return id == null ? null : adjustmentMethodRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Adjustment Method not found with ID: " + id));
+    }
+
+    @Named("mapCompany")
+    public Company mapCompany(Long id) {
+        return id == null ? null : companyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found with ID: " + id));
     }
 }

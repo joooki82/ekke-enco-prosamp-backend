@@ -53,7 +53,7 @@ CREATE TABLE locations
     name           VARCHAR(255) NOT NULL,
     address        TEXT,
     contact_person VARCHAR(255) NOT NULL,
-    email          VARCHAR(255) UNIQUE,
+    email          VARCHAR(255) ,
     phone          VARCHAR(50),
     country        VARCHAR(100),
     city           VARCHAR(100),

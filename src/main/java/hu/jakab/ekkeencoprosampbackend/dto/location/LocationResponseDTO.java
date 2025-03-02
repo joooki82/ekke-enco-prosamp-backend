@@ -1,6 +1,6 @@
-package hu.jakab.ekkeencoprosampbackend.dto.response;
+package hu.jakab.ekkeencoprosampbackend.dto.location;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import hu.jakab.ekkeencoprosampbackend.dto.company.CompanyListItemDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public class LocationResponseDTO {
     private Long id;
-    private CompanyBasicInfoDTO company;
+    private CompanyListItemDTO company;
     private String name;
     private String address;
     private String contactPerson;
