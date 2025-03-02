@@ -6,6 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "measurement_units", uniqueConstraints = {
@@ -35,6 +37,9 @@ public class MeasurementUnit {
     @ManyToOne
     @JoinColumn(name = "base_unit_id", foreignKey = @ForeignKey(name = "fk_base_unit"))
     private MeasurementUnit baseUnit; // Self-reference for unit conversion
+
+    @OneToMany(mappedBy = "baseUnit", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MeasurementUnit> derivedUnits = new ArrayList<>(); // Derived units that reference this unit
 
     @Column(name = "conversion_factor")
     private Double conversionFactor; // Factor to convert to base unit
