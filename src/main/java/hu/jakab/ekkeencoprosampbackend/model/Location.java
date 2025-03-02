@@ -38,7 +38,7 @@ public class Location {
     @Column(name = "contact_person", length = 255, nullable = false)
     private String contactPerson;
 
-    @Column(name = "email", length = 255, unique = true)
+    @Column(name = "email", length = 255)
     private String email;
 
     @Column(name = "phone", length = 50)
