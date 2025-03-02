@@ -47,6 +47,10 @@ public class Company {
     @Column(name = "city", length = 100)
     private String city;
 
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Location> locations;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -55,6 +59,5 @@ public class Company {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Location> locations;
+
 }
