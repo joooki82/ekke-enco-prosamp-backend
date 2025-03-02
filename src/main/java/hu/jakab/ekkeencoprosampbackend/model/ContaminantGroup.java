@@ -6,6 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "contaminant_groups", uniqueConstraints = {
@@ -28,6 +30,9 @@ public class ContaminantGroup {
 
     @Column(name = "description", nullable = false)
     private String description;
+
+    @OneToMany(mappedBy = "contaminantGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Contaminant> contaminants = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

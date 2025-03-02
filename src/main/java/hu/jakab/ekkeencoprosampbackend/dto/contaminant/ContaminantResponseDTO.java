@@ -1,5 +1,6 @@
-package hu.jakab.ekkeencoprosampbackend.dto.response;
+package hu.jakab.ekkeencoprosampbackend.dto.contaminant;
 
+import hu.jakab.ekkeencoprosampbackend.dto.contaminantGroup.ContaminantGroupResponseDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
