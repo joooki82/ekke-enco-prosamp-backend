@@ -300,6 +300,7 @@ CREATE TABLE sample_contaminants
     fk_sample_id      BIGINT NOT NULL REFERENCES samples (id) ON DELETE CASCADE,
     fk_contaminant_id BIGINT NOT NULL REFERENCES contaminants (id) ON DELETE RESTRICT,
     created_at        TIMESTAMP DEFAULT NOW(),
+    updated_at        TIMESTAMP DEFAULT NOW(),
     UNIQUE (fk_sample_id, fk_contaminant_id)
 );
 
@@ -339,7 +340,7 @@ CREATE TABLE analytical_lab_reports
 CREATE TABLE sample_analytical_results
 (
     id                       BIGSERIAL PRIMARY KEY,
-    sample_contaminant_id    BIGINT                                                         NOT NULL REFERENCES sample_contaminants (id) ON DELETE CASCADE,
+    sample_contaminant_id    BIGINT                                                   NOT NULL REFERENCES sample_contaminants (id) ON DELETE CASCADE,
     result_main              NUMERIC(10, 4) CHECK (result_main IS NULL OR result_main >= 0) NOT NULL,
     result_control           NUMERIC(10, 4) CHECK (result_control IS NULL OR result_control >= 0)           DEFAULT NULL,
     result_main_control      NUMERIC(10, 4) CHECK (result_main_control IS NULL OR result_main_control >= 0) DEFAULT NULL,
@@ -617,15 +618,20 @@ VALUES ('PROJ-001', 1, 'Air Quality Testing', '2024-01-01', '2024-12-31', 'ONGOI
        ('PROJ-002', 2, 'Safety Compliance Audit', '2024-03-01', NULL, 'ONGOING', 'Ensuring safety standards are met.');
 
 -- Insert Equipments
-INSERT INTO equipments (name, identifier, description, manufacturer, type, serial_number, measuring_range, resolution, accuracy, calibration_date, next_calibration_date, created_at, updated_at)
-VALUES
-    ('Air Quality Monitor', 'AQM-001', 'Detects air pollutants', 'EnviroTech', 'Air Monitoring', 'SN-AQM-1001', '0-500 ppm', '0.01 ppm', '±2%', '2023-05-15', '2024-05-15', NOW(), NOW()),
+INSERT INTO equipments (name, identifier, description, manufacturer, type, serial_number, measuring_range, resolution,
+                        accuracy, calibration_date, next_calibration_date, created_at, updated_at)
+VALUES ('Air Quality Monitor', 'AQM-001', 'Detects air pollutants', 'EnviroTech', 'Air Monitoring', 'SN-AQM-1001',
+        '0-500 ppm', '0.01 ppm', '±2%', '2023-05-15', '2024-05-15', NOW(), NOW()),
 
-    ('Gas Analyzer', 'GA-002', 'Analyzes gas composition', 'SafeAir', 'Gas Detection', 'SN-GA-2002', '0-100%', '0.1%', '±1%', '2023-07-10', '2024-07-10', NOW(), NOW()),
+       ('Gas Analyzer', 'GA-002', 'Analyzes gas composition', 'SafeAir', 'Gas Detection', 'SN-GA-2002', '0-100%',
+        '0.1%', '±1%', '2023-07-10', '2024-07-10', NOW(), NOW()),
 
-    ('High Precision Thermometer', 'THERMO-12345', 'A thermometer with high precision for lab testing.', 'ThermoTech Inc.', 'Temperature Measurement', 'SN-98765', '-50°C to 150°C', '0.01°C', '±0.1°C', '2024-02-20', '2025-02-20', NOW(), NOW()),
+       ('High Precision Thermometer', 'THERMO-12345', 'A thermometer with high precision for lab testing.',
+        'ThermoTech Inc.', 'Temperature Measurement', 'SN-98765', '-50°C to 150°C', '0.01°C', '±0.1°C', '2024-02-20',
+        '2025-02-20', NOW(), NOW()),
 
-    ('Advanced Gas Detector', 'AGD-3001', 'Detects hazardous gases in industrial settings.', 'GasSecure', 'Safety Equipment', 'SN-3001-GAS', '0-1000 ppm', '0.5 ppm', '±0.5%', '2023-06-01', '2024-06-01', NOW(), NOW());
+       ('Advanced Gas Detector', 'AGD-3001', 'Detects hazardous gases in industrial settings.', 'GasSecure',
+        'Safety Equipment', 'SN-3001-GAS', '0-1000 ppm', '0.5 ppm', '±0.5%', '2023-06-01', '2024-06-01', NOW(), NOW());
 
 -- Insert Standards
 INSERT INTO standards (standard_number, description, standard_type, identifier)
