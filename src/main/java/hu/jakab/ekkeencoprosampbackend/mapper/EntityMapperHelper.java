@@ -31,6 +31,13 @@ public class EntityMapperHelper {
     @Autowired
     private ContaminantGroupRepository contaminantGroupRepository;
 
+    @Autowired
+    private SampleContaminantRepository sampleContaminantrepository;
+
+    @Autowired
+    private AnalyticalLabReportRepository analyticalLabReportrepository;
+
+
 
     @Named("mapSamplingRecord")
     public SamplingRecordDatM200 mapSamplingRecord(Long id) {
@@ -72,5 +79,17 @@ public class EntityMapperHelper {
     public ContaminantGroup mapContaminantGroup(Long id) {
         return id == null ? null : contaminantGroupRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("ContaminantGroup not found with ID: " + id));
+    }
+
+    @Named("mapSampleContaminant")
+    public SampleContaminant mapSampleContaminant(Long id) {
+        return id == null ? null : sampleContaminantrepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("SampleContaminant not found with ID: " + id));
+    }
+
+    @Named("mapAnalyticalLabReport")
+    public AnalyticalLabReport mapAnalyticalLabReport(Long id) {
+        return id == null ? null : analyticalLabReportrepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("SampleContaminant not found with ID: " + id));
     }
 }

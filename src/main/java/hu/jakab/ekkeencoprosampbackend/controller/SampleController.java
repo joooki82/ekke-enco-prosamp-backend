@@ -4,7 +4,6 @@ package hu.jakab.ekkeencoprosampbackend.controller;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleCreatedDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleResponseDTO;
-import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.service.SampleService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

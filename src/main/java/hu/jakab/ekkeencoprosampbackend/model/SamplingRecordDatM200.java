@@ -6,11 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "sampling_records_dat_m200")
@@ -101,7 +98,7 @@ public class SamplingRecordDatM200 {
     private String remarks;
 
     @OneToMany(mappedBy = "samplingRecord", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<SamplingRecordEquipment> samplingRecordEquipments = new HashSet<>();
+    private List<SamplingRecordEquipment> samplingRecordEquipments = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

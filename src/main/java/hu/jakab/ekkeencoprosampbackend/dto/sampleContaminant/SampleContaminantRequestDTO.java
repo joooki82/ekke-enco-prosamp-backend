@@ -1,4 +1,4 @@
-package hu.jakab.ekkeencoprosampbackend.dto.request;
+package hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

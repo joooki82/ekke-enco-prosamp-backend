@@ -63,7 +63,7 @@ public class Sample {
     private String sampleType = "AK";
 
     @Column(name = "status", length = 50, nullable = false)
-    private String status = "active";
+    private String status = "ACTIVE";
 
     @Column(name = "remarks", length = 255)
     private String remarks;

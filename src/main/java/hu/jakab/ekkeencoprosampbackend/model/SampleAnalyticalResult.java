@@ -23,13 +23,9 @@ public class SampleAnalyticalResult {
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "sample_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sample"))
-    private Sample sample;
-
-    @ManyToOne
-    @JoinColumn(name = "contaminant_id", nullable = false, foreignKey = @ForeignKey(name = "fk_contaminant"))
-    private Contaminant contaminant;
+    @OneToOne
+    @JoinColumn(name = "sample_contaminant_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sample_contaminant"))
+    private SampleContaminant sampleContaminant;
 
     @Column(name = "result_main", precision = 10, scale = 4, nullable = false)
     private BigDecimal resultMain;

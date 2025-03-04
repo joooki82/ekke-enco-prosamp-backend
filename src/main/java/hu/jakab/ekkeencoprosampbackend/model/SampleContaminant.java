@@ -34,4 +34,8 @@ public class SampleContaminant {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @CreationTimestamp
+    @Column(name = "updated_at", updatable = false)
+    private LocalDateTime updatedAt;
 }
