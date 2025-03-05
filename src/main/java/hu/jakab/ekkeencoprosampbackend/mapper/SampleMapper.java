@@ -5,9 +5,7 @@ import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.model.Sample;
-import hu.jakab.ekkeencoprosampbackend.model.SamplingRecordDatM200;
 import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring", uses = {EntityMapperHelper.class})
 public interface SampleMapper {

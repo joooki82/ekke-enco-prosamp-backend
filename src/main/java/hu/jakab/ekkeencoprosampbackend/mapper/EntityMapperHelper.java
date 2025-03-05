@@ -10,34 +10,42 @@ import org.springframework.stereotype.Component;
 @Component
 public class EntityMapperHelper {
 
-    @Autowired
-    private SamplingRecordDatM200Repository samplingRecordRepository;
+    private final SamplingRecordDatM200Repository samplingRecordRepository;
+    private final MeasurementUnitRepository measurementUnitRepository;
+    private final SamplingTypeRepository samplingTypeRepository;
+    private final AdjustmentMethodRepository adjustmentMethodRepository;
+    private final CompanyRepository companyRepository;
+    private final LaboratoryRepository laboratoryRepository;
+    private final ContaminantGroupRepository contaminantGroupRepository;
+    private final SampleContaminantRepository sampleContaminantRepository;
+    private final AnalyticalLabReportRepository analyticalLabReportRepository;
+    private final SampleRepository sampleRepository;
+    private final ContaminantRepository contaminantRepository;
 
     @Autowired
-    private MeasurementUnitRepository measurementUnitRepository;
-
-    @Autowired
-    private SamplingTypeRepository samplingTypeRepository;
-
-    @Autowired
-    private AdjustmentMethodRepository adjustmentMethodRepository;
-
-    @Autowired
-    private CompanyRepository companyRepository;
-
-    @Autowired
-    private LaboratoryRepository laboratoryRepository;
-
-    @Autowired
-    private ContaminantGroupRepository contaminantGroupRepository;
-
-    @Autowired
-    private SampleContaminantRepository sampleContaminantrepository;
-
-    @Autowired
-    private AnalyticalLabReportRepository analyticalLabReportrepository;
-
-
+    public EntityMapperHelper(SamplingRecordDatM200Repository samplingRecordRepository,
+                              MeasurementUnitRepository measurementUnitRepository,
+                              SamplingTypeRepository samplingTypeRepository,
+                              AdjustmentMethodRepository adjustmentMethodRepository,
+                              CompanyRepository companyRepository,
+                              LaboratoryRepository laboratoryRepository,
+                              ContaminantGroupRepository contaminantGroupRepository,
+                              SampleContaminantRepository sampleContaminantRepository,
+                              AnalyticalLabReportRepository analyticalLabReportRepository,
+                              SampleRepository sampleRepository,
+                              ContaminantRepository contaminantRepository) {
+        this.samplingRecordRepository = samplingRecordRepository;
+        this.measurementUnitRepository = measurementUnitRepository;
+        this.samplingTypeRepository = samplingTypeRepository;
+        this.adjustmentMethodRepository = adjustmentMethodRepository;
+        this.companyRepository = companyRepository;
+        this.laboratoryRepository = laboratoryRepository;
+        this.contaminantGroupRepository = contaminantGroupRepository;
+        this.sampleContaminantRepository = sampleContaminantRepository;
+        this.analyticalLabReportRepository = analyticalLabReportRepository;
+        this.sampleRepository = sampleRepository;
+        this.contaminantRepository = contaminantRepository;
+    }
 
     @Named("mapSamplingRecord")
     public SamplingRecordDatM200 mapSamplingRecord(Long id) {
@@ -83,13 +91,25 @@ public class EntityMapperHelper {
 
     @Named("mapSampleContaminant")
     public SampleContaminant mapSampleContaminant(Long id) {
-        return id == null ? null : sampleContaminantrepository.findById(id)
+        return id == null ? null : sampleContaminantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("SampleContaminant not found with ID: " + id));
     }
 
     @Named("mapAnalyticalLabReport")
     public AnalyticalLabReport mapAnalyticalLabReport(Long id) {
-        return id == null ? null : analyticalLabReportrepository.findById(id)
+        return id == null ? null : analyticalLabReportRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("SampleContaminant not found with ID: " + id));
+    }
+
+    @Named("mapSample")
+    public Sample mapSample(Long id) {
+        return id == null ? null : sampleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Sample not found with ID: " + id));
+    }
+
+    @Named("mapContaminant")
+    public Contaminant mapContaminant(Long id) {
+        return id == null ? null : contaminantRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Contaminant not found with ID: " + id));
     }
 }

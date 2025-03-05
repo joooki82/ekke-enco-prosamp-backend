@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -106,6 +109,55 @@ public class GlobalExceptionHandler {
                 .timestamp(Instant.now())
                 .build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotSupportedException(
+            HttpRequestMethodNotSupportedException ex, WebRequest request) {
+
+        logger.warn("Method Not Allowed: {} - Supported Methods: {} - Request: {}",
+                ex.getMethod(), ex.getSupportedHttpMethods(), request.getDescription(false));
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .error("Method Not Allowed")
+                .message("Request method '" + ex.getMethod() + "' is not supported. Use one of: " + ex.getSupportedHttpMethods())
+                .code("ERR_METHOD_NOT_ALLOWED")
+                .timestamp(Instant.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(errorResponse);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
+            MissingServletRequestParameterException ex, WebRequest request) {
+
+        logger.warn("Missing request parameter: {} - Request: {}", ex.getParameterName(), request.getDescription(false));
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .error("Missing Request Parameter")
+                .message("Required parameter '" + ex.getParameterName() + "' is missing.")
+                .code("ERR_MISSING_PARAMETER")
+                .timestamp(Instant.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex, WebRequest request) {
+
+        logger.error("Malformed JSON request: {} - Request: {}", ex.getMessage(), request.getDescription(false));
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .error("Malformed JSON Request")
+                .message("Invalid JSON format in request body. Please check the structure.")
+                .code("ERR_INVALID_JSON")
+                .timestamp(Instant.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
 }
