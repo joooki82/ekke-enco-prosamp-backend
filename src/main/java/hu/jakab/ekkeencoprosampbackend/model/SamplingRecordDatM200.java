@@ -31,12 +31,12 @@ public class SamplingRecordDatM200 {
     private User conductedBy;
 
     @ManyToOne
-    @JoinColumn(name = "site_location_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sampling_location"))
-    private Location siteLocation;
-
-    @ManyToOne
     @JoinColumn(name = "company_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sampling_company"))
     private Company company;
+
+    @ManyToOne
+    @JoinColumn(name = "site_location_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sampling_location"))
+    private Location siteLocation;
 
     @Column(name = "tested_plant", length = 255)
     private String testedPlant;

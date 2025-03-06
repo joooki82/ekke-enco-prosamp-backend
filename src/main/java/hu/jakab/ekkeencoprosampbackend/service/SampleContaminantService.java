@@ -82,11 +82,6 @@ public class SampleContaminantService {
         if (sampleContaminants.isEmpty()) {
             return null; // or throw an exception
         }
-//        List<SampleWithContaminantsDTO> sampleWithContaminantsDTOs =
-//                sampleContaminants.stream()
-//                        .map(mapper::toSampleWithContaminantsDTO)
-//                        .collect(Collectors.toList());
-//        // Convert to a single DTO using MapStruct
 
         return mapper.mapToSampleWithContaminantsDTO(sampleContaminants);
 

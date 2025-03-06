@@ -7,6 +7,10 @@ import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 @Component
 public class EntityMapperHelper {
 
@@ -21,6 +25,10 @@ public class EntityMapperHelper {
     private final AnalyticalLabReportRepository analyticalLabReportRepository;
     private final SampleRepository sampleRepository;
     private final ContaminantRepository contaminantRepository;
+    private final UserRepository userRepository;
+    private final LocationRepository locationRepository;
+    private final ProjectRepository projectRepository;
+    private final EquipmentRepository equipmentRepository;
 
     @Autowired
     public EntityMapperHelper(SamplingRecordDatM200Repository samplingRecordRepository,
@@ -33,7 +41,7 @@ public class EntityMapperHelper {
                               SampleContaminantRepository sampleContaminantRepository,
                               AnalyticalLabReportRepository analyticalLabReportRepository,
                               SampleRepository sampleRepository,
-                              ContaminantRepository contaminantRepository) {
+                              ContaminantRepository contaminantRepository, UserRepository userRepository, LocationRepository locationRepository, ProjectRepository projectRepository, EquipmentRepository equipmentRepository) {
         this.samplingRecordRepository = samplingRecordRepository;
         this.measurementUnitRepository = measurementUnitRepository;
         this.samplingTypeRepository = samplingTypeRepository;
@@ -45,6 +53,10 @@ public class EntityMapperHelper {
         this.analyticalLabReportRepository = analyticalLabReportRepository;
         this.sampleRepository = sampleRepository;
         this.contaminantRepository = contaminantRepository;
+        this.userRepository = userRepository;
+        this.locationRepository = locationRepository;
+        this.projectRepository = projectRepository;
+        this.equipmentRepository = equipmentRepository;
     }
 
     @Named("mapSamplingRecord")
@@ -112,4 +124,36 @@ public class EntityMapperHelper {
         return id == null ? null : contaminantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Contaminant not found with ID: " + id));
     }
+
+    @Named("mapUser")
+    public User mapUser(UUID id) {
+        return id == null ? null : userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
+    }
+
+    @Named("mapLocation")
+    public Location mapLocation(Long id) {
+        return id == null ? null : locationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Location not found with ID: " + id));
+    }
+
+    @Named("mapProject")
+    public Project mapProject(Long id) {
+        return id == null ? null : projectRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found with ID: " + id));
+    }
+
+    @Named("mapEquipments")
+    public List<SamplingRecordEquipment> mapEquipments(List<Long> equipmentIds) {
+        if (equipmentIds == null || equipmentIds.isEmpty()) {
+            return List.of();
+        }
+        return equipmentRepository.findAllById(equipmentIds)
+                .stream()
+                .map(equipment -> SamplingRecordEquipment.builder()
+                        .equipment(equipment)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }

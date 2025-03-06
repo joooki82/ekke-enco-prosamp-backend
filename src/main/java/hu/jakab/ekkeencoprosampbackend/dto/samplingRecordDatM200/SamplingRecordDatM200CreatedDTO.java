@@ -5,9 +5,10 @@ import hu.jakab.ekkeencoprosampbackend.dto.equipment.EquipmentListNameDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.location.LocationListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.project.ProjectListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.user.UserDTO;
-import hu.jakab.ekkeencoprosampbackend.model.Location;
-import hu.jakab.ekkeencoprosampbackend.model.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SamplingRecordDatM200ResponseDTO {
+public class SamplingRecordDatM200CreatedDTO {
 
     private Long id;
 
@@ -69,7 +70,4 @@ public class SamplingRecordDatM200ResponseDTO {
 
     private List<EquipmentListNameDTO> samplingRecordEquipments;
 
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 }
