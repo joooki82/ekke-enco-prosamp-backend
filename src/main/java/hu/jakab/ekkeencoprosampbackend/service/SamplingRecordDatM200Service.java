@@ -153,11 +153,24 @@ public class SamplingRecordDatM200Service {
                 existing.setStatus(SamplingRecordStatus.valueOf(dto.getStatus()));
             }
 
-            // Handle Equipment List Update (Optional)
+            // ✅ Fix: Handle Equipment List Update Correctly
             if (dto.getEquipmentIds() != null) {
-                List<SamplingRecordEquipment> updatedEquipments = samplingRecordEquipmentRepository.findAllById(dto.getEquipmentIds());
-                existing.getSamplingRecordEquipments().clear();
-                existing.getSamplingRecordEquipments().addAll(updatedEquipments);
+                List<Equipment> selectedEquipments = equipmentRepository.findAllById(dto.getEquipmentIds());
+
+                // Remove old mappings that are no longer in the new list
+                existing.getSamplingRecordEquipments().removeIf(equipmentMapping ->
+                        !dto.getEquipmentIds().contains(equipmentMapping.getEquipment().getId()));
+
+                // Add new mappings
+                for (Equipment equipment : selectedEquipments) {
+                    if (existing.getSamplingRecordEquipments().stream()
+                            .noneMatch(mapping -> mapping.getEquipment().getId().equals(equipment.getId()))) {
+                        SamplingRecordEquipment newEquipmentMapping = new SamplingRecordEquipment();
+                        newEquipmentMapping.setSamplingRecord(existing);
+                        newEquipmentMapping.setEquipment(equipment);
+                        existing.getSamplingRecordEquipments().add(newEquipmentMapping);
+                    }
+                }
             }
 
             // Save updated entity
@@ -166,7 +179,7 @@ public class SamplingRecordDatM200Service {
             // Convert to response DTO
             return mapper.toResponseDTO(updatedSamplingRecordDatM200);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update SamplingRecordDatM200 (ID: {}): Duplicate field  detected", id);
+            logger.error("Failed to update SamplingRecordDatM200 (ID: {}): Duplicate field detected", id);
             throw new DuplicateResourceException("Update failed: Duplicate field detected");
         } catch (Exception e) {
             logger.error("Unexpected error while updating SamplingRecordDatM200 (ID: {}): {}", id, e.getMessage());

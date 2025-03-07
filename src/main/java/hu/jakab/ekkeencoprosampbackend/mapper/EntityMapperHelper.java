@@ -1,5 +1,6 @@
 package hu.jakab.ekkeencoprosampbackend.mapper;
 
+import hu.jakab.ekkeencoprosampbackend.dto.equipment.EquipmentListNameDTO;
 import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.model.*;
 import hu.jakab.ekkeencoprosampbackend.repository.*;
@@ -155,5 +156,16 @@ public class EntityMapperHelper {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    @Named("mapEquipmentList")
+    public List<EquipmentListNameDTO> mapEquipmentList(List<SamplingRecordEquipment> equipmentList) {
+        if (equipmentList == null) {
+            return null;
+        }
+        return equipmentList.stream()
+                .map(equipment -> new EquipmentListNameDTO(equipment.getEquipment().getId(), equipment.getEquipment().getName(), equipment.getEquipment().getIdentifier()))
+                .collect(Collectors.toList());
+    }
+
 
 }

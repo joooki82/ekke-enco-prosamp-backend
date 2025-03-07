@@ -21,7 +21,9 @@ public interface SamplingRecordDatM200Mapper {
     @Mapping(target = "samplingRecordEquipments", source = "equipmentIds", qualifiedByName = "mapEquipments")
     SamplingRecordDatM200 toEntity(SamplingRecordDatM200RequestDTO dto);
 
+    @Mapping(source = "samplingRecordEquipments", target = "samplingRecordEquipments", qualifiedByName = "mapEquipmentList")
     SamplingRecordDatM200ResponseDTO toResponseDTO(SamplingRecordDatM200 entity);
 
+    @Mapping(source = "samplingRecordEquipments", target = "samplingRecordEquipments", qualifiedByName = "mapEquipmentList")
     SamplingRecordDatM200CreatedDTO toCreatedDTO(SamplingRecordDatM200 entity);
 }
