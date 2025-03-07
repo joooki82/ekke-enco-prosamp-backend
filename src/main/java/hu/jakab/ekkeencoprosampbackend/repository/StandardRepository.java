@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface StandardRepository extends JpaRepository<Standard, Long> {
     Optional<Standard> findByIdentifier(String identifier);
+    boolean existsByIdentifier(String identifier);
 }
