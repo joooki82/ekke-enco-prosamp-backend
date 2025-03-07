@@ -1,8 +1,9 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
-import hu.jakab.ekkeencoprosampbackend.dto.SamplingType.SamplingTypeCreatedDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.SamplingType.SamplingTypeRequestDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.SamplingType.SamplingTypeResponseDTO;
+
+import hu.jakab.ekkeencoprosampbackend.dto.samplingType.SamplingTypeCreatedDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.samplingType.SamplingTypeRequestDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.samplingType.SamplingTypeResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.service.SamplingTypeService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

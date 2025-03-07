@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface SamplingTypeRepository extends JpaRepository<SamplingType, Long> {
     Optional<SamplingType> findByCode(String code);
+    boolean existsByCode(String code);
+
 }

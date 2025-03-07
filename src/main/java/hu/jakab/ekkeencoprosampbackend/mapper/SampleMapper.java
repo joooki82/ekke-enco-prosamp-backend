@@ -22,7 +22,7 @@ public interface SampleMapper {
 
     @Mapping(target = "samplingRecord", source = "samplingRecord")
     @Mapping(target = "sampleVolumeFlowRateUnit", source = "sampleVolumeFlowRateUnit")
-    @Mapping(target = "samplingTypeId", source = "samplingType.id")
+    @Mapping(target = "samplingType", source = "samplingType")
     @Mapping(target = "adjustmentMethod", source = "adjustmentMethod")
     SampleResponseDTO toResponseDTO(Sample entity);
 

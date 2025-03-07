@@ -3,6 +3,7 @@ package hu.jakab.ekkeencoprosampbackend.dto.sample;
 import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.measurementUnit.MeasurementUnitListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.samplingRecordDatM200.SamplingRecordDatM200ListItemDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.samplingType.SamplingTypeListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.model.MeasurementUnit;
 import lombok.*;
 
@@ -30,7 +31,7 @@ public class SampleResponseDTO {
     private String sampleType;
     private String status;
     private String remarks;
-    private Long samplingTypeId;
+    private SamplingTypeListItemDTO samplingType;
     private AdjustmentMethodListItemDTO adjustmentMethod;
     private BigDecimal samplingFlowRate;
     private LocalDateTime createdAt;
