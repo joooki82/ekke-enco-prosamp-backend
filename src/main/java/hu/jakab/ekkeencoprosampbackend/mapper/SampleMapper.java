@@ -20,10 +20,10 @@ public interface SampleMapper {
     @Mapping(target = "adjustmentMethod", source = "adjustmentMethodId", qualifiedByName = "mapAdjustmentMethod")
     Sample toEntity(SampleRequestDTO dto);
 
-    @Mapping(target = "samplingRecordId", source = "samplingRecord.id")
-    @Mapping(target = "sampleVolumeFlowRateUnitId", source = "sampleVolumeFlowRateUnit.id")
+    @Mapping(target = "samplingRecord", source = "samplingRecord")
+    @Mapping(target = "sampleVolumeFlowRateUnit", source = "sampleVolumeFlowRateUnit")
     @Mapping(target = "samplingTypeId", source = "samplingType.id")
-    @Mapping(target = "adjustmentMethodId", source = "adjustmentMethod.id")
+    @Mapping(target = "adjustmentMethod", source = "adjustmentMethod")
     SampleResponseDTO toResponseDTO(Sample entity);
 
     SampleCreatedDTO toCreatedDTO(Sample entity);
