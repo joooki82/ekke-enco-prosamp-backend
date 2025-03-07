@@ -1,6 +1,6 @@
 package hu.jakab.ekkeencoprosampbackend.mapper;
 
-import hu.jakab.ekkeencoprosampbackend.dto.testreport.TestReporCreatedDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.testreport.TestReportCreatedDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.testreport.TestReportListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.testreport.TestReportRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.testreport.TestReportResponseDTO;
@@ -18,7 +18,7 @@ public interface TestReportMapper {
 
     TestReportResponseDTO toResponseDTO(TestReport entity);
 
-    TestReporCreatedDTO toCreatedDTO(TestReport entity);
+    TestReportCreatedDTO toCreatedDTO(TestReport entity);
 
     @Mapping(target = "projectId", source = "project.id")
     @Mapping(target = "locationId", source = "location.id")

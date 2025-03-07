@@ -1,6 +1,9 @@
 package hu.jakab.ekkeencoprosampbackend.dto.testreport;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TestReportResponseDTO {
+public class TestReportCreatedDTO {
 
     private Long id;
     private String reportNumber;
@@ -30,8 +33,5 @@ public class TestReportResponseDTO {
     private String determinationOfPollutantConcentration;
     private LocalDate issueDate;
     private String reportStatus;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
 
 }
