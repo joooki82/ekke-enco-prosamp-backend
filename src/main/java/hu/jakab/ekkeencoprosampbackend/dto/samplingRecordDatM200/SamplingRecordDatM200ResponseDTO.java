@@ -4,13 +4,17 @@ import hu.jakab.ekkeencoprosampbackend.dto.company.CompanyListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.equipment.EquipmentListNameDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.location.LocationListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.project.ProjectListItemDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleIdentifierDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.user.UserDTO;
 import hu.jakab.ekkeencoprosampbackend.model.Location;
+import hu.jakab.ekkeencoprosampbackend.model.Sample;
 import hu.jakab.ekkeencoprosampbackend.model.User;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -68,6 +72,8 @@ public class SamplingRecordDatM200ResponseDTO {
     private String remarks;
 
     private List<EquipmentListNameDTO> samplingRecordEquipments;
+
+    private List<SampleIdentifierDTO> samples;
 
     private LocalDateTime createdAt;
 

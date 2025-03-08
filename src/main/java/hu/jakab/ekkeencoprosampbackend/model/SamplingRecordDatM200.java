@@ -100,6 +100,9 @@ public class SamplingRecordDatM200 {
     @OneToMany(mappedBy = "samplingRecord", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SamplingRecordEquipment> samplingRecordEquipments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "samplingRecord", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Sample> samples = new ArrayList<>();
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

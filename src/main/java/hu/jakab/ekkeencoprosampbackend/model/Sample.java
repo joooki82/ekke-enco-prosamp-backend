@@ -24,7 +24,7 @@ public class Sample {
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sampling_record_id", nullable = false, foreignKey = @ForeignKey(name = "fk_samples_sampling_record"))
     private SamplingRecordDatM200 samplingRecord;
 

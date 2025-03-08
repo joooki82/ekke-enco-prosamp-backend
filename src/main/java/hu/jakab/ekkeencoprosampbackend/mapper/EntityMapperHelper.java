@@ -1,6 +1,8 @@
 package hu.jakab.ekkeencoprosampbackend.mapper;
 
 import hu.jakab.ekkeencoprosampbackend.dto.equipment.EquipmentListNameDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleIdentifierDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.standard.StandardListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.user.UserDTO;
 import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
@@ -186,6 +188,19 @@ public class EntityMapperHelper {
         }
         return samplerList.stream()
                 .map(sampler -> new UserDTO(sampler.getUser().getId(), sampler.getUser().getUsername()))
+                .toList();
+    }
+
+    @Named("mapSampleList")
+    public List<SampleIdentifierDTO> mapSampleList(List<Sample> samples) {
+        if (samples == null) {
+            return null;
+        }
+        return samples.stream()
+                .map(sample -> new SampleIdentifierDTO(
+                        sample.getId(),
+                        sample.getSampleIdentifier())
+                )
                 .toList();
     }
 }

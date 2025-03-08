@@ -294,8 +294,8 @@ CREATE TABLE samples
     pressure                     NUMERIC(7, 2),
     sample_volume_flow_rate      NUMERIC(5, 4),
     sample_volume_flow_rate_unit BIGINT      NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
-    start_time                   TIMESTAMP,
-    end_time                     TIMESTAMP,
+    start_time                   TIMESTAMP(0),  -- Store only up to seconds
+    end_time                     TIMESTAMP(0),  -- Store only up to seconds
     sample_type                  VARCHAR(10) CHECK (sample_type IN ('AK', 'CK')) DEFAULT 'AK',
     status                       VARCHAR(50)                                     DEFAULT 'ACTIVE', -- Státusz: 'active', 'lost', 'broken', 'invalid'
     remarks                      VARCHAR(255),
