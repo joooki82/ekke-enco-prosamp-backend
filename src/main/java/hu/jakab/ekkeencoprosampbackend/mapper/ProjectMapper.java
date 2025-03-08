@@ -22,6 +22,7 @@ public interface ProjectMapper {
 
     @Mapping(target = "clientId", source = "client.id")
     @Mapping(target = "clientName", source = "client.name")
+    @Mapping(target = "testReports", source = "testReports")
     ProjectResponseDTO toResponseDTO(Project entity);
 
     ProjectCreatedDTO toCreatedDTO(Project entity);

@@ -21,6 +21,7 @@ public class SampleAnalyticalResultResponseDTO {
     private Long id;
     
     private SampleContaminantListItemDTO sampleContaminant;
+
     private BigDecimal resultMain;
     
     private BigDecimal resultControl;

@@ -1,5 +1,8 @@
 package hu.jakab.ekkeencoprosampbackend.dto.testreport;
 
+import hu.jakab.ekkeencoprosampbackend.dto.location.LocationListItemDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.project.ProjectListItemDTO;
+import hu.jakab.ekkeencoprosampbackend.dto.samplingRecordDatM200.SamplingRecordDatM200ListItemDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,21 +23,9 @@ public class TestReportListItemDTO {
     private String reportNumber;
     private String title;
     private UUID approvedBy;
-    private UUID preparedBy;
-    private UUID checkedBy;
-    private String aimOfTest;
-    private Long projectId;
-    private List<Long> testReportStandardIds;
-    private List<Long> testReportSamplerIds;
-    private Long locationId;
-    private Long samplingRecordId;
-    private String technology;
-    private String samplingConditionsDates;
-    private String determinationOfPollutantConcentration;
+    private LocationListItemDTO location;
     private LocalDate issueDate;
     private String reportStatus;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
 
 }

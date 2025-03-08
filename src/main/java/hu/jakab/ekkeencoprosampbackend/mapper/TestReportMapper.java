@@ -16,13 +16,14 @@ public interface TestReportMapper {
     @Mapping(target = "updatedAt", ignore = true)
     TestReport toEntity(TestReportRequestDTO dto);
 
+    @Mapping(target = "project", source = "project")
+    @Mapping(target = "location", source = "location")
+    @Mapping(target = "samplingRecord", source = "samplingRecord")
     TestReportResponseDTO toResponseDTO(TestReport entity);
 
     TestReportCreatedDTO toCreatedDTO(TestReport entity);
 
-    @Mapping(target = "projectId", source = "project.id")
-    @Mapping(target = "locationId", source = "location.id")
-    @Mapping(target = "samplingRecordId", source = "samplingRecord.id")
+    @Mapping(target = "location", source = "location")
     TestReportListItemDTO toListItemDTO(TestReport entity);
 
 }
