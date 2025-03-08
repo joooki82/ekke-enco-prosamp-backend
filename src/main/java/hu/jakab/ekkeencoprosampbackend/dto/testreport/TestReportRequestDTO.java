@@ -37,7 +37,7 @@ public class TestReportRequestDTO {
     private Long projectId;
 
     private List<Long> testReportStandardIds;
-    private List<Long> testReportSamplerIds;
+    private List<UUID> testReportSamplerIds;
 
     @NotNull(message = "Location ID is required")
     private Long locationId;

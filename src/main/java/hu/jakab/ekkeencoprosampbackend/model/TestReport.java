@@ -7,9 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "test_reports", uniqueConstraints = {
@@ -33,14 +31,17 @@ public class TestReport {
     @Column(name = "title", length = 255, nullable = false)
     private String title;
 
-    @Column(name = "approved_by")
-    private UUID approvedBy;
+    @ManyToOne
+    @JoinColumn(name = "approved_by", foreignKey = @ForeignKey(name = "fk_approved_by"))
+    private User approvedBy;
 
-    @Column(name = "prepared_by")
-    private UUID preparedBy;
+    @ManyToOne
+    @JoinColumn(name = "prepared_by", foreignKey = @ForeignKey(name = "fk_prepared_by"))
+    private User preparedBy;
 
-    @Column(name = "checked_by")
-    private UUID checkedBy;
+    @ManyToOne
+    @JoinColumn(name = "checked_by", foreignKey = @ForeignKey(name = "fk_checked_by"))
+    private User checkedBy;
 
     @Column(name = "aim_of_test", columnDefinition = "TEXT")
     private String aimOfTest;
@@ -50,10 +51,10 @@ public class TestReport {
     private Project project;
 
     @OneToMany(mappedBy = "testReport", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<TestReportStandard> testReportStandards = new HashSet<>();
+    private List<TestReportStandard> testReportStandards = new ArrayList<>();
 
     @OneToMany(mappedBy = "testReport", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<TestReportSampler> testReportSamplers = new HashSet<>();
+    private List<TestReportSampler> testReportSamplers = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "location_id", nullable = false, foreignKey = @ForeignKey(name = "fk_location"))
