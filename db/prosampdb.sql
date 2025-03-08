@@ -1,9 +1,22 @@
 -- Enable necessary extensions
 -- CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
+SELECT current_user, session_user;
+SET ROLE postgres;
 
 DROP SCHEMA public CASCADE;
+
 CREATE SCHEMA public;
+
+SET session "app.current_user" = '22222222-2222-2222-2222-222222222222';
+
+-- ALTER DATABASE prosampdb SET "app.current_user" = '33333333-3333-3333-3333-333333333333';
+
+SELECT pg_reload_conf();
+
+SET ROLE prosamp;
+
+SELECT current_user, session_user;
 
 -- ALTER ROLE prosamp WITH SUPERUSER;
 -- CREATE EXTENSION IF NOT EXISTS pgaudit;
@@ -25,6 +38,12 @@ CREATE TABLE users
 INSERT INTO users (id, username, email, role, created_at, updated_at)
 VALUES ('11111111-1111-1111-1111-111111111111', 'anonymous', 'anonymous@example.com', 'manager', NOW(), NOW())
 ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO users (id, username, email, role)
+VALUES
+    ('22222222-2222-2222-2222-222222222222', 'benonymous', 'benonymous@encotech.hu', 'admin'),
+    ('33333333-3333-3333-3333-333333333333', 'vazulnymus', 'vazulnymus@ananas.hu', 'technician');
+
 
 -- #############################################################################
 -- TABLE: Companies
@@ -340,7 +359,7 @@ CREATE TABLE analytical_lab_reports
 CREATE TABLE sample_analytical_results
 (
     id                       BIGSERIAL PRIMARY KEY,
-    sample_contaminant_id    BIGINT                                                   NOT NULL REFERENCES sample_contaminants (id) ON DELETE CASCADE,
+    sample_contaminant_id    BIGINT                                                         NOT NULL REFERENCES sample_contaminants (id) ON DELETE CASCADE,
     result_main              NUMERIC(10, 4) CHECK (result_main IS NULL OR result_main >= 0) NOT NULL,
     result_control           NUMERIC(10, 4) CHECK (result_control IS NULL OR result_control >= 0)           DEFAULT NULL,
     result_main_control      NUMERIC(10, 4) CHECK (result_main_control IS NULL OR result_main_control >= 0) DEFAULT NULL,
@@ -366,9 +385,9 @@ CREATE TABLE test_reports
     id                                       BIGSERIAL PRIMARY KEY,
     report_number                            VARCHAR(50) UNIQUE NOT NULL,
     title                                    VARCHAR(255)       NOT NULL,
-    approved_by                              UUID REFERENCES users(id) ON DELETE RESTRICT,
-    prepared_by                              UUID REFERENCES users(id) ON DELETE RESTRICT,
-    checked_by                               UUID REFERENCES users(id) ON DELETE RESTRICT,
+    approved_by                              UUID REFERENCES users (id) ON DELETE RESTRICT,
+    prepared_by                              UUID REFERENCES users (id) ON DELETE RESTRICT,
+    checked_by                               UUID REFERENCES users (id) ON DELETE RESTRICT,
     aim_of_test                              TEXT,
     project_id                               BIGINT             NOT NULL REFERENCES projects (id) ON DELETE RESTRICT,
     location_id                              BIGINT             NOT NULL REFERENCES locations (id) ON DELETE RESTRICT,
@@ -419,7 +438,6 @@ $$ LANGUAGE plpgsql;
 -- ##########################################################################
 -- Function to Apply `update_timestamp()` to All Tables With `updated_at`
 -- ##########################################################################
-
 CREATE OR REPLACE FUNCTION apply_update_timestamp_trigger()
     RETURNS event_trigger AS
 $$
@@ -486,40 +504,91 @@ CREATE INDEX idx_sampling_records_project ON sampling_records_dat_m200 (project_
 -- #############################################################################
 ALTER SYSTEM SET pgaudit.log = 'write, ddl';
 
-CREATE TABLE audit_logs
+CREATE TABLE IF NOT EXISTS audit_logs
 (
-    id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id    UUID REFERENCES users (id),
-    table_name TEXT NOT NULL,
-    action     TEXT CHECK (action IN ('INSERT', 'UPDATE', 'DELETE')),
-    record_id  UUID NOT NULL, -- The affected row’s ID
-    changes    JSONB,         -- Stores old and new values
-    timestamp  TIMESTAMP DEFAULT NOW()
+    id               BIGSERIAL PRIMARY KEY,
+    user_id          UUID REFERENCES users (id),
+    table_name       TEXT NOT NULL,
+    action           TEXT CHECK (action IN ('INSERT', 'UPDATE', 'DELETE')),
+    record_id_uuid   UUID,   -- Stores UUID-based IDs
+    record_id_bigint BIGINT, -- Stores BIGINT-based IDs
+    changes          JSONB,  -- Stores old and new values
+    timestamp        TIMESTAMP DEFAULT NOW(),
+    CHECK (
+        (record_id_uuid IS NOT NULL AND record_id_bigint IS NULL) OR
+        (record_id_bigint IS NOT NULL AND record_id_uuid IS NULL)
+        )                    -- Ensures only one is filled
 );
+
 
 -- # TODO set when the user make transactions
 -- # SET LOCAL app.current_user = 'some-user-id';
 
+
+CREATE OR REPLACE FUNCTION get_current_user_id()
+    RETURNS UUID AS
+$$
+BEGIN
+    RETURN COALESCE(
+            NULLIF(current_setting('app.current_user', TRUE), '')::UUID,
+            '11111111-1111-1111-1111-111111111111' -- Default: Anonymous User
+           );
+END;
+$$ LANGUAGE plpgsql;
+
+
 CREATE OR REPLACE FUNCTION audit_log()
     RETURNS TRIGGER AS
 $$
+DECLARE
+    current_user_uuid UUID;
+    rec_uuid UUID;
+    rec_bigint BIGINT;
 BEGIN
-    INSERT INTO audit_logs (user_id, table_name, action, record_id, changes)
-    VALUES (COALESCE(
-                    NULLIF(current_setting('app.current_user', TRUE), '')::UUID,
-                    '11111111-1111-1111-1111-111111111111' -- Anonymous user UUID
-            ), -- Capture application user
-            TG_TABLE_NAME, -- Gets the table name dynamically
-            TG_OP, -- Captures the operation (INSERT, UPDATE, DELETE)
-            CASE WHEN TG_OP = 'DELETE' THEN OLD.id ELSE NEW.id END, -- Get ID of affected row
-            jsonb_build_object(
-                    'old', CASE WHEN TG_OP = 'UPDATE' OR TG_OP = 'DELETE' THEN row_to_json(OLD) ELSE NULL END,
-                    'new', CASE WHEN TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN row_to_json(NEW) ELSE NULL END
-            ));
-    RETURN CASE
-               WHEN TG_OP = 'DELETE' THEN OLD
-               ELSE NEW
-        END;
+    -- Retrieve current user UUID from session settings
+    BEGIN
+        SELECT NULLIF(current_setting('app.current_user', TRUE), '')::UUID
+        INTO current_user_uuid;
+    EXCEPTION
+        WHEN others THEN
+            current_user_uuid := '11111111-1111-1111-1111-111111111111'; -- Default Anonymous User
+    END;
+
+    -- Determine the type of NEW.id and assign to local variables accordingly
+    IF pg_typeof(NEW.id)::text = 'uuid' THEN
+        rec_uuid := NEW.id;
+        rec_bigint := NULL;
+    ELSIF pg_typeof(NEW.id)::text = 'bigint' THEN
+        rec_bigint := NEW.id;
+        rec_uuid := NULL;
+    ELSE
+        rec_uuid := NULL;
+        rec_bigint := NULL;
+    END IF;
+
+    -- Insert the audit log record with the correctly typed values
+    INSERT INTO audit_logs (
+        user_id,
+        table_name,
+        action,
+        record_id_uuid,
+        record_id_bigint,
+        changes
+    )
+    VALUES (
+               current_user_uuid,              -- current user
+               TG_TABLE_NAME,                  -- table triggering the audit
+               TG_OP,                          -- type of operation (INSERT, UPDATE, DELETE)
+               rec_uuid,
+               rec_bigint,
+               jsonb_build_object(
+                       'old', CASE WHEN TG_OP IN ('UPDATE', 'DELETE') THEN row_to_json(OLD) ELSE NULL END,
+                       'new', CASE WHEN TG_OP IN ('INSERT', 'UPDATE') THEN row_to_json(NEW) ELSE NULL END
+               )
+           );
+
+    -- Return the appropriate record for the operation
+    RETURN CASE WHEN TG_OP = 'DELETE' THEN OLD ELSE NEW END;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -532,39 +601,36 @@ $$ LANGUAGE plpgsql;
 -- Function: Auto-Apply Logging to New Tables
 -- Detects New Tables and Adds an Audit Trigger
 -- #############################################################################
-CREATE OR REPLACE FUNCTION apply_audit_trigger()
-    RETURNS event_trigger AS
-$$
-DECLARE
-    tbl TEXT;
-BEGIN
-    FOR tbl IN
-        SELECT table_name
-        FROM information_schema.tables
-        WHERE table_schema = 'public'
-          AND table_name NOT IN ('audit_logs')
-          AND table_name NOT IN (SELECT event_object_table
-                                 FROM information_schema.triggers
-                                 WHERE trigger_name LIKE 'audit_trigger_%')
-        LOOP
-            EXECUTE format(
-                    'CREATE TRIGGER audit_trigger_%s
-                    AFTER INSERT OR UPDATE OR DELETE ON %I
-                    FOR EACH ROW EXECUTE FUNCTION audit_log();',
-                    tbl, tbl
-                    );
-        END LOOP;
-END;
-$$ LANGUAGE plpgsql;
-
-
 -- #############################################################################
 -- Event Trigger: Automatically Applies Logging to New Tables
 -- #############################################################################
-CREATE EVENT TRIGGER trigger_auto_audit
-    ON ddl_command_end
-    WHEN TAG IN ('CREATE TABLE')
-EXECUTE FUNCTION apply_audit_trigger();
+-- CREATE EVENT TRIGGER trigger_auto_audit
+--     ON ddl_command_end
+--     WHEN TAG IN ('CREATE TABLE')
+-- EXECUTE FUNCTION apply_audit_trigger();
+
+
+DO
+$$
+    DECLARE
+        tbl TEXT;
+    BEGIN
+        FOR tbl IN
+            SELECT table_name
+            FROM information_schema.columns
+            WHERE table_schema = 'public'
+              AND column_name = 'id'
+              AND table_name NOT IN ('audit_logs') -- Exclude itself
+            LOOP
+                EXECUTE format(
+                        'CREATE TRIGGER audit_trigger_%I
+                         AFTER INSERT OR UPDATE OR DELETE ON %I
+                         FOR EACH ROW EXECUTE FUNCTION audit_log();',
+                        tbl, tbl
+                        );
+            END LOOP;
+    END;
+$$;
 
 
 -- #####################################################
@@ -585,8 +651,8 @@ RETURNING id;
 
 
 INSERT INTO users (id, username, email, role, created_at, updated_at)
-VALUES ('22222222-2222-2222-2222-222222222222', 'john_doe', 'john.doe@example.com', 'admin', NOW(), NOW()),
-       ('33333333-3333-3333-3333-333333333333', 'jane_smith', 'jane.smith@example.com', 'technician', NOW(), NOW());
+VALUES ('44444444-2222-2222-2222-222222222222', 'john_doe', 'john.doe@example.com', 'admin', NOW(), NOW()),
+       ('55555555-3333-3333-3333-333333333333', 'jane_smith', 'jane.smith@example.com', 'technician', NOW(), NOW());
 
 -- Insert Companies
 INSERT INTO companies (name, address, contact_person, email, phone, country, city)
@@ -712,5 +778,6 @@ VALUES ('TR-001', 'Air Quality Test Report', '22222222-2222-2222-2222-2222222222
         '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222',
         'Evaluate air quality in factory', 1, 1, 1, 'Modern Tech', '2024-02-15', 'Detailed analysis', '2024-02-20',
         'FINALIZED');
+
 
 
