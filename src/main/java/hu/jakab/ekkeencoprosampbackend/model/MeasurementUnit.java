@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class MeasurementUnit {
     private List<MeasurementUnit> derivedUnits = new ArrayList<>(); // Derived units that reference this unit
 
     @Column(name = "conversion_factor")
-    private Double conversionFactor; // Factor to convert to base unit
+    private BigDecimal conversionFactor; // Factor to convert to base unit
 
     @Column(name = "standard_body", length = 50)
     private String standardBody; // e.g., "SI", "ISO", "ASTM", "EPA"

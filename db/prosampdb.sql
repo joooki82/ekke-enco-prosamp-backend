@@ -272,7 +272,7 @@ CREATE TABLE measurement_units
     description       TEXT               NOT NULL,              -- e.g., "Milligrams per cubic meter"
     unit_category     VARCHAR(50)        NOT NULL,              -- e.g., "Concentration", "Mass", "Volume"
     base_unit_id      BIGINT REFERENCES measurement_units (id), -- For unit conversion reference
-    conversion_factor DOUBLE PRECISION,                         -- Factor to convert to base unit
+    conversion_factor NUMERIC(20,10),                         -- Factor to convert to base unit
     standard_body     VARCHAR(50),                              -- e.g., "SI", "ISO", "ASTM", "EPA"
     created_at        TIMESTAMP DEFAULT NOW(),
     updated_at        TIMESTAMP DEFAULT NOW()
