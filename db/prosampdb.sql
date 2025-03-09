@@ -420,6 +420,19 @@ CREATE TABLE test_report_samplers
 );
 
 
+CREATE TABLE regulatory_limits_workplace
+(
+    id                     BIGSERIAL PRIMARY KEY,
+    fk_contaminant_id      BIGINT NOT NULL REFERENCES contaminants (id) ON DELETE CASCADE,
+    fk_measurement_unit_id BIGINT NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
+    fk_sample_type         VARCHAR(10) CHECK (fk_sample_type IN ('AK', 'CK')) DEFAULT 'AK',
+    limit_value            NUMERIC(10, 4) CHECK (limit_value >= 0), -- Maximum allowed concentration
+    created_at             TIMESTAMP                                          DEFAULT NOW(),
+    updated_at             TIMESTAMP                                          DEFAULT NOW(),
+    UNIQUE (fk_contaminant_id, fk_sample_type)
+);
+
+
 -- #############################################################################
 -- UPDATE TIMESTAMP
 -- #############################################################################
@@ -723,8 +736,8 @@ VALUES ('2024-02-15 08:00:00', '22222222-2222-2222-2222-222222222222', 1, 1, 'Fa
 
 -- Insert Measurement Units
 INSERT INTO measurement_units (unit_code, description, unit_category, base_unit_id, conversion_factor)
-VALUES ('mg/m³', 'Milligrams per cubic meter', 'Concentration', 1,1),
-       ('ppm', 'Parts per million', 'Concentration',1, 1);
+VALUES ('mg/m³', 'Milligrams per cubic meter', 'Concentration', 1, 1),
+       ('ppm', 'Parts per million', 'Concentration', 1, 1);
 
 -- Insert Samples
 INSERT INTO samples (sampling_record_id, sample_identifier, location, employee_name, temperature, humidity, pressure,
@@ -768,6 +781,20 @@ VALUES ('TR-001', 'Air Quality Test Report', '22222222-2222-2222-2222-2222222222
         '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222',
         'Evaluate air quality in factory', 1, 1, 1, 'Modern Tech', '2024-02-15', 'Detailed analysis', '2024-02-20',
         'FINALIZED');
+
+
+
+INSERT INTO regulatory_limits_workplace
+(fk_contaminant_id, fk_measurement_unit_id, fk_sample_type, limit_value)
+VALUES
+    -- Benzene (Workplace Air Limit)
+    (1, 1, 'AK', 1.0),  -- 1.0 mg/m³ for AK samples
+    (1, 1, 'CK', 0.5),  -- 0.5 mg/m³ for CK samples
+
+    -- Lead (Workplace Exposure Limit)
+    (2, 2, 'AK', 0.05),  -- 0.05 ppm for AK samples
+    (2, 2, 'CK', 0.03);  -- 0.03 ppm for CK samples
+
 
 
 

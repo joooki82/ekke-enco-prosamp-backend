@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class SampleAnalyticalResultService {
@@ -66,6 +67,10 @@ public class SampleAnalyticalResultService {
         SampleAnalyticalResult sampleAnalyticalResult = mapper.toEntity(dto);
 
         BigDecimal analyticalResultMain = dto.getResultMain();
+
+        if (Objects.equals(analyticalResultMain, BigDecimal.valueOf(0)))  {
+            analyticalResultMain = dto.getDetectionLimit();
+        }
 
         Sample sample = sampleRepository.findById(sampleAnalyticalResult.getSampleContaminant().getSample().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + sampleAnalyticalResult.getSampleContaminant().getSample().getId() + " not found"));
@@ -133,6 +138,10 @@ public class SampleAnalyticalResultService {
         }
 
         BigDecimal analyticalResultMain = existing.getResultMain();
+
+        if (Objects.equals(analyticalResultMain, BigDecimal.valueOf(0)))  {
+            analyticalResultMain = existing.getDetectionLimit();
+        }
 
         Sample sample = sampleRepository.findById(existing.getSampleContaminant().getSample().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + existing.getSampleContaminant().getSample().getId() + " not found"));
