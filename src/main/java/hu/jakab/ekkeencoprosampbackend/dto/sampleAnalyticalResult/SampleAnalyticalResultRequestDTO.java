@@ -20,7 +20,7 @@ public class SampleAnalyticalResultRequestDTO {
     
     private BigDecimal resultMainControl;
     
-    private Long measurementUnitId;  // References MeasurementUnit
+    private Long resultMeasurementUnitId;  // References MeasurementUnit
     
     private BigDecimal detectionLimit;
     
@@ -32,7 +32,6 @@ public class SampleAnalyticalResultRequestDTO {
     
     private LocalDateTime analysisDate;
     
-    private BigDecimal calculatedConcentration;
 
 
 }

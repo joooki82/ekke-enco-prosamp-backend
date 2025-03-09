@@ -31,5 +31,4 @@ public class SampleCreatedDTO {
     private String remarks;
     private Long samplingTypeId;
     private Long adjustmentMethodId;
-    private BigDecimal samplingFlowRate;
 }

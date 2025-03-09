@@ -37,8 +37,8 @@ public class SampleAnalyticalResult {
     private BigDecimal resultMainControl;
 
     @ManyToOne
-    @JoinColumn(name = "measurement_unit", nullable = false, foreignKey = @ForeignKey(name = "fk_measurement_unit"))
-    private MeasurementUnit measurementUnit;
+    @JoinColumn(name = "result_measurement_unit", nullable = false, foreignKey = @ForeignKey(name = "fk_measurement_unit"))
+    private MeasurementUnit resultMeasurementUnit;
 
     @Column(name = "detection_limit", precision = 10, scale = 4)
     private BigDecimal detectionLimit;
@@ -59,6 +59,10 @@ public class SampleAnalyticalResult {
 
     @Column(name = "calculated_concentration", precision = 10, scale = 4)
     private BigDecimal calculatedConcentration;
+
+    @ManyToOne
+    @JoinColumn(name = "calculated_concentration_measurement_unit", nullable = false, foreignKey = @ForeignKey(name = "fk_measurement_unit"))
+    private MeasurementUnit calculatedConcentrationMeasurementUnit;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

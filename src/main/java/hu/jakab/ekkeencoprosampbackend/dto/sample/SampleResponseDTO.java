@@ -33,7 +33,6 @@ public class SampleResponseDTO {
     private String remarks;
     private SamplingTypeListItemDTO samplingType;
     private AdjustmentMethodListItemDTO adjustmentMethod;
-    private BigDecimal samplingFlowRate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

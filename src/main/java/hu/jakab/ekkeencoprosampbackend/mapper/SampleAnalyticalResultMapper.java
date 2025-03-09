@@ -14,13 +14,13 @@ public interface SampleAnalyticalResultMapper {
     @Mapping(target = "id", ignore = true) // ID is auto-generated
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "measurementUnit", source = "measurementUnitId", qualifiedByName = "mapMeasurementUnit")
+    @Mapping(target = "resultMeasurementUnit", source = "resultMeasurementUnitId", qualifiedByName = "mapMeasurementUnit")
     @Mapping(target = "sampleContaminant", source = "sampleContaminantId", qualifiedByName = "mapSampleContaminant")
     @Mapping(target = "labReport", source = "labReportId", qualifiedByName = "mapAnalyticalLabReport")
     SampleAnalyticalResult toEntity(SampleAnalyticalResultRequestDTO dto);
 
     @Mapping(target = "sampleContaminant", source = "sampleContaminant")
-    @Mapping(target = "measurementUnit", source = "measurementUnit")
+    @Mapping(target = "resultMeasurementUnit", source = "resultMeasurementUnit")
     @Mapping(target = "labReport", source = "labReport")
     SampleAnalyticalResultResponseDTO toResponseDTO(SampleAnalyticalResult entity);
 

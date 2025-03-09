@@ -28,7 +28,7 @@ public class SampleAnalyticalResultCreatedDTO {
     
     private BigDecimal resultMainControl;
     
-    private MeasurementUnitListItemDTO measurementUnit;  // Full object
+    private MeasurementUnitListItemDTO resultMeasurementUnit;  // Full object
     
     private BigDecimal detectionLimit;
     
@@ -41,5 +41,7 @@ public class SampleAnalyticalResultCreatedDTO {
     private LocalDateTime analysisDate;
     
     private BigDecimal calculatedConcentration;
-    
+
+    private MeasurementUnitListItemDTO calculatedConcentrationMeasurementUnit;
+
 }

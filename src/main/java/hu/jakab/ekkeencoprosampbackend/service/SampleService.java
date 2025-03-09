@@ -97,7 +97,6 @@ public class SampleService {
         if (dto.getSampleType() != null) existing.setSampleType(dto.getSampleType());
         if (dto.getStatus() != null) existing.setStatus(dto.getStatus());
         if (dto.getRemarks() != null) existing.setRemarks(dto.getRemarks());
-        if (dto.getSamplingFlowRate() != null) existing.setSamplingFlowRate(dto.getSamplingFlowRate());
 
         // Set references to other entities
         existing.setSamplingRecord(samplingRecordRepository.findById(dto.getSamplingRecordId())
@@ -124,8 +123,6 @@ public class SampleService {
             throw new RuntimeException("Update failed: Duplicate identifier detected");
         }
     }
-
-
 
     @Transactional
     public void delete(Long id) {

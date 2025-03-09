@@ -76,8 +76,6 @@ public class Sample {
     @JoinColumn(name = "adjustment_method_id", foreignKey = @ForeignKey(name = "fk_adjustment_method"))
     private AdjustmentMethod adjustmentMethod;
 
-    @Column(name = "sampling_flow_rate", precision = 6, scale = 3)
-    private BigDecimal samplingFlowRate;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

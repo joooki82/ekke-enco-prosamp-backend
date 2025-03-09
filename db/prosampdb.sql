@@ -40,9 +40,8 @@ VALUES ('11111111-1111-1111-1111-111111111111', 'anonymous', 'anonymous@example.
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO users (id, username, email, role)
-VALUES
-    ('22222222-2222-2222-2222-222222222222', 'benonymous', 'benonymous@encotech.hu', 'admin'),
-    ('33333333-3333-3333-3333-333333333333', 'vazulnymus', 'vazulnymus@ananas.hu', 'technician');
+VALUES ('22222222-2222-2222-2222-222222222222', 'benonymous', 'benonymous@encotech.hu', 'admin'),
+       ('33333333-3333-3333-3333-333333333333', 'vazulnymus', 'vazulnymus@ananas.hu', 'technician');
 
 
 -- #############################################################################
@@ -272,7 +271,7 @@ CREATE TABLE measurement_units
     description       TEXT               NOT NULL,              -- e.g., "Milligrams per cubic meter"
     unit_category     VARCHAR(50)        NOT NULL,              -- e.g., "Concentration", "Mass", "Volume"
     base_unit_id      BIGINT REFERENCES measurement_units (id), -- For unit conversion reference
-    conversion_factor NUMERIC(20,10),                         -- Factor to convert to base unit
+    conversion_factor NUMERIC(20, 10),                          -- Factor to convert to base unit
     standard_body     VARCHAR(50),                              -- e.g., "SI", "ISO", "ASTM", "EPA"
     created_at        TIMESTAMP DEFAULT NOW(),
     updated_at        TIMESTAMP DEFAULT NOW()
@@ -294,8 +293,8 @@ CREATE TABLE samples
     pressure                     NUMERIC(7, 2),
     sample_volume_flow_rate      NUMERIC(5, 4),
     sample_volume_flow_rate_unit BIGINT      NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
-    start_time                   TIMESTAMP(0),  -- Store only up to seconds
-    end_time                     TIMESTAMP(0),  -- Store only up to seconds
+    start_time                   TIMESTAMP(0),                                                     -- Store only up to seconds
+    end_time                     TIMESTAMP(0),                                                     -- Store only up to seconds
     sample_type                  VARCHAR(10) CHECK (sample_type IN ('AK', 'CK')) DEFAULT 'AK',
     status                       VARCHAR(50)                                     DEFAULT 'ACTIVE', -- Státusz: 'active', 'lost', 'broken', 'invalid'
     remarks                      VARCHAR(255),
@@ -358,21 +357,22 @@ CREATE TABLE analytical_lab_reports
 -- #############################################################################
 CREATE TABLE sample_analytical_results
 (
-    id                       BIGSERIAL PRIMARY KEY,
-    sample_contaminant_id    BIGINT                                                         NOT NULL REFERENCES sample_contaminants (id) ON DELETE CASCADE,
-    result_main              NUMERIC(10, 4) CHECK (result_main IS NULL OR result_main >= 0) NOT NULL,
-    result_control           NUMERIC(10, 4) CHECK (result_control IS NULL OR result_control >= 0)           DEFAULT NULL,
-    result_main_control      NUMERIC(10, 4) CHECK (result_main_control IS NULL OR result_main_control >= 0) DEFAULT NULL,
-    measurement_unit         BIGINT                                                         NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
-    detection_limit          NUMERIC(10, 4) CHECK (detection_limit IS NULL OR detection_limit >= 0),
-    measurement_uncertainty  NUMERIC(5, 2) CHECK (measurement_uncertainty IS NULL OR
-                                                  measurement_uncertainty BETWEEN 0 AND 100),
-    analysis_method          VARCHAR(255) CHECK (LENGTH(analysis_method) > 3),
-    lab_report_id            BIGINT                                                         NOT NULL REFERENCES analytical_lab_reports (id) ON DELETE CASCADE,
-    analysis_date            TIMESTAMP CHECK (analysis_date <= CURRENT_TIMESTAMP),
-    calculated_concentration NUMERIC(10, 4) CHECK (calculated_concentration >= 0),
-    created_at               TIMESTAMP                                                                      DEFAULT NOW(),
-    updated_at               TIMESTAMP                                                                      DEFAULT NOW(),
+    id                                        BIGSERIAL PRIMARY KEY,
+    sample_contaminant_id                     BIGINT                                                         NOT NULL REFERENCES sample_contaminants (id) ON DELETE CASCADE,
+    result_main                               NUMERIC(10, 4) CHECK (result_main IS NULL OR result_main >= 0) NOT NULL,
+    result_control                            NUMERIC(10, 4) CHECK (result_control IS NULL OR result_control >= 0)           DEFAULT NULL,
+    result_main_control                       NUMERIC(10, 4) CHECK (result_main_control IS NULL OR result_main_control >= 0) DEFAULT NULL,
+    result_measurement_unit                   BIGINT                                                         NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
+    detection_limit                           NUMERIC(10, 4) CHECK (detection_limit IS NULL OR detection_limit >= 0),
+    measurement_uncertainty                   NUMERIC(5, 2) CHECK (measurement_uncertainty IS NULL OR
+                                                                   measurement_uncertainty BETWEEN 0 AND 100),
+    analysis_method                           VARCHAR(255) CHECK (LENGTH(analysis_method) > 3),
+    lab_report_id                             BIGINT                                                         NOT NULL REFERENCES analytical_lab_reports (id) ON DELETE CASCADE,
+    analysis_date                             TIMESTAMP CHECK (analysis_date <= CURRENT_TIMESTAMP),
+    calculated_concentration                  NUMERIC(10, 4) CHECK (calculated_concentration >= 0),
+    calculated_concentration_measurement_unit BIGINT                                                         NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
+    created_at                                TIMESTAMP                                                                      DEFAULT NOW(),
+    updated_at                                TIMESTAMP                                                                      DEFAULT NOW(),
     CONSTRAINT fk_sample_contaminant FOREIGN KEY (sample_contaminant_id)
         REFERENCES sample_contaminants (id) ON DELETE CASCADE
 );
@@ -542,8 +542,8 @@ CREATE OR REPLACE FUNCTION audit_log()
 $$
 DECLARE
     current_user_uuid UUID;
-    rec_uuid UUID;
-    rec_bigint BIGINT;
+    rec_uuid          UUID;
+    rec_bigint        BIGINT;
 BEGIN
     -- Retrieve current user UUID from session settings
     BEGIN
@@ -567,25 +567,21 @@ BEGIN
     END IF;
 
     -- Insert the audit log record with the correctly typed values
-    INSERT INTO audit_logs (
-        user_id,
-        table_name,
-        action,
-        record_id_uuid,
-        record_id_bigint,
-        changes
-    )
-    VALUES (
-               current_user_uuid,              -- current user
-               TG_TABLE_NAME,                  -- table triggering the audit
-               TG_OP,                          -- type of operation (INSERT, UPDATE, DELETE)
-               rec_uuid,
-               rec_bigint,
-               jsonb_build_object(
-                       'old', CASE WHEN TG_OP IN ('UPDATE', 'DELETE') THEN row_to_json(OLD) ELSE NULL END,
-                       'new', CASE WHEN TG_OP IN ('INSERT', 'UPDATE') THEN row_to_json(NEW) ELSE NULL END
-               )
-           );
+    INSERT INTO audit_logs (user_id,
+                            table_name,
+                            action,
+                            record_id_uuid,
+                            record_id_bigint,
+                            changes)
+    VALUES (current_user_uuid, -- current user
+            TG_TABLE_NAME, -- table triggering the audit
+            TG_OP, -- type of operation (INSERT, UPDATE, DELETE)
+            rec_uuid,
+            rec_bigint,
+            jsonb_build_object(
+                    'old', CASE WHEN TG_OP IN ('UPDATE', 'DELETE') THEN row_to_json(OLD) ELSE NULL END,
+                    'new', CASE WHEN TG_OP IN ('INSERT', 'UPDATE') THEN row_to_json(NEW) ELSE NULL END
+            ));
 
     -- Return the appropriate record for the operation
     RETURN CASE WHEN TG_OP = 'DELETE' THEN OLD ELSE NEW END;
@@ -726,9 +722,9 @@ VALUES ('2024-02-15 08:00:00', '22222222-2222-2222-2222-222222222222', 1, 1, 'Fa
         18.0, 50.0, 2.5, 1012.5, 1011.7, 'Slight dust', 'Moderate', 'High', 'Frequent', 'No', 'SN003, SN004', 2);
 
 -- Insert Measurement Units
-INSERT INTO measurement_units (unit_code, description, unit_category)
-VALUES ('mg/m³', 'Milligrams per cubic meter', 'Concentration'),
-       ('ppm', 'Parts per million', 'Concentration');
+INSERT INTO measurement_units (unit_code, description, unit_category, base_unit_id, conversion_factor)
+VALUES ('mg/m³', 'Milligrams per cubic meter', 'Concentration', 1,1),
+       ('ppm', 'Parts per million', 'Concentration',1, 1);
 
 -- Insert Samples
 INSERT INTO samples (sampling_record_id, sample_identifier, location, employee_name, temperature, humidity, pressure,
@@ -756,20 +752,14 @@ VALUES (1, 1, '2024-02-17 10:00:00'),
        (2, 2, '2024-02-18 12:00:00');
 
 -- Insert into sample_analytical_results (Using sample_contaminant_id)
-INSERT INTO sample_analytical_results (sample_contaminant_id, result_main, measurement_unit, detection_limit,
+INSERT INTO sample_analytical_results (sample_contaminant_id, result_main, result_measurement_unit, detection_limit,
                                        measurement_uncertainty, analysis_method, lab_report_id, analysis_date,
-                                       calculated_concentration)
+                                       calculated_concentration, calculated_concentration_measurement_unit)
 VALUES ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 1 AND fk_contaminant_id = 1), 0.35, 1, 0.1, 5.0,
-        'GC-MS', 1, '2024-02-17 12:00:00', 0.35),
+        'GC-MS', 1, '2024-02-17 12:00:00', 0.35, 1),
        ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 2 AND fk_contaminant_id = 2), 1.25, 2, 0.2, 4.5,
-        'HPLC', 2, '2024-02-18 14:00:00', 1.25);
+        'HPLC', 2, '2024-02-18 14:00:00', 1.25, 2);
 
--- -- Insert Sample Analytical Results
--- INSERT INTO sample_analytical_results (sample_id, contaminant_id, result_main, measurement_unit, detection_limit, measurement_uncertainty, analysis_method, lab_report_id, analysis_date, calculated_concentration)
--- VALUES
---     (1, 1, 0.35, 1, 0.1, 5.0, 'GC-MS', 1, '2024-02-17 12:00:00', 0.35),
---     (2, 2, 1.25, 2, 0.2, 4.5, 'HPLC', 2, '2024-02-18 14:00:00', 1.25);
---
 -- Insert Test Reports
 INSERT INTO test_reports (report_number, title, approved_by, prepared_by, checked_by, aim_of_test, project_id,
                           location_id, sampling_record_id, technology, sampling_conditions_dates,

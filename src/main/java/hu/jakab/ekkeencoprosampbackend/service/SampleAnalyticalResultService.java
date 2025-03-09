@@ -10,6 +10,7 @@ import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.mapper.SampleAnalyticalResultMapper;
 import hu.jakab.ekkeencoprosampbackend.model.*;
 import hu.jakab.ekkeencoprosampbackend.repository.*;
+import hu.jakab.ekkeencoprosampbackend.service.utils.CalculationEngine;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -27,17 +29,21 @@ public class SampleAnalyticalResultService {
     private final SampleAnalyticalResultRepository repository;
     private final MeasurementUnitRepository measurementUnitRepository;
     private final SampleContaminantRepository sampleContaminantRepository;
+    private final SampleRepository sampleRepository;
     private final AnalyticalLabReportRepository analyticalLabReportRepository;
     private final SampleAnalyticalResultMapper mapper;
+    private final CalculationEngine calculationEngine;
 
     @Autowired
-    public SampleAnalyticalResultService(SampleAnalyticalResultRepository repository, MeasurementUnitRepository measurementUnitRepository, SampleContaminantRepository sampleContaminantRepository,
-                                         AnalyticalLabReportRepository analyticalLabReportRepository, SampleAnalyticalResultMapper mapper) {
+    public SampleAnalyticalResultService(SampleAnalyticalResultRepository repository, MeasurementUnitRepository measurementUnitRepository, SampleContaminantRepository sampleContaminantRepository, SampleRepository sampleRepository,
+                                         AnalyticalLabReportRepository analyticalLabReportRepository, SampleAnalyticalResultMapper mapper, CalculationEngine calculationEngine) {
         this.repository = repository;
         this.measurementUnitRepository = measurementUnitRepository;
         this.sampleContaminantRepository = sampleContaminantRepository;
+        this.sampleRepository = sampleRepository;
         this.analyticalLabReportRepository = analyticalLabReportRepository;
         this.mapper = mapper;
+        this.calculationEngine = calculationEngine;
     }
 
     public List<SampleAnalyticalResultResponseDTO> getAll() {
@@ -57,9 +63,19 @@ public class SampleAnalyticalResultService {
     @Transactional
     public SampleAnalyticalResultCreatedDTO save(SampleAnalyticalResultRequestDTO dto) {
         logger.info("Creating a new SampleAnalyticalResult with sampleContaminantId: {}", dto.getSampleContaminantId());
-        SampleAnalyticalResult SampleAnalyticalResult = mapper.toEntity(dto);
+        SampleAnalyticalResult sampleAnalyticalResult = mapper.toEntity(dto);
+
+        BigDecimal analyticalResultMain = dto.getResultMain();
+
+        Sample sample = sampleRepository.findById(sampleAnalyticalResult.getSampleContaminant().getSample().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + sampleAnalyticalResult.getSampleContaminant().getSample().getId() + " not found"));
+
+        BigDecimal calculateAdjustedTotalSampledVolume = calculationEngine.calculateAdjustedTotalSampledVolume(sample);
+
+        sampleAnalyticalResult.setCalculatedConcentration(analyticalResultMain.multiply(calculateAdjustedTotalSampledVolume));
+
         try {
-            SampleAnalyticalResult savedSampleAnalyticalResult = repository.save(SampleAnalyticalResult);
+            SampleAnalyticalResult savedSampleAnalyticalResult = repository.save(sampleAnalyticalResult);
             return mapper.toCreatedDTO(savedSampleAnalyticalResult);
         } catch (DataIntegrityViolationException e) {
             logger.error("Error saving SampleAnalyticalResult: Duplicate report number");
@@ -98,10 +114,10 @@ public class SampleAnalyticalResultService {
         if (dto.getResultMainControl() != null) {
             existing.setResultMainControl(dto.getResultMainControl());
         }
-        if (dto.getMeasurementUnitId() != null) {
-            MeasurementUnit measurementUnit = measurementUnitRepository.findById(dto.getMeasurementUnitId())
-                    .orElseThrow(() -> new ResourceNotFoundException("MeasurementUnit with ID " + dto.getMeasurementUnitId() + " not found"));
-            existing.setMeasurementUnit(measurementUnit);
+        if (dto.getResultMeasurementUnitId() != null) {
+            MeasurementUnit measurementUnit = measurementUnitRepository.findById(dto.getResultMeasurementUnitId())
+                    .orElseThrow(() -> new ResourceNotFoundException("MeasurementUnit with ID " + dto.getResultMeasurementUnitId() + " not found"));
+            existing.setResultMeasurementUnit(measurementUnit);
         }
         if (dto.getDetectionLimit() != null) {
             existing.setDetectionLimit(dto.getDetectionLimit());
@@ -115,9 +131,15 @@ public class SampleAnalyticalResultService {
         if (dto.getAnalysisDate() != null) {
             existing.setAnalysisDate(dto.getAnalysisDate());
         }
-        if (dto.getCalculatedConcentration() != null) {
-            existing.setCalculatedConcentration(dto.getCalculatedConcentration());
-        }
+
+        BigDecimal analyticalResultMain = existing.getResultMain();
+
+        Sample sample = sampleRepository.findById(existing.getSampleContaminant().getSample().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + existing.getSampleContaminant().getSample().getId() + " not found"));
+
+        BigDecimal calculateAdjustedTotalSampledVolume = calculationEngine.calculateAdjustedTotalSampledVolume(sample);
+
+        existing.setCalculatedConcentration(analyticalResultMain.multiply(calculateAdjustedTotalSampledVolume));
 
         try {
             SampleAnalyticalResult updatedSampleAnalyticalResult = repository.save(existing);

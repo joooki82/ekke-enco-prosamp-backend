@@ -42,5 +42,4 @@ public class SampleRequestDTO {
 
     private Long samplingTypeId;
     private Long adjustmentMethodId;
-    private BigDecimal samplingFlowRate;
 }
