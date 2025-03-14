@@ -1,4 +1,759 @@
-\documentclass{article}
+\documentclass[a4paper,12pt]{article}
+
+% ==============================
+% Packages
+% ==============================
+
+\usepackage[utf8]{inputenc}  % UTF-8 encoding
+\usepackage{graphicx}        % For including images
+\usepackage{geometry}        % Adjust margins
+\usepackage{fancyhdr}        % Headers and footers
+\usepackage{setspace}        % Line spacing
+\usepackage{xcolor}          % Colors
+\usepackage{tabularx}        % Advanced tables
+\usepackage{tocloft}         % For controlling Table of Contents spacing
+\usepackage[magyar]{babel}   % Hungarian language support
+\usepackage{titlesec}        % Control section title format
+\usepackage{ragged2e}        % For text alignment
+\usepackage{lmodern}         % Better font rendering
+\usepackage{ulem}            % For underlining text
+\usepackage{array}           % Improves table layout
+\usepackage[T1]{fontenc}     % Fixes accented characters hyphenation
+\usepackage{changepage}      % Adjust text width
+\usepackage{makecell}        % Improved table cell formatting
+\usepackage{multirow}        % Multi-row cells in tables
+\usepackage{longtable}       % Multi-page tables
+\usepackage{hyphenat}        % Better hyphenation
+\usepackage{needspace}       % Prevent page breaks in certain places
+\usepackage{lastpage}        % Reference last page in footer
+\usepackage{float}           % Force figure/table placements
+
+
+
+% ==============================
+% Page Layout
+% ==============================
+
+\geometry{top=3.5cm, bottom=3.5cm, left=2.5cm, right=2.5cm}
+\definecolor{aubergine}{RGB}{134,73,139} 
+
+% Line spacing
+\setstretch{1.2}
+
+% Set default font to sans-serif
+\usepackage[scaled]{helvet}  % Use Helvetica (similar to Arial)
+\renewcommand{\familydefault}{\sfdefault}
+
+%\usepackage{uarial}
+%\renewcommand{\familydefault}{\sfdefault}
+
+%\usepackage{mathpazo}  % Palatino for text & math
+%\renewcommand{\familydefault}{\rmdefault}
+
+%\usepackage{newtxtext,newtxmath}  % Times font for text & math
+%\renewcommand{\familydefault}{\rmdefault}
+
+%\usepackage{cmbright}  % Modern sans-serif font
+%\renewcommand{\familydefault}{\sfdefault}
+
+%\usepackage{fontspec}
+%\setmainfont{IBM Plex Sans}  % Modern and clean
+
+
+
+
+
+% Remove paragraph indentation
+\setlength{\parindent}{0pt}
+
+% ==============================
+% Header and Footer Configuration
+% ==============================
+
+\pagestyle{fancy}
+\fancyhf{}  % Clear default headers and footers
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% First page style (with logo)
+\fancypagestyle{firstpage}{
+	\fancyhf{}
+	\rhead{\includegraphics[width=7cm]{logo.png}}  % Logo only on first page
+	\fancyfoot[C]{
+		\renewcommand{\arraystretch}{0.5}
+		\scriptsize
+		\noindent\makebox[\textwidth]{
+			\begin{tabular}{p{6.5cm} p{3cm} p{3cm} p{3.5cm}}
+				\textbf{\textcolor{aubergine}{ENCOTECH Környezetvédelmi}} & \textbf{1089 BUDAPEST} & \textbf{Tel.:} +36 1 3037848 &  \texttt{meres@encotech.hu} \\
+				\textbf{\textcolor{aubergine}{Szolgáltató és Tanácsadó Kft. LABORATÓRIUMA}} & Bláthy Ottó utca 41. & \textbf{Fax:} +36 1 3231512 & \texttt{www.encotech.hu} \\
+			\end{tabular}
+		}
+	}
+}
+
+% Standard header/footer from page 2 onward
+\fancypagestyle{report}{
+	\fancyhf{}
+	\fancyhead[L]{\footnotesize Tech Solutions Ltd., New York}
+	\fancyhead[R]{\footnotesize \parbox{6cm}{\raggedleft Evaluate air quality in factory }}
+	\renewcommand{\headrulewidth}{0.4pt}
+	\renewcommand{\footrulewidth}{0.4pt}
+	\fancyfoot[L]{\footnotesize Vizsgálati Jegyzőkönyv száma: TR-001}
+	\fancyfoot[C]{\footnotesize \thepage/\pageref{LastPage}}
+	\fancyfoot[R]{\footnotesize ENCOTECH Kft. Laboratóriuma}
+}
+
+% ==============================
+% Section Title Formatting
+% ==============================
+
+\titleformat{\section}
+{\large\bfseries} % Large & Bold
+{\thesection.}{1em} % Section number + spacing
+{\MakeUppercase} % Uppercase section title
+
+% ==============================
+% Document Start
+% ==============================
 \begin{document}
-Hello, this is a test PDF.
+	
+	
+% ==============================
+% Fedlap
+% ==============================
+	% --- First Page ---
+	\thispagestyle{firstpage}
+	
+	\begin{flushleft}
+		{\footnotesize  
+			\textbf{
+				\makebox[6cm][s]{A NAH által NAH-1-1201/2019} \\
+				\vspace{-2mm} 
+				\makebox[6cm][s]{számon akkreditált vizsgálólaboratórium.}
+			}
+		}
+	\end{flushleft}
+	
+	\vfill
+	
+	\begin{center}
+		{\Huge \textbf{Vizsgálati Jegyzőkönyv}}
+	\end{center}
+	
+	\vfill
+	
+	\begin{center}
+		\large
+		\textbf{a} \\
+		\textbf{Air Quality Test Report}
+	\end{center}
+	
+	\vfill
+	
+	\begin{center}
+		\textbf{Témaszám:} PROJ-001
+	\end{center}    
+	
+	\vfill
+	
+	\begin{center}
+		\textbf{A Vizsgálati Jegyzőkönyv száma:} TR-001.
+	\end{center}
+	
+	\begin{center}
+		\textbf{A Vizsgálati Jegyzőkönyvet jóváhagyta:}
+	\end{center}    
+	
+	\vfill
+	
+	\begin{center}
+		\textbf{benonymous}\\
+		\textit{admin} \\
+	\end{center}    
+	
+	\vfill
+	
+	\begin{center}
+		2024-02-20
+	\end{center}    
+	
+	\vfill
+	
+	\begin{center}
+		\textbf{A Vizsgálati Jegyzőkönyv \pageref{LastPage} db számozott oldalt és \ref{totalappendices} db mellékletet tartalmaz.}
+	\end{center}    
+	
+	\begin{center}
+		{\scriptsize 
+			\textit{
+				Az ENCOTECH Kft. Laboratóriuma írásbeli engedélye nélkül a Vizsgálati Jegyzőkönyv csak teljes terjedelmében sokszorosítható. 
+				Jelen Vizsgálati Jegyzőkönyvben meghatározott eredmények csak a közölt mérési időszakokra vonatkoznak.
+		}}  
+	\end{center}
+	
+	% --- End of First Page ---
+	\newpage
+	
+% ==============================
+% Tartalomjegyzék
+% ==============================
+
+	% --- Second Page: Table of Contents ---
+	\tableofcontents
+	
+% ==============================
+% Vizsgálati jegyzőkönyv
+% ==============================
+
+	\newpage  % Move to third page
+	%	--- Apply default style for all next pages ---
+	\pagestyle{report}
+	
+	
+% ==============================
+% A VIZSGÁLAT CÉLJA
+% ==============================
+	% --- Third Page: Start of Sections ---
+	\section{A VIZSGÁLAT CÉLJA}
+		\begin{adjustwidth}{1cm}{0cm}
+		Evaluate air quality in factory
+		\end{adjustwidth}
+	
+	
+% ==============================
+% A VIZSGÁLATOT VÉGEZTE
+% ==============================
+	\section{A VIZSGÁLATOT VÉGEZTE}
+		\begin{adjustwidth}{1cm}{0cm}
+			\noindent
+			\textbf{ENCOTECH Környezetvédelmi Szolgáltató és Tanácsadó Kft.} \\
+			1089 Budapest, Bláthy Ottó u. 41.
+			
+			\vspace{1.0em} % Small space for better readability
+			
+			% Create a tabular structure to align names properly
+			\noindent
+			\begin{tabular}{ p{5.5cm} p{8cm} } 
+				\textit{\underline{A mintavételt végezte:}} & anonymous, manager \\ & benonymous, admin \\ 
+			\end{tabular}
+		\end{adjustwidth}
+	
+	
+% ==============================
+% A MEGBÍZÓ ADATAI
+% ==============================	
+	\section{A MEGBÍZÓ ADATAI}
+		\begin{adjustwidth}{1cm}{0cm}
+			
+			\vspace{0.5em} % Small spacing before the table
+			
+			\noindent
+			\renewcommand{\arraystretch}{1.4} % Adjust row height for better readability
+			
+			\begin{tabularx}{\textwidth}{ | p{4.5cm} | X | } % X column auto-adjusts
+				\hline
+				\textbf{A megbízó neve:} & \textbf{Global Engineering} \\ \hline
+				\textbf{A megbízó címe:} & 789 Industrial Road \\ \hline
+			\end{tabularx}
+			
+		\end{adjustwidth}
+		
+% ==============================
+% A TELEPHELY ADATAI
+% ==============================
+	\section{A TELEPHELY ADATAI}
+		\begin{adjustwidth}{1cm}{0cm}
+			\vspace{0.5em} % Small spacing before the table
+			
+			\noindent
+			\renewcommand{\arraystretch}{1.4} % Adjust row height for better readability
+			
+			
+			\begin{tabularx}{\textwidth}{ | p{4.5cm} | X | } % X column auto-adjusts
+				\hline
+				\textbf{A telephely neve:} & \textbf{Tech Solutions HQ} \\ \hline
+				\textbf{A telephely címe:} & 123 Tech Street \\ \hline
+			\end{tabularx}
+			
+			\vspace{0.5em} % Small spacing before the table
+			
+			\begin{tabular}{ p{5.5cm} p{8cm} } 
+				\textit{\underline{A telephely kapcsolattartója:}} & Global Engineering \\  & +1122334455
+			\end{tabular}
+			
+		\end{adjustwidth}
+	
+% ==============================
+% MINTAVÉTELI ÉS ÜZEMVITELI KÖRÜLMÉNYEK
+% ==============================
+
+	\newpage  % Move to third page
+	\section{MINTAVÉTELI ÉS ÜZEMVITELI KÖRÜLMÉNYEK}
+	\subsection{MÉRÉSI IDŐPONT}
+		\begin{adjustwidth}{1cm}{0cm}
+			\begin{tabular}{ p{5.5cm} p{4cm} p{5cm}}
+				\textit{\underline{Helyszíni mérések:}} & 2024. február 15. & 8-10 óra között \\& 2024. február 16. & 9-11 óra között \\
+			\end{tabular}
+			
+		\end{adjustwidth}
+	
+	
+	
+% ==============================
+% KÖRNYEZETI PARAMÉTEREK
+% ==============================
+
+	\subsection{KÖRNYEZETI PARAMÉTEREK}
+		\begin{adjustwidth}{1cm}{0cm}
+			A mérési időszakra vonatkozó környezeti paraméterek a következők voltak. \\
+			\begin{table}[h]
+				\centering
+				\renewcommand{\arraystretch}{1.5}
+				\begin{tabular}{|c|c|c|c|}
+					\hline
+					\textbf{Dátum} & \multicolumn{1}{c|}{\textbf{Hőmérséklet}} & \multicolumn{1}{c|}{\textbf{Páratartalom}} & \multicolumn{1}{c|}{\textbf{Légnyomás}} \\
+					& \textbf{[°C]} & \textbf{[\%]} & \textbf{[mbar]} \\
+					\hline
+					2024. február 15. & 23 & 45 & 1013 \\
+					\hline
+				\end{tabular}\label{tab:table}
+			\end{table}
+			
+			
+		\end{adjustwidth}
+	
+% ==============================
+% SZENNYEZŐ TECHNOLÓGIA
+% ==============================
+	\subsection{SZENNYEZŐ TECHNOLÓGIA}
+		\begin{adjustwidth}{1cm}{0cm}
+			A Robert Robert Bosch Bosch Automotive Steering Kft. maklári telephelyén elektromos kormányművek,
+			kormányművekhez fogaslécek és kormányanyák gyártását végzik. A vizsgált területek a
+			festősor környezetében találhatóak.
+		\end{adjustwidth}
+	
+% ==============================
+% SZENNYEZŐ TECHNOLÓGIA
+% ==============================
+	\subsection{MINTAVÉTELI KÖRÜLMÉNYEK, IDŐPONTOK}
+	\begin{adjustwidth}{1cm}{0cm}
+		A vizsgálatok ideje alatt a telephelyen folyamatos, normál üzemmenetnek megfelelő
+		munka folyt. Az üzemvitelt megzavaró körülményt nem tapasztaltunk. A mintavételek
+		ideje alatt 45 db kormánymű festését végezték óránként. A vizsgálatokat a megrendelő
+		által kijelölt, alábbi táblázatokban összefoglalt telepített pontokon hajtottuk végre.
+		
+	\end{adjustwidth}
+	\newpage  % Move to third page
+	\begin{center}
+		\textit{\underline{Átlagkoncentráció mintavétele}} % Underlined title
+		\begin{longtable}{|m{3.5cm}|m{2cm}|m{3.5cm}|m{2cm}|m{1cm}|m{1cm}|}
+			
+			\hline
+			\makecell{\textbf{Minta jele /} \\ \textit{Vizsgált szennyező}} & \makecell{Mintavétel \\ ideje} &\makecell{ Munkaterület} & \makecell{Mintavétel \\ jellege} & \makecell{Hőm. \\ °C} & \makecell{Párat. \\ \%} \\
+			\hline
+			
+			\endfirsthead
+			
+			\hline
+			\makecell{\textbf{Minta jele /} \\ \textit{Vizsgált szennyező}} & \makecell{Mintavétel \\ ideje} &\makecell{ Munkaterület} & \makecell{Mintavétel \\ jellege} & \makecell{Hőm. \\ °C} & \makecell{Párat. \\ \%} \\
+			\hline
+			\endhead
+			
+			\hline
+			%			\multicolumn{6}{|r|}{{a táblázat a következő oldalon folytatódik}} \\ \hline
+			\endfoot
+			
+			\hline
+			\endlastfoot
+			
+			\begin{minipage}{3.5cm} 
+				\centering \vspace{3pt} 
+				\textbf{DT-A-KA /} \\ \textit{Illékony szerves komponensek} \vspace{3pt} 
+			\end{minipage} &
+			\begin{minipage}{2cm} 
+				\centering 
+				2024.04.15 \\ 9\textsuperscript{41} - 13\textsuperscript{42}
+			\end{minipage} &
+			\begin{minipage}{3.5cm} 
+				\centering \vspace{3pt}  
+				Demaszkoló terület
+			\end{minipage} &
+			\begin{minipage}{2cm} \centering Telepített \end{minipage} &
+			\begin{minipage}{1cm} \centering 25,4 \end{minipage} &
+			\begin{minipage}{1cm} \centering 30,9 \end{minipage} \\
+			\hline
+			
+		\end{longtable}
+	\end{center}
+	
+	\newpage  
+	\begin{center}
+		\textit{\underline{Csúcskoncentráció mintavétele}} % Underlined title
+		\begin{longtable}{|m{3,5cm}|m{2cm}|m{3,5cm}|m{2cm}|m{1cm}|m{1cm}|}
+			
+			\hline
+			\makecell{\textbf{Minta jele /} \\ \textit{Vizsgált szennyező}} & \makecell{Mintavétel \\ ideje} &\makecell{ Munkaterület} & \makecell{Mintavétel \\ jellege} & \makecell{Hőm. \\ °C} & \makecell{Párat. \\ \%} \\
+			\hline
+			
+			\endfirsthead
+			
+			\hline
+			\makecell{\textbf{Minta jele /} \\ \textit{Vizsgált szennyező}} & \makecell{Mintavétel \\ ideje} &\makecell{ Munkaterület} & \makecell{Mintavétel \\ jellege} & \makecell{Hőm. \\ °C} & \makecell{Párat. \\ \%} \\
+			\hline
+			\endhead
+			
+			\hline
+			%			\multicolumn{6}{|r|}{{a táblázat a következő oldalon folytatódik}} \\ \hline
+			\endfoot
+			
+			\hline
+			\endlastfoot
+			
+			
+			
+			\begin{minipage}{3.5cm} 
+				\centering \vspace{3pt} 
+				\textbf{DT-A-KA /} \\ \textit{Illékony szerves komponensek} \vspace{3pt} 
+			\end{minipage} &
+			\begin{minipage}{2cm} 
+				\centering 
+				2024.04.15 \\ 9\textsuperscript{41} - 13\textsuperscript{42}
+			\end{minipage} &
+			\begin{minipage}{3.5cm} 
+				\centering \vspace{3pt}  
+				Demaszkoló terület
+			\end{minipage} &
+			\begin{minipage}{2cm} \centering Telepített \end{minipage} &
+			\begin{minipage}{1cm} \centering 25,4 \end{minipage} &
+			\begin{minipage}{1cm} \centering 30,9 \end{minipage} \\
+			\hline
+
+			
+		\end{longtable}
+	\end{center}
+	
+	
+% ==============================
+% FELHASZNÁLT ESZKÖZÖK, MINTAVÉTELI ÉS MÉRÉSI MÓDSZEREK
+% ==============================
+	\newpage
+	\section{FELHASZNÁLT ESZKÖZÖK, MINTAVÉTELI ÉS MÉRÉSI MÓDSZEREK}
+	\subsection{A KÖRNYEZETI LEVEGŐ ÁLLAPOTJELZŐINEK MEGHATÁROZÁSA}
+	
+		\begin{adjustwidth}{1cm}{0cm}
+			A \textbf{\textit{hőmérséklet}} és a \textbf{\textit{nedvességtartalom}} meghatározását TESTO 410-2 típusú digitális
+			áramlás, hőmérséklet és relatív páratartalom mérővel végeztük. A mérőműszer
+			jellemzői:
+			
+			\vspace{1.0em} % Small space for better readability
+			\noindent
+			\centering 
+			\begin{tabular}{ p{5.5cm} p{8cm} } 
+				Gyártó: & TESTOTHERM \\
+				Méréstartomány: & 0,4 ... 20 m/s; 5 ... 95\% relatív páratartalom;
+				-10 ... +50 °C \\
+				Felbontás: & 0,1 m/s; 0,1 \%; 0,1°C \\
+				Pontosság: & ± 0,2 m/s; ± 2,5 \%; ± 0,5°C \\
+			\end{tabular}
+			
+			
+		\end{adjustwidth}
+	
+		\begin{adjustwidth}{1cm}{0cm}
+			\vspace{1.0em} % Small space for better readability
+			A \textbf{\textit{légköri nyomás}} méréséhez TESTO 511 típusú barométert alkalmaztunk. A mérőműszer jellemzői:
+			
+			\vspace{1.0em} % Small space for better readability
+			\noindent
+			\centering 
+			\begin{tabular}{ p{5.5cm} p{8cm} } 
+				Gyártó: & TESTOTHERM \\
+				Méréstartomány: & 300 .. 1200 mbar \\
+				Felbontás: & 0,1 mbar \\
+			\end{tabular}
+			
+		\end{adjustwidth}
+	
+	\subsection{SZENNYEZŐANYAG KONCENTRÁCIÓ MEGHATÁROZÁSA}
+	
+	\begin{adjustwidth}{1cm}{0cm}
+		\vspace{1.0em} % Small space for better readability
+		
+		A szennyező anyagok koncentrációjának meghatározásához SKC típusú személyi mintavevő szivattyút használtunk, a térfogatáramot Drycal típusú elektronikus áramlásmérő készülékkel állítottuk be. A mintavételeket telepített mintavételi körökkel hajtottuk végre. A levegő elszívása kb. 1,5 m magasságból történt.
+		
+		\vspace{1.0em}
+		
+		A szálló por (respirábilis- és belélegezhető por) és a fémtartalom (KOH, NaOH, Ni, Mn, Co, Zn) koncentrációjának meghatározásához SKC típusú személyi mintavevő szivattyút használtunk. A mintavételt az MDHS 14/4:2014 sz. módszer előírásai alapján végeztük. A mintavételhez SKC gyártmányú, IOM típusú személyi por mintavevő készülékben elhelyezett hab- és síkszűrőt használtunk.
+		
+		\vspace{1.0em}
+		
+		A szálló por mennyiségének meghatározása az ENCOTECH Kft. akkreditált laboratóriumában történt. A tömegméréshez METTLER TOLEDO MX5 típusú mikromérleget használtunk.
+		
+		\vspace{1.0em}
+		
+		Az illékony szerves komponensek koncentrációjának meghatározása érdekében a mintavételhez az MSZ 21862-22:1982 sz. szabvány, valamint az MDHS 70:1993 sz. mérési eljárás előírásainak megfelelően, adszorbenssel töltött mintavételi csöveket alkalmaztunk.
+		
+		\vspace{1.0em}
+		
+		A fluoridok és foszforsav expozíció meghatározásához a mintavételt az MDHS 70:1993 sz. módszer szerint hajtottuk végre, az OSHA ID-165SG:1985 sz. szabvány figyelembe vételével. A mintavételi láncba adszorbennsel töltött SKC mintavételi csövet iktattunk.
+		
+		\vspace{1.0em}
+		
+		A minták egyéb szennyező anyag tartalmának meghatározását a BÁLINT ANALITIKA Kft. akkreditált laboratóriumában végezték. A laboratóriumi vizsgálati jegyzőkönyvet 1. sz. mellékletként csatoljuk.
+		
+		\vspace{1.0em}
+		
+		A szén-monoxid koncentráció meghatározása BW Gas Alert Micro Clip XL műszerhez kapcsolódó gázmérő szondával (CO: elektrokémiai) történt az MSZ EN 45544-4:2016 sz. szabvány figyelembevételével.
+		
+	\end{adjustwidth}
+	
+	
+% ==============================
+% A VIZSGÁLAT SORÁN ALKALMAZOTT SZABVÁNYOK, ELJÁRÁSOK
+% ==============================
+	\newpage
+	\section{A VIZSGÁLAT SORÁN ALKALMAZOTT SZABVÁNYOK, ELJÁRÁSOK}
+	
+		\renewcommand{\arraystretch}{1.1} % Adjust row height for better readability
+		\footnotesize % Decrease font size by one scale
+		
+		\begin{longtable}{|p{5cm}|p{10cm}|}
+			\hline
+			\multicolumn{2}{|c|}{\textbf{Mintavétel, helyszíni vizsgálatok}} \\ 
+			\hline
+			\endfirsthead
+			
+			\multicolumn{2}{|c|}{\textbf{Mintavétel, helyszíni vizsgálatok}} \\ 
+			\hline
+			\endhead
+			
+			\endfoot
+			
+			\hline
+			\endlastfoot
+			
+			MSZ EN 689:2018+AC:2019 & Munkahelyi levegő. Útmutató az inhalatív vegyianyag-expozíció becslésére a határértékekkel való összehasonlításhoz és mérési stratégiához. \\ 
+			\hline
+			MSZ EN 482:2012+A1:2016 (visszavont szabvány)* & A vegyi anyagok mérési eljárásai teljesítőképességének általános követelményei. \\ 
+			\hline
+			MSZ 21452-1:1975 & A levegő állapotjelzőinek meghatározása. Nedvességtartalom mérése. \\ 
+			\hline
+			MSZ 21452-3:1975 & A levegő állapotjelzőinek meghatározása. Hőmérséklet mérése. \\ 
+			\hline
+			MSZ ISO 8756:1995 & Levegőminőség. A hőmérséklet-, a légnyomás- és a légnedvességi adatok figyelembevétele. \\ 
+			\hline
+			MDHS 14/4:2014 & Respirábilis, torakális és belélegezhető por mintavételének és gravimetriás elemzésének általános eljárásai. \\ 
+			\hline
+			MSZ 21862-22:1982 & Munkahelyi gázállapotú légszennyezettség vizsgálata. Gázkromatográfiás mintavételi és vizsgálati általános előírásai. \\ 
+			\hline
+			MDHS 70:1993 & Mintavétel illékony szerves anyagok meghatározásához. \\ 
+			\hline
+			OSHA ID-165SG:1985 & Mintavétel szervetlen savak meghatározásához. \\ 
+			\hline
+			MSZ EN ISO 10882-2:2001 & Egészségvédelem és biztonság a hegesztés és a rokon eljárások területén. A szálló por és a gázok mintavétele a hegesztő légzési zónájában. 2. rész: A gázok mintavétele. \\ 
+			\hline
+			MSZ EN 45544-4:2016 & Szervetlen gázok mérése folyamatos gázelemző készülékkel. \\ 
+
+		\end{longtable}
+		
+		\begin{longtable}{|p{5cm}|p{10cm}|}
+			\hline
+			\multicolumn{2}{|c|}{\textbf{Szennyezőanyag-tartalom meghatározása - ENCOTECH Kft.}} \\ 
+			\hline
+			\endfirsthead
+			
+			\hline
+			\multicolumn{2}{|c|}{\textbf{Szennyezőanyag-tartalom meghatározása - ENCOTECH Kft.}} \\ 
+			\hline
+			\endhead
+			
+			\hline
+			\endfoot
+			
+			MDHS 14/4:2014 & Respirábilis, torakális és belélegezhető por mintavételének és gravimetriás elemzésének általános eljárásai. \\ 
+			
+		\end{longtable}
+		
+		\begin{longtable}{|p{5cm}|p{10cm}|}
+			\hline
+			\multicolumn{2}{|c|}{\textbf{Szennyezőanyag-tartalom meghatározása - BÁLINT ANALITIKA Kft.}} \\ 
+			\hline
+			\endfirsthead
+			
+			\hline
+			\multicolumn{2}{|c|}{\textbf{Szennyezőanyag-tartalom meghatározása - BÁLINT ANALITIKA Kft.}} \\ 
+
+			\hline
+			\endhead
+			
+			\hline
+			\endfoot
+			
+			ISO 16200-1:2001 & Illékony szerves komponensek meghatározása. \\ 
+			\hline
+			MSZ 448-18:2009 & Oldott orto-foszfát tartalom meghatározása. \\ 
+			\hline
+			MSZ 21862-9:1981 (visszavont szabvány)* & HF tartalom meghatározása. \\ 
+			\hline
+			EPA IO-3.5:1999 & Mintaelőkészítés elemek meghatározásához. \\ 
+			\hline
+			EPA 6002B:2014 & Elemtartalom meghatározása (ICP-MS). \\ 
+		\end{longtable}
+
+
+		\parbox{\textwidth}{\raggedright \footnotesize 
+			* Magyar Szabványügyi Testület által visszavont szabvány, amelyet a Nemzeti Akkreditáló Hatóság továbbra is alkalmazható módszernek tekint.
+		}
+	
+% ==============================
+% VIZSGÁLATI EREDMÉNYEK
+% ==============================
+	\newpage
+	\section{VIZSGÁLATI EREDMÉNYEK}
+		\begin{adjustwidth}{1cm}{0cm}
+			\textit{A mérési eredmények a munkahelyi légtérnek a vizsgálat ideje alatt érvényes jellemzőire vonatkoznak.}
+		\end{adjustwidth}
+
+	\subsection{ÁTLAGKONCENTRÁCIÓ MINTAVÉTELE}
+	
+		\begin{center}
+			\begin{longtable}{|m{2.5cm}|m{5cm}|m{3cm}|m{2cm}|m{2cm}|}
+				
+				\hline
+				\makecell{\textbf{Minta jele}} & \makecell{Szennyezőanyag} &\makecell{Leválasztott \\ mennyiség \\ } & \makecell{Minta  \\ térfogat \\ } & \makecell{Koncentráció \\ mg/m3} \\
+				\hline
+				
+				\endfirsthead
+				
+				\hline
+				\makecell{\textbf{Minta jele}} & \makecell{Szennyezőanyag} &\makecell{Leválasztott \\ mennyiség \\ } & \makecell{Minta  \\ térfogat \\ } & \makecell{Koncentráció \\ mg/m3} \\
+				\hline
+				\endhead
+				
+				\hline
+				%			\multicolumn{6}{|r|}{{a táblázat a következő oldalon folytatódik}} \\ \hline
+				\endfoot
+				
+				\hline
+				\endlastfoot
+				
+				
+				
+				\begin{minipage}{2.5cm} 
+					\centering \vspace{3pt} 
+					\textbf{DT-A-KA} 
+					\vspace{3pt} 
+				\end{minipage} &
+				\begin{minipage}{5cm} 
+					\centering 
+					Kálium-hidroxid
+				\end{minipage} &
+				\begin{minipage}{3cm} 
+					\centering \vspace{3pt}  
+					43,1
+				\end{minipage} &
+				\begin{minipage}{2cm} \centering 0,4428 \end{minipage} &
+				\begin{minipage}{2cm} \centering 0,1 \end{minipage} \\
+				\hline
+				
+			\end{longtable}
+			\vspace{-\baselineskip}
+			\parbox{\textwidth}{\raggedright \footnotesize 
+				*20 °C-ra és 101,3 kPa légköri nyomásra számított koncentráció
+			}
+			
+			
+		\end{center}
+		
+		\subsection{CSÚCSKONCENTRÁCIÓ MINTAVÉTELE}
+		
+		\begin{center}
+			\begin{longtable}{|m{2.5cm}|m{5cm}|m{3cm}|m{2cm}|m{2cm}|}
+				
+				\hline
+				\makecell{\textbf{Minta jele}} & \makecell{Szennyezőanyag} &\makecell{Leválasztott \\ mennyiség \\ } & \makecell{Minta  \\ térfogat \\ } & \makecell{Koncentráció \\ mg/m3} \\
+				\hline
+				
+				\endfirsthead
+				
+				\hline
+				\makecell{\textbf{Minta jele}} & \makecell{Szennyezőanyag} &\makecell{Leválasztott \\ mennyiség \\ } & \makecell{Minta  \\ térfogat \\ } & \makecell{Koncentráció \\ mg/m3} \\
+				\hline
+				\endhead
+				
+				\hline
+				%			\multicolumn{6}{|r|}{{a táblázat a következő oldalon folytatódik}} \\ \hline
+				\endfoot
+				
+				\hline
+				\endlastfoot
+
+				\begin{minipage}{2.5cm} 
+					\centering \vspace{3pt} 
+					\textbf{DT-A-KA} 
+					\vspace{3pt} 
+				\end{minipage} &
+				\begin{minipage}{5cm} 
+					\centering 
+					Kálium-hidroxid
+				\end{minipage} &
+				\begin{minipage}{3cm} 
+					\centering \vspace{3pt}  
+					43,1
+				\end{minipage} &
+				\begin{minipage}{2cm} \centering 0,4428 \end{minipage} &
+				\begin{minipage}{2cm} \centering 0,1 \end{minipage} \\
+				\hline
+
+				
+			\end{longtable}
+			\vspace{-\baselineskip}
+			\parbox{\textwidth}{\raggedright \footnotesize 
+				*20 °C-ra és 101,3 kPa légköri nyomásra számított koncentráció
+			}
+			
+
+		\end{center}
+		
+		\vspace{1em} % Adjust spacing if needed
+		
+		\noindent\textbf{Budapest, 2024. május 17.} % Date aligned to the left
+		
+		\vspace{1em} % Adjust vertical space
+		
+		\begin{center}
+			\begin{tabular}{p{7cm} c m{7cm}} % Column widths and alignment
+				\textbf{A Vizsgálati Jegyzőkönyvet készítette:} & & 
+				\begin{center} 
+					\textbf{Poremba Marcell Áron} \\ 
+					vizsgáló mérnök
+				\end{center} \\[6em] % Increased space for signature
+				
+				\textbf{A Vizsgálati Jegyzőkönyvet ellenőrizte:} & & 
+				\begin{center} 
+					\textbf{Iga Benedek} \\ 
+					vezető mérnök
+				\end{center} \\
+			\end{tabular}
+		\end{center}
+		
+		\vspace{1em}
+		
+		\begin{center}
+			\textbf{-- Vizsgálati Jegyzőkönyv vége --}
+		\end{center}
+
+	
+	% --- Appendices Section (MELLÉKLETEK) ---
+	\newpage
+	\appendix
+	\section{MELLÉKLETEK}  % This will appear in the Table of Contents
+	
+	\subsection{1. Melléklet - Mérési adatok}  
+	A mérési adatok részletezése.
+	
+	\subsection{2. Melléklet - Egyéb adatok}  
+	Egyéb adatok részletezése.
+	
+	
 \end{document}
