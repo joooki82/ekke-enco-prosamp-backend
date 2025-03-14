@@ -9,6 +9,7 @@ import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.mapper.TestReportMapper;
 import hu.jakab.ekkeencoprosampbackend.model.*;
 import hu.jakab.ekkeencoprosampbackend.repository.*;
+import hu.jakab.ekkeencoprosampbackend.service.utils.LaTeXReportService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.io.IOException;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,10 +38,10 @@ public class TestReportService {
     private final TestReportSamplerRepository testReportSamplerRepository;
     private final UserRepository userRepository;
     private final StandardRepository standardRepository;
-
+    private final LaTeXReportService latexReportService;
 
     @Autowired
-    public TestReportService(TestReportRepository repository, TestReportMapper mapper, ProjectRepository projectRepository, LocationRepository locationRepository, SamplingRecordDatM200Repository samplingRecordRepository, TestReportStandardRepository testReportStandardRepository, TestReportSamplerRepository testReportSamplerRepository, UserRepository userRepository, StandardRepository standardRepository) {
+    public TestReportService(TestReportRepository repository, TestReportMapper mapper, ProjectRepository projectRepository, LocationRepository locationRepository, SamplingRecordDatM200Repository samplingRecordRepository, TestReportStandardRepository testReportStandardRepository, TestReportSamplerRepository testReportSamplerRepository, UserRepository userRepository, StandardRepository standardRepository, LaTeXReportService latexReportService) {
         this.repository = repository;
         this.mapper = mapper;
         this.projectRepository = projectRepository;
@@ -49,6 +51,7 @@ public class TestReportService {
         this.testReportSamplerRepository = testReportSamplerRepository;
         this.userRepository = userRepository;
         this.standardRepository = standardRepository;
+        this.latexReportService = latexReportService;
     }
 
     public List<TestReportResponseDTO> getAll() {
@@ -220,4 +223,125 @@ public class TestReportService {
         repository.deleteById(id);
         logger.info("Successfully deleted TestReport with ID: {}", id);
     }
+
+    public byte[] generateReport(Long id) {
+        // Fetch report data from the database
+        TestReport testReport = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("TestReport with ID " + id + " not found"));
+
+        // Prepare the data map for LaTeX placeholders
+        Map<String, String> reportData = new HashMap<>();
+        reportData.put("companyName", testReport.getSamplingRecord().getCompany().getName());
+        reportData.put("city", testReport.getSamplingRecord().getSiteLocation().getCity());
+        reportData.put("aimOfTest", testReport.getAimOfTest());
+        reportData.put("reportNumber", testReport.getReportNumber());
+        reportData.put("title", testReport.getTitle());
+        reportData.put("projectNumber", testReport.getProject().getProjectNumber());
+        reportData.put("approvedBy", testReport.getApprovedBy().getUsername());
+        reportData.put("approvedByRole", testReport.getApprovedBy().getRole());
+        reportData.put("issueDate", testReport.getIssueDate().toString());
+
+        String samplersString = generateSamplersList(testReport.getTestReportSamplers());
+        reportData.put("samplers", samplersString);
+
+        reportData.put("clientName", testReport.getProject().getClient().getName());
+        reportData.put("clientAddress", testReport.getProject().getClient().getAddress());
+
+        reportData.put("locationName", testReport.getLocation().getName());
+        reportData.put("locationAddress", testReport.getLocation().getAddress());
+
+        Client contact = testReport.getProject().getClient();
+        String clientContactString = generateClientContact(contact);
+        reportData.put("clientContact", clientContactString);
+
+        String samplingSchedule = generateSamplingSchedule(testReport);
+        reportData.put("samplingSchedule", samplingSchedule);
+
+        String samplingDate = formatDateInHungarian(testReport.getSamplingRecord().getSamplingDate().toLocalDate());
+        reportData.put("samplingDate", samplingDate);
+        reportData.put("temperature", String.valueOf(testReport.getSamplingRecord().getTemperature().setScale(0, RoundingMode.HALF_UP).intValue()));
+        reportData.put("humidity", String.valueOf(testReport.getSamplingRecord().getHumidity().setScale(0, RoundingMode.HALF_UP).intValue()));
+        reportData.put("pressure", String.valueOf(testReport.getSamplingRecord().getPressure1().setScale(0, RoundingMode.HALF_UP).intValue()));
+        reportData.put("technology", testReport.getTechnology());
+        reportData.put("samplingConditions", testReport.getSamplingConditionsDates());
+
+
+        // Generate the LaTeX-based PDF and return byte array
+        try {
+            return latexReportService.generatePdfReport(reportData);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("Failed to generate the report", e);
+        }
+    }
+
+    private String generateSamplersList(List<TestReportSampler> samplers) {
+        StringBuilder samplersTable = new StringBuilder(); // Create new instance every time the method is invoked
+
+        for (TestReportSampler sampler : samplers) {
+            samplersTable.append("& ")
+                    .append(sampler.getUser().getUsername())
+                    .append(", ")
+                    .append(sampler.getUser().getRole())
+                    .append(" \\\\ ");
+        }
+
+        return samplersTable.toString(); // Convert to a string before returning
+    }
+
+    private String generateClientContact(Client client) {
+        if (client == null) {
+            return "";
+        }
+        return "& " + client.getName() + " \\\\  & " + client.getPhone();
+    }
+
+    public String generateSamplingSchedule(TestReport testReport) {
+        if (testReport == null || testReport.getSamplingRecord() == null) {
+            return "No sampling record available.";
+        }
+
+        List<Sample> samples = testReport.getSamplingRecord().getSamples();
+        if (samples.isEmpty()) {
+            return "No samples recorded.";
+        }
+
+        // Group samples by the date of sampling
+        Map<LocalDate, List<Sample>> groupedByDate = samples.stream()
+                .collect(Collectors.groupingBy(sample -> sample.getStartTime().toLocalDate()));
+
+        // Generate formatted schedule
+        StringBuilder schedule = new StringBuilder();
+
+        groupedByDate.forEach((date, sampleList) -> {
+            int minHour = sampleList.stream()
+                    .mapToInt(sample -> sample.getStartTime().getHour())
+                    .min().orElse(0);
+
+            int maxHour = sampleList.stream()
+                    .mapToInt(sample -> sample.getEndTime().getHour())
+                    .max().orElse(0);
+
+            // Format date in Hungarian style (e.g., "2024. április 3.")
+            String formattedDate = formatDateInHungarian(date);
+
+            schedule.append("& ")
+                    .append(formattedDate)
+                    .append(" & ")
+                    .append(minHour)
+                    .append("-")
+                    .append(maxHour)
+                    .append(" óra között \\\\");
+        });
+
+        return schedule.toString().trim();
+    }
+
+    private String formatDateInHungarian(LocalDate date) {
+        return date.getYear() + ". " +
+                date.getMonth().getDisplayName(TextStyle.FULL, new Locale("hu")) + " " +
+                date.getDayOfMonth() + ".";
+    }
+
+
+
 }
