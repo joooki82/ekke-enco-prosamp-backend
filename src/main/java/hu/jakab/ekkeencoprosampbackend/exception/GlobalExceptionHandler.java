@@ -160,4 +160,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    @ExceptionHandler(CustomFileNotFoundException.class)
+    public ResponseEntity<String> handleCustomFileNotFoundException(CustomFileNotFoundException e) {
+        logger.error("File Not Found: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+
+
 }
