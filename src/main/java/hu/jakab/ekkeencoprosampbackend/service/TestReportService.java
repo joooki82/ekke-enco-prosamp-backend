@@ -9,7 +9,8 @@ import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.mapper.TestReportMapper;
 import hu.jakab.ekkeencoprosampbackend.model.*;
 import hu.jakab.ekkeencoprosampbackend.repository.*;
-import hu.jakab.ekkeencoprosampbackend.service.utils.LaTeXReportService;
+import hu.jakab.ekkeencoprosampbackend.service.laTex.LaTeXReportService;
+import hu.jakab.ekkeencoprosampbackend.service.laTex.LatexContentBuilder;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +19,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -41,9 +37,11 @@ public class TestReportService {
     private final UserRepository userRepository;
     private final StandardRepository standardRepository;
     private final LaTeXReportService latexReportService;
+    private final LatexContentBuilder latexContentBuilder;
+
 
     @Autowired
-    public TestReportService(TestReportRepository repository, TestReportMapper mapper, ProjectRepository projectRepository, LocationRepository locationRepository, SamplingRecordDatM200Repository samplingRecordRepository, TestReportStandardRepository testReportStandardRepository, TestReportSamplerRepository testReportSamplerRepository, UserRepository userRepository, StandardRepository standardRepository, LaTeXReportService latexReportService) {
+    public TestReportService(TestReportRepository repository, TestReportMapper mapper, ProjectRepository projectRepository, LocationRepository locationRepository, SamplingRecordDatM200Repository samplingRecordRepository, TestReportStandardRepository testReportStandardRepository, TestReportSamplerRepository testReportSamplerRepository, UserRepository userRepository, StandardRepository standardRepository, LaTeXReportService latexReportService, LatexContentBuilder latexContentBuilder) {
         this.repository = repository;
         this.mapper = mapper;
         this.projectRepository = projectRepository;
@@ -54,6 +52,7 @@ public class TestReportService {
         this.userRepository = userRepository;
         this.standardRepository = standardRepository;
         this.latexReportService = latexReportService;
+        this.latexContentBuilder = latexContentBuilder;
     }
 
     public List<TestReportResponseDTO> getAll() {
@@ -243,7 +242,7 @@ public class TestReportService {
         reportData.put("approvedByRole", testReport.getApprovedBy().getRole());
         reportData.put("issueDate", testReport.getIssueDate().toString());
 
-        String samplersString = generateSamplersList(testReport.getTestReportSamplers());
+        String samplersString = latexContentBuilder.generateSamplersList(testReport.getTestReportSamplers());
         reportData.put("samplers", samplersString);
 
         reportData.put("clientName", testReport.getProject().getClient().getName());
@@ -253,17 +252,17 @@ public class TestReportService {
         reportData.put("locationAddress", testReport.getLocation().getAddress());
 
         Client contact = testReport.getProject().getClient();
-        String clientContactString = generateClientContact(contact);
+        String clientContactString = latexContentBuilder.generateClientContact(contact);
         reportData.put("clientContact", clientContactString);
 
-        String samplingSchedule = generateSamplingSchedule(testReport);
+        String samplingSchedule = latexContentBuilder.generateSamplingSchedule(testReport);
         reportData.put("samplingSchedule", samplingSchedule);
 
-        String samplingDate = formatDateInHungarian(testReport.getSamplingRecord().getSamplingDate().toLocalDate());
+        String samplingDate = latexContentBuilder.formatDateInHungarian(testReport.getSamplingRecord().getSamplingDate().toLocalDate());
         reportData.put("samplingDate", samplingDate);
-        reportData.put("temperature", formatBigDecimal(testReport.getSamplingRecord().getTemperature(), 0));
-        reportData.put("humidity", formatBigDecimal(testReport.getSamplingRecord().getHumidity(), 0));
-        reportData.put("pressure", formatBigDecimal(testReport.getSamplingRecord().getPressure1(), 0));
+        reportData.put("temperature", latexContentBuilder.formatBigDecimal(testReport.getSamplingRecord().getTemperature(), 0));
+        reportData.put("humidity", latexContentBuilder.formatBigDecimal(testReport.getSamplingRecord().getHumidity(), 0));
+        reportData.put("pressure", latexContentBuilder.formatBigDecimal(testReport.getSamplingRecord().getPressure1(), 0));
         reportData.put("technology", testReport.getTechnology());
         reportData.put("samplingConditions", testReport.getSamplingConditionsDates());
 
@@ -273,14 +272,16 @@ public class TestReportService {
                 .sorted(Comparator.comparing(Sample::getLocation)
                         .thenComparing(Sample::getSampleIdentifier)) // Sort by Location, then by Identifier
                 .toList();
-        reportData.put("sampleDetailsAverage", generateSampleDetails(samplesAverage));
+        reportData.put("sampleDetailsAverage", latexContentBuilder.generateSampleDetails(samplesAverage));
 
         List<Sample> samplesPeak = samples.stream()
                 .filter(sample -> "CK".equals(sample.getSampleType()))
                 .sorted(Comparator.comparing(Sample::getLocation)
                         .thenComparing(Sample::getSampleIdentifier)) // Sort by Location, then by Identifier
                 .toList();
-        reportData.put("sampleDetailsPeak", generateSampleDetails(samplesPeak));
+        reportData.put("sampleDetailsPeak", latexContentBuilder.generateSampleDetails(samplesPeak));
+
+        reportData.put("equipmentList", latexContentBuilder.generateEquipmentList(testReport));
 
 
         // Generate the LaTeX-based PDF and return byte array
@@ -291,163 +292,6 @@ public class TestReportService {
         }
     }
 
-    private String generateSamplersList(List<TestReportSampler> samplers) {
-        StringBuilder samplersTable = new StringBuilder(); // Create new instance every time the method is invoked
-
-        for (TestReportSampler sampler : samplers) {
-            samplersTable.append("& ")
-                    .append(sampler.getUser().getUsername())
-                    .append(", ")
-                    .append(sampler.getUser().getRole())
-                    .append(" \\\\ ");
-        }
-
-        return samplersTable.toString(); // Convert to a string before returning
-    }
-
-    private String generateClientContact(Client client) {
-        if (client == null) {
-            return "";
-        }
-        return "& " + client.getName() + " \\\\  & " + client.getPhone();
-    }
-
-    public String generateSamplingSchedule(TestReport testReport) {
-        if (testReport == null || testReport.getSamplingRecord() == null) {
-            return "No sampling record available.";
-        }
-
-        List<Sample> samples = testReport.getSamplingRecord().getSamples();
-        if (samples.isEmpty()) {
-            return "No samples recorded.";
-        }
-
-        // Group samples by the date of sampling
-        Map<LocalDate, List<Sample>> groupedByDate = samples.stream()
-                .collect(Collectors.groupingBy(sample -> sample.getStartTime().toLocalDate()));
-
-        // Generate formatted schedule
-        StringBuilder schedule = new StringBuilder();
-
-        groupedByDate.forEach((date, sampleList) -> {
-            int minHour = sampleList.stream()
-                    .mapToInt(sample -> sample.getStartTime().getHour())
-                    .min().orElse(0);
-
-            int maxHour = sampleList.stream()
-                    .mapToInt(sample -> sample.getEndTime().getHour())
-                    .max().orElse(0);
-
-            // Format date in Hungarian style (e.g., "2024. április 3.")
-            String formattedDate = formatDateInHungarian(date);
-
-            schedule.append("& ")
-                    .append(formattedDate)
-                    .append(" & ")
-                    .append(minHour)
-                    .append("-")
-                    .append(maxHour)
-                    .append(" óra között \\\\");
-        });
-
-        return schedule.toString().trim();
-    }
-
-    private String formatDateInHungarian(LocalDate date) {
-        return date.getYear() + ". " +
-                date.getMonth().getDisplayName(TextStyle.FULL, new Locale("hu")) + " " +
-                date.getDayOfMonth() + ".";
-    }
-
-    public String generateSampleDetails(List<Sample> samples) {
-        if (samples == null || samples.isEmpty()) {
-            return "No sample data available.";
-
-        }
-        StringBuilder sampleDetails = new StringBuilder();
-
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.ENGLISH);
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("H:mm"); // Fixed pattern
-
-        for (Sample sample : samples) {
-            // Extract and format data
-            String formattedDate = sample.getStartTime().format(dateFormatter);
-            String formattedStartTime = sample.getStartTime().format(timeFormatter)
-                    .replace(":", "\\textsuperscript{") + "}"; // Fix LaTeX superscript
-            String formattedEndTime = sample.getEndTime().format(timeFormatter)
-                    .replace(":", "\\textsuperscript{") + "}";
-
-            // Collect contaminant groups into a comma-separated string
-            String contaminantGroups = sample.getSampleContaminants().stream()
-                    .map(SampleContaminant::getContaminant)
-                    .map(Contaminant::getContaminantGroup)
-                    .distinct()
-                    .map(ContaminantGroup::getName)
-                    .collect(Collectors.joining(", "));
-
-
-            sampleDetails.append("\\begin{minipage}{3.5cm} ")
-                    .append("\\centering \\vspace{3pt} ")
-                    .append("\\textbf{"+ sample.getSampleIdentifier() + " /} \\\\ \\textit{" +contaminantGroups+ "} \\vspace{3pt}")
-                    .append("\\end{minipage} & ")
-                    .append("\\begin{minipage}{2cm} ")
-                    .append("\\centering ")
-                    .append( formattedDate + "\\\\ " + formattedStartTime + " - " + formattedEndTime)
-                    .append("\\end{minipage} & ")
-                    .append("\\begin{minipage}{3.5cm} ")
-                    .append("\\centering \\vspace{3pt}  ")
-                    .append(sample.getLocation())
-                    .append("\\end{minipage} & ")
-                    .append("\\begin{minipage}{2cm} \\centering "+ (sample.getEmployeeName() != null ? sample.getEmployeeName() : "-") +" \\end{minipage} & ")
-                    .append("\\begin{minipage}{1cm} \\centering "+ (sample.getTemperature() != null ? sample.getTemperature() : "-") +" \\end{minipage} & ")
-                    .append("\\begin{minipage}{1cm} \\centering "+ (sample.getHumidity() != null ? sample.getHumidity() : "-") +" \\end{minipage} \\\\ ")
-                    .append("\\hline");
-
-        }
-
-        return sampleDetails.toString();
-    }
-
-    private String formatBigDecimal(BigDecimal value, int scale) {
-        if (value == null) return "-"; // Return placeholder if value is missing
-        return value.setScale(scale, RoundingMode.HALF_UP).toString(); // Round to 1 decimal place
-    }
-
-    public String generateEquipmentList(SamplingRecordDatM200 samplingReport) {
-
-        List<Equipment> equipments = samplingReport.getEquipmentList();
-
-        if (equipments.isEmpty()) {
-            return "No equipment available.";
-        }
-
-        StringBuilder latexBuilder = new StringBuilder();
-
-        latexBuilder.append("\\section*{Equipment List}\n")
-                .append("\\vspace{1.0em} % Small space for better readability\n")
-                .append("\\noindent\n")
-                .append("\\centering\n")
-                .append("\\begin{tabular}{ p{5.5cm} p{8cm} } \n")
-                .append("\\hline\n")
-                .append("\\textbf{Name} & \\textbf{Manufacturer} & \\textbf{Identifier} & \\textbf{Type} & \\textbf{Measuring Range} & \\textbf{Resolution} & \\textbf{Accuracy} \\\\\n")
-                .append("\\hline\n");
-
-        // Append each equipment data
-        for (Equipment equipment : equipments) {
-            latexBuilder.append(equipment.getName()).append(" & ")
-                    .append(equipment.getManufacturer() != null ? equipment.getManufacturer() : "N/A").append(" & ")
-                    .append(equipment.getIdentifier()).append(" & ")
-                    .append(equipment.getType() != null ? equipment.getType() : "N/A").append(" & ")
-                    .append(equipment.getMeasuringRange() != null ? equipment.getMeasuringRange() : "N/A").append(" & ")
-                    .append(equipment.getResolution() != null ? equipment.getResolution() : "N/A").append(" & ")
-                    .append(equipment.getAccuracy() != null ? equipment.getAccuracy() : "N/A").append(" \\\\\n");
-        }
-
-        latexBuilder.append("\\hline\n")
-                .append("\\end{tabular}\n");
-
-        return latexBuilder.toString();
-    }
 
 
 }

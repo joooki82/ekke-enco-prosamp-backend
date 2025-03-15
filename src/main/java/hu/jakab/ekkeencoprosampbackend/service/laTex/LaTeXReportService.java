@@ -1,4 +1,4 @@
-package hu.jakab.ekkeencoprosampbackend.service.utils;
+package hu.jakab.ekkeencoprosampbackend.service.laTex;
 
 import java.io.*;
 import java.nio.file.*;

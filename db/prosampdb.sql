@@ -721,7 +721,17 @@ VALUES ('PROJ-001', 1, 'Air Quality Testing', '2024-01-01', '2024-12-31', 'ONGOI
 -- Insert Equipments
 INSERT INTO equipments (name, identifier, description, manufacturer, type, serial_number, measuring_range, resolution,
                         accuracy, calibration_date, next_calibration_date, created_at, updated_at)
-VALUES ('Air Quality Monitor', 'AQM-001', 'Detects air pollutants', 'EnviroTech', 'Air Monitoring', 'SN-AQM-1001',
+VALUES ('TESTOTHERM', 'AGD-4001',
+        'A hőmérséklet és a nedvességtartalom meghatározását TESTO 410-2 típusú digitális áramlás, hőmérséklet és relatív páratartalom mérővel végeztük. A mérőműszer jellemzői:',
+        'TESTOTHERM',
+        'TESTO 410-2', 'SN-3001-GAS', '0,4 ... 20 m/s; 5...95 % relatív páratartalom; -10 ... +50 °C',
+        '0,1 m/s; 0,1 %; 0,1 °C', '±0,2 m/s; ±2,5 %; ±0,5 °C', '2023-06-01', '2024-06-01', NOW(), NOW()),
+
+       ('TESTOTHERM', 'AGD-5001',
+        'A légköri nyomás méréséhez TESTO 511 típusú barométert alkalmaztunk. A mérőműszer jellemzői:', 'TESTOTHERM',
+        'TESTO 511', 'SN-3001-GAS', '300...1200 mbar', '0,1 mbar', null, '2023-06-01', '2024-06-01', NOW(), NOW()),
+
+       ('Air Quality Monitor', 'AQM-001', 'Detects air pollutants', 'EnviroTech', 'Air Monitoring', 'SN-AQM-1001',
         '0-500 ppm', '0.01 ppm', '±2%', '2023-05-15', '2024-05-15', NOW(), NOW()),
 
        ('Gas Analyzer', 'GA-002', 'Analyzes gas composition', 'SafeAir', 'Gas Detection', 'SN-GA-2002', '0-100%',
@@ -786,14 +796,19 @@ VALUES ('LAB-001', '2024-02-17', 1),
        ('LAB-002', '2024-02-18', 2);
 
 
-
 -- Insert Test Reports
 INSERT INTO test_reports (report_number, title, approved_by, prepared_by, checked_by, aim_of_test, project_id,
                           location_id, sampling_record_id, technology, sampling_conditions_dates,
                           determination_of_pollutant_concentration, issue_date, report_status)
 VALUES ('TR-001', 'Air Quality Test Report', '22222222-2222-2222-2222-222222222222',
         '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222',
-        'Evaluate air quality in factory', 1, 1, 1, 'Modern Tech', '2024-02-15', 'Detailed analysis', '2024-02-20',
+        'Evaluate air quality in factory', 1, 1, 1, 'A Robert Bosch Automotive Steering Kft. maklári telephelyén elektromos kormányművek,
+kormányművekhez fogaslécek és kormányanyák gyártását végzik. A vizsgált területek a
+festősor környezetében találhatóak.', 'vizsgálatok ideje alatt a telephelyen folyamatos, normál üzemmenetnek megfelelő
+munka folyt. Az üzemvitelt megzavaró körülményt nem tapasztaltunk. A mintavételek
+ideje alatt 45 db kormánymű festését végezték óránként. A vizsgálatokat a megrendelő
+által kijelölt, alábbi táblázatokban összefoglalt telepített pontokon hajtottuk végre.', 'Detailed analysis',
+        '2024-02-20',
         'FINALIZED');
 
 
@@ -902,39 +917,37 @@ VALUES (1, 'SMP-101', 'Factory 1 - Zone A', 'Worker A', 20.45, 44.64, 1006.98, 2
 
 
 
-INSERT INTO sample_contaminants (
-    fk_sample_id, fk_contaminant_id, created_at, updated_at
-) VALUES
-      (3, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (12, 6, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (8, 14, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (18, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (22, 2, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (6, 8, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (12, 12, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (12, 13, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (22, 18, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (8, 16, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (21, 15, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (4, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (14, 20, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (14, 17, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (6, 9, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (19, 2, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (25, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (11, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (13, 12, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (15, 5, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (26, 19, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (1, 4, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (9, 1, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (27, 9, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (27, 18, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (15, 8, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (21, 16, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (30, 15, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (15, 1, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
-      (28, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47');
+INSERT INTO sample_contaminants (fk_sample_id, fk_contaminant_id, created_at, updated_at)
+VALUES (3, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (12, 6, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (8, 14, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (18, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (22, 2, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (6, 8, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (12, 12, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (12, 13, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (22, 18, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (8, 16, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (21, 15, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (4, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (14, 20, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (14, 17, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (6, 9, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (19, 2, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (25, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (11, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (13, 12, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (15, 5, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (26, 19, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (1, 4, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (9, 1, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (27, 9, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (27, 18, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (15, 8, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (21, 16, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (30, 15, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (15, 1, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+       (28, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47');
 
 -- Insert into sample_analytical_results (Using sample_contaminant_id)
 INSERT INTO sample_analytical_results (sample_contaminant_id, result_main, result_measurement_unit, detection_limit,
@@ -945,5 +958,10 @@ VALUES ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 3 AND fk_contam
        ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 6), 1.25, 2, 0.2, 4.5,
         'HPLC', 2, '2024-02-18 14:00:00', 1.25, 2);
 
+INSERT INTO sampling_record_equipments (fk_sampling_record_id, fk_equipment_id, created_at)
+VALUES (1, 1, '2025-03-15 14:21:45'),
+       (1, 2, '2025-03-15 14:21:45'),
+       (2, 3, '2025-03-15 14:21:45'),
+       (2, 4, '2025-03-15 14:21:45');
 
 
