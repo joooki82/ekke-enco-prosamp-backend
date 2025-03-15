@@ -1,11 +1,14 @@
 package hu.jakab.ekkeencoprosampbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "standards", uniqueConstraints = {
@@ -29,11 +32,17 @@ public class Standard {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "standard_type", length = 255)
-    private String standardType;
+    @Enumerated(EnumType.STRING) // Store enum as string in DB
+    @Column(name = "standard_type", length = 50, nullable = false)
+    private StandardType standardType;
 
     @Column(name = "identifier", length = 255, nullable = false, unique = true)
     private String identifier;
+
+    @OneToMany(mappedBy = "standard", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private List<LaboratoryStandard> laboratoryStandards = new ArrayList<>();
+
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

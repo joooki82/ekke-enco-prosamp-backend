@@ -112,7 +112,7 @@ CREATE TABLE standards
     id              BIGSERIAL PRIMARY KEY,
     standard_number VARCHAR(255)        NOT NULL,
     description     TEXT,
-    standard_type   VARCHAR(255),
+    standard_type   VARCHAR(50) CHECK (standard_type IN ('SAMPLING', 'ANALYSES')) NOT NULL,
     identifier      VARCHAR(255) UNIQUE NOT NULL,
     created_at      TIMESTAMP DEFAULT NOW(),
     updated_at      TIMESTAMP DEFAULT NOW()
@@ -432,6 +432,16 @@ CREATE TABLE regulatory_limits_workplace
     UNIQUE (fk_contaminant_id, fk_sample_type)
 );
 
+CREATE TABLE laboratory_standards
+(
+    laboratory_id BIGINT NOT NULL,
+    standard_id   BIGINT NOT NULL,
+    PRIMARY KEY (laboratory_id, standard_id),
+    FOREIGN KEY (laboratory_id) REFERENCES laboratories(id) ON DELETE CASCADE,
+    FOREIGN KEY (standard_id) REFERENCES standards(id) ON DELETE CASCADE
+);
+
+
 
 -- #############################################################################
 -- UPDATE TIMESTAMP
@@ -745,9 +755,24 @@ VALUES ('TESTOTHERM', 'AGD-4001',
         'Safety Equipment', 'SN-3001-GAS', '0-1000 ppm', '0.5 ppm', '±0.5%', '2023-06-01', '2024-06-01', NOW(), NOW());
 
 -- Insert Standards
-INSERT INTO standards (standard_number, description, standard_type, identifier)
-VALUES ('ISO 9001', 'Quality Management System', 'ISO', 'ISO-9001'),
-       ('OSHA 1910.1000', 'Occupational Safety and Health Standards', 'OSHA', 'OSHA-1910');
+INSERT INTO standards (standard_number, description, standard_type, identifier, created_at, updated_at)
+VALUES
+    ('MSZ EN 689:2018+AC:2019', 'Munkahelyi levegő. Útmutató az inhalatív vegyianyag-expozíció becslésére a határértékekkel való összehasonlításhoz és mérési stratégiához.', 'SAMPLING', 'MSZ_EN_689_2018', NOW(), NOW()),
+    ('MSZ EN 482:2012+A1:2016', 'A vegyi anyagok mérési eljárásai teljesítőképességének általános követelményei.', 'SAMPLING', 'MSZ_EN_482_2012', NOW(), NOW()),
+    ('MSZ 21452-1:1975', 'A levegő állapotjelzőinek meghatározása. Nedvességtartalom mérése.', 'SAMPLING', 'MSZ_21452_1_1975', NOW(), NOW()),
+    ('MSZ 21452-3:1975', 'A levegő állapotjelzőinek meghatározása. Hőmérséklet mérése.', 'SAMPLING', 'MSZ_21452_3_1975', NOW(), NOW()),
+    ('MSZ ISO 8756:1995', 'Levegőminőség. A hőmérséklet-, a légnyomás- és a légnedvességi adatok figyelembevétele.', 'SAMPLING', 'MSZ_ISO_8756_1995', NOW(), NOW()),
+    ('MDHS 14/4:2014', 'Respirábilis, torakális és belélegezhető por mintavételének és gravimetriás elemzésének általános eljárásai.', 'ANALYSES', 'MDHS_14_4_2014', NOW(), NOW()),
+    ('MSZ 21862-22:1982', 'Munkahelyek gázállapotú légszennyezőinek vizsgálata. Gázkromatográfiás mintavétel és vizsgálat általános előírásai.', 'SAMPLING', 'MSZ_21862_22_1982', NOW(), NOW()),
+    ('MDHS 70:1993', 'Mintavétel illékony szerves anyagok meghatározásához.', 'SAMPLING', 'MDHS_70_1993', NOW(), NOW()),
+    ('OSHA ID-165SGS:1985', 'Mintavétel szervetlen savak meghatározásához.', 'SAMPLING', 'OSHA_ID_165SGS_1985', NOW(), NOW()),
+    ('MSZ EN ISO 10882-2:2001', 'Egészségvédelem és biztonság a hegesztés és a rokon eljárások területén. A szilárd por és a gázok mintavétele a hegesztő légzési zónájában. 2. rész: A gázok mintavétele.', 'SAMPLING', 'MSZ_EN_ISO_10882_2_2001', NOW(), NOW()),
+    ('MSZ EN 45544-4:2016', 'Szervetlen gázok mérése folyamatos gázelemző készülékkel.', 'SAMPLING', 'MSZ_EN_45544_4_2016', NOW(), NOW()),
+    ('ISO 16200-1:2001', 'Illékony szerves komponensek meghatározása.', 'ANALYSES', 'ISO_16200_1_2001', NOW(), NOW()),
+    ('MSZ 448-18:2009', 'Oldott orto-foszfát tartalom meghatározása.', 'ANALYSES', 'MSZ_448_18_2009', NOW(), NOW()),
+    ('MSZ 21862-9:1981', 'HF tartalom meghatározása.', 'ANALYSES', 'MSZ_21862_9_1981', NOW(), NOW()),
+    ('EPA 1-3.5:1998', 'Mintaelőkészítés elemek meghatározásához.', 'ANALYSES', 'EPA_1_3_5_1998', NOW(), NOW()),
+    ('EPA 60208:2014', 'Elemtartalom meghatározása (ICP-MS).', 'ANALYSES', 'EPA_60208_2014', NOW(), NOW());
 
 -- Insert Sampling Types
 INSERT INTO sampling_types (code, description)
@@ -807,9 +832,30 @@ kormányművekhez fogaslécek és kormányanyák gyártását végzik. A vizsgá
 festősor környezetében találhatóak.', 'vizsgálatok ideje alatt a telephelyen folyamatos, normál üzemmenetnek megfelelő
 munka folyt. Az üzemvitelt megzavaró körülményt nem tapasztaltunk. A mintavételek
 ideje alatt 45 db kormánymű festését végezték óránként. A vizsgálatokat a megrendelő
-által kijelölt, alábbi táblázatokban összefoglalt telepített pontokon hajtottuk végre.', 'Detailed analysis',
-        '2024-02-20',
-        'FINALIZED');
+által kijelölt, alábbi táblázatokban összefoglalt telepített pontokon hajtottuk végre.', 'A szennyező anyagok koncentrációjának meghatározásához SKC típusú személyi
+mintavevő szivattyút használtunk, a térfogatáramot Drycal típusú elektronikus
+áramlásmérő készülékkel állítottuk be. A mintavételeket telepített mintavételi körökkel
+hajtottuk végre. A levegő elszívása kb. 1,5 m magasságból történt. \\
+A szálló por (respirábilis- és belélegezhető por) és a fémtartalom (KOH, NaOH, Ni, Mn, Co,
+Zn) koncentrációjának meghatározásához SKC típusú személyi mintavevő szivattyút
+használtunk. A mintavételt az MDHS 14/4:2014 sz. módszer előírásai alapján végeztük. A
+mintavételhez SKC gyártmányú, IOM típusú személyi por mintavevő készülékben
+elhelyezett hab- és síkszűrőt használtunk. \\
+A szálló por mennyiségének meghatározása az ENCOTECH Kft. akkreditált
+laboratóriumában történt. A tömegméréshez METTLER TOLEDO MX5 típusú
+mikromérleget használtunk. Az illékony szerves komponensek koncentrációjának meghatározása érdekében a
+mintavételhez az MSZ 21862-22:1982 sz. szabvány, valamint az MDHS 70:1993 sz. mérési
+eljárás előírásainak megfelelően, adszorbenssel töltött mintavételi csöveket
+alkalmaztunk. \\
+A fluoridok és foszforsav expozíció meghatározásához a mintavételt az MDHS 70:1993 sz.
+módszer szerint hajtottuk végre, az OSHA ID-165SG:1985 sz. szabvány figyelembe
+vételével. A mintavételi láncba adszorbennsel töltött SKC mintavételi csövet iktattunk.
+A minták egyéb szennyező anyag tartalmának meghatározását a BÁLINT ANALITIKA Kft.
+akkreditált laboratóriumában végezték. A laboratóriumi vizsgálati jegyzőkönyvet
+1. sz. mellékletként csatoljuk. \\
+A szén-monoxid koncentráció meghatározása BW Gas Alert Micro Clip XL műszerhez
+kapcsolódó gázmérő szondával (CO: elektrokémiai) történt az MSZ EN 45544-4:2016 sz.
+szabvány figyelembevételével.','2024-02-20','FINALIZED');
 
 
 

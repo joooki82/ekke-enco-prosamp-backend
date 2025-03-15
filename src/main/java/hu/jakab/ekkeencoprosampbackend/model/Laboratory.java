@@ -48,6 +48,11 @@ public class Laboratory {
     @JsonManagedReference
     private List<AnalyticalLabReport> reports = new ArrayList<>();
 
+    @OneToMany(mappedBy = "laboratory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<LaboratoryStandard> laboratoryStandards = new ArrayList<>();
+
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
