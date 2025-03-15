@@ -648,15 +648,41 @@ $$;
 
 -- Insert Users
 
-INSERT INTO contaminant_groups (name, description)
-VALUES ('Volatile Organic Compounds', 'Group of organic chemicals that evaporate easily'),
-       ('Heavy Metals', 'Metallic elements that can be toxic at low concentrations')
-RETURNING id;
+INSERT INTO contaminant_groups (id, name, description, created_at, updated_at)
+VALUES (1, 'Volatile Organic Compounds', 'Group of organic chemicals that evaporate easily', NOW(), NOW()),
+       (2, 'Heavy Metals', 'Metallic elements that can be toxic at low concentrations', NOW(), NOW()),
+       (3, 'Particulate Matter', 'Small solid or liquid particles in the air', NOW(), NOW()),
+       (4, 'Pesticides', 'Chemicals used to kill pests, can be harmful to humans', NOW(), NOW()),
+       (5, 'Industrial Gases', 'Gases emitted from industrial processes', NOW(), NOW()),
+       (6, 'Combustion Byproducts', 'Substances produced during burning of fuels', NOW(), NOW()),
+       (7, 'Radioactive Contaminants', 'Radioactive substances that pose health risks', NOW(), NOW()),
+       (8, 'Pathogenic Microorganisms', 'Microbes that can cause disease', NOW(), NOW()),
+       (9, 'Endocrine Disruptors', 'Chemicals that interfere with hormonal functions', NOW(), NOW()),
+       (10, 'Pharmaceutical Residues', 'Traces of pharmaceutical substances in the environment', NOW(), NOW());
 
-INSERT INTO contaminants (name, description, contaminant_group_id, created_at, updated_at)
-VALUES ('Benzene', 'A volatile organic compound found in industrial emissions', 1, NOW(), NOW()),
-       ('Lead', 'A heavy metal that can cause serious health problems', 2, NOW(), NOW())
-RETURNING id;
+INSERT INTO contaminants (id, name, description, contaminant_group_id, created_at, updated_at)
+VALUES (1, 'Benzene', 'A volatile organic compound found in industrial emissions', 1, NOW(), NOW()),
+       (2, 'Toluene', 'A solvent commonly used in paints and coatings', 1, NOW(), NOW()),
+       (3, 'Lead', 'A heavy metal that can cause serious health problems', 2, NOW(), NOW()),
+       (4, 'Mercury', 'A toxic heavy metal often found in fish', 2, NOW(), NOW()),
+       (5, 'PM10', 'Particulate matter less than 10 micrometers in diameter', 3, NOW(), NOW()),
+       (6, 'PM2.5', 'Fine particulate matter that can penetrate deep into the lungs', 3, NOW(), NOW()),
+       (7, 'DDT', 'A banned pesticide with long-lasting environmental effects', 4, NOW(), NOW()),
+       (8, 'Glyphosate', 'A widely used herbicide with potential health concerns', 4, NOW(), NOW()),
+       (9, 'Carbon Monoxide', 'A colorless, odorless gas produced by combustion', 5, NOW(), NOW()),
+       (10, 'Sulfur Dioxide', 'A gas produced by burning fossil fuels', 5, NOW(), NOW()),
+       (11, 'Dioxins', 'Highly toxic compounds formed during combustion', 6, NOW(), NOW()),
+       (12, 'Polycyclic Aromatic Hydrocarbons (PAHs)', 'A class of chemicals formed during incomplete combustion', 6,
+        NOW(), NOW()),
+       (13, 'Radon', 'A radioactive gas naturally found in soil and rock', 7, NOW(), NOW()),
+       (14, 'Cesium-137', 'A radioactive isotope from nuclear fallout', 7, NOW(), NOW()),
+       (15, 'E. coli', 'A bacteria that can cause serious foodborne illness', 8, NOW(), NOW()),
+       (16, 'Legionella', 'A bacteria that thrives in water systems', 8, NOW(), NOW()),
+       (17, 'Bisphenol A (BPA)', 'A chemical used in plastics that may disrupt hormones', 9, NOW(), NOW()),
+       (18, 'Phthalates', 'Plasticizers that can affect human development', 9, NOW(), NOW()),
+       (19, 'Ibuprofen', 'A common painkiller that can be found in water sources', 10, NOW(), NOW()),
+       (20, 'Antibiotic Residues', 'Traces of antibiotics in the environment leading to resistance', 10, NOW(), NOW());
+
 
 
 INSERT INTO users (id, username, email, role, created_at, updated_at)
@@ -759,19 +785,7 @@ INSERT INTO analytical_lab_reports (report_number, issue_date, laboratory_id)
 VALUES ('LAB-001', '2024-02-17', 1),
        ('LAB-002', '2024-02-18', 2);
 
--- Insert into sample_contaminants (Each sample-contaminant pair must exist)
-INSERT INTO sample_contaminants (fk_sample_id, fk_contaminant_id, created_at)
-VALUES (1, 1, '2024-02-17 10:00:00'),
-       (2, 2, '2024-02-18 12:00:00');
 
--- Insert into sample_analytical_results (Using sample_contaminant_id)
-INSERT INTO sample_analytical_results (sample_contaminant_id, result_main, result_measurement_unit, detection_limit,
-                                       measurement_uncertainty, analysis_method, lab_report_id, analysis_date,
-                                       calculated_concentration, calculated_concentration_measurement_unit)
-VALUES ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 1 AND fk_contaminant_id = 1), 0.35, 1, 0.1, 5.0,
-        'GC-MS', 1, '2024-02-17 12:00:00', 0.35, 1),
-       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 2 AND fk_contaminant_id = 2), 1.25, 2, 0.2, 4.5,
-        'HPLC', 2, '2024-02-18 14:00:00', 1.25, 2);
 
 -- Insert Test Reports
 INSERT INTO test_reports (report_number, title, approved_by, prepared_by, checked_by, aim_of_test, project_id,
@@ -792,9 +806,144 @@ VALUES
     (1, 1, 'CK', 0.5),  -- 0.5 mg/m³ for CK samples
 
     -- Lead (Workplace Exposure Limit)
-    (2, 2, 'AK', 0.05),  -- 0.05 ppm for AK samples
-    (2, 2, 'CK', 0.03);  -- 0.03 ppm for CK samples
+    (2, 2, 'AK', 0.05), -- 0.05 ppm for AK samples
+    (2, 2, 'CK', 0.03); -- 0.03 ppm for CK samples
 
+
+INSERT INTO samples (sampling_record_id, sample_identifier, location, employee_name,
+                     temperature, humidity, pressure, sample_volume_flow_rate,
+                     sample_volume_flow_rate_unit, start_time, end_time,
+                     sample_type, status, remarks, sampling_type_id,
+                     adjustment_method_id, sampling_flow_rate, created_at, updated_at)
+VALUES (1, 'SMP-101', 'Factory 1 - Zone A', 'Worker A', 20.45, 44.64, 1006.98, 2.1327, 1, '2024-02-15 11:00:00',
+        '2024-02-15 14:00:00', 'CK', 'LOST', 'Auto-generated test data', 1, 1, 1.760, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-102', 'Factory 1 - Zone B', 'Worker B', 22.99, 39.92, 1004.40, 1.5644, 2, '2024-02-15 10:00:00',
+        '2024-02-15 11:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 1, 1, 2.433, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-103', 'Factory 1 - Zone A', 'Worker C', 23.72, 47.40, 1005.01, 4.5677, 1, '2024-02-15 12:00:00',
+        '2024-02-15 14:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 1, 1, 2.343, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-104', 'Factory 1 - Zone A', 'Worker A', 23.40, 48.32, 1010.34, 4.3860, 1, '2024-02-15 08:00:00',
+        '2024-02-15 10:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 2, 1, 2.130, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-105', 'Factory 1 - Zone A', 'Worker D', 22.94, 69.15, 1008.94, 1.0780, 1, '2024-02-15 12:00:00',
+        '2024-02-15 14:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 2, 2, 0.861, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-106', 'Factory 1 - Zone A', 'Worker D', 20.10, 61.63, 1005.10, 1.0223, 1, '2024-02-15 11:00:00',
+        '2024-02-15 12:00:00', 'CK', 'LOST', 'Auto-generated test data', 1, 2, 2.814, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-107', 'Factory 1 - Zone C', 'Worker A', 27.96, 65.00, 1005.17, 1.0831, 2, '2024-02-15 09:00:00',
+        '2024-02-15 11:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 1, 2, 1.787, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-108', 'Factory 1 - Zone B', 'Worker A', 22.78, 44.09, 1003.92, 3.0844, 1, '2024-02-15 08:00:00',
+        '2024-02-15 09:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 1, 1, 2.639, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-109', 'Factory 1 - Zone A', 'Worker B', 27.75, 33.32, 1011.63, 2.0787, 2, '2024-02-15 11:00:00',
+        '2024-02-15 14:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 2, 1, 2.546, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-110', 'Factory 1 - Zone C', 'Worker A', 16.74, 31.00, 1015.03, 4.3690, 2, '2024-02-15 08:00:00',
+        '2024-02-15 10:00:00', 'AK', 'BROKEN', 'Auto-generated test data', 2, 1, 1.583, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-130', 'Factory 1 - Zone A', 'Worker B', 25.39, 46.53, 1016.33, 3.6220, 2, '2024-02-15 12:00:00',
+        '2024-02-15 15:00:00', 'CK', 'BROKEN', 'Auto-generated test data', 2, 1, 2.010, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-111', 'Factory 1 - Zone C', 'Worker B', 21.11, 36.62, 1009.05, 3.8655, 1, '2024-02-15 11:00:00',
+        '2024-02-15 13:00:00', 'CK', 'INVALID', 'Auto-generated test data', 1, 1, 2.515, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-112', 'Factory 1 - Zone B', 'Worker B', 22.37, 65.37, 1018.21, 4.0541, 1, '2024-02-15 09:00:00',
+        '2024-02-15 11:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 2, 2, 2.686, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-113', 'Factory 1 - Zone A', 'Worker A', 28.97, 66.43, 1016.12, 1.5, 1, '2024-02-15 09:00:00',
+        '2024-02-15 11:00:00', 'CK', 'LOST', 'Auto-generated test data', 2, 1, 0.714, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-114', 'Factory 1 - Zone B', 'Worker C', 20.03, 46.00, 1009.77, 4.9908, 2, '2024-02-15 11:00:00',
+        '2024-02-15 12:00:00', 'CK', 'LOST', 'Auto-generated test data', 2, 2, 1.561, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-115', 'Factory 1 - Zone A', 'Worker A', 18.12, 34.47, 1012.89, 4.3047, 2, '2024-02-15 10:00:00',
+        '2024-02-15 12:00:00', 'CK', 'BROKEN', 'Auto-generated test data', 2, 1, 2.833, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-116', 'Factory 1 - Zone B', 'Worker C', 17.53, 52.72, 1013.43, 4.6970, 1, '2024-02-15 10:00:00',
+        '2024-02-15 11:00:00', 'AK', 'LOST', 'Auto-generated test data', 1, 1, 2.914, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-117', 'Factory 1 - Zone C', 'Worker A', 27.89, 38.41, 1002.54, 4.9744, 2, '2024-02-15 12:00:00',
+        '2024-02-15 14:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 2, 1, 2.074, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-118', 'Factory 1 - Zone B', 'Worker D', 23.62, 57.82, 1008.68, 1.1326, 2, '2024-02-15 10:00:00',
+        '2024-02-15 11:00:00', 'AK', 'BROKEN', 'Auto-generated test data', 2, 2, 2.375, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-119', 'Factory 1 - Zone B', 'Worker C', 24.84, 41.01, 1003.58, 3.2086, 1, '2024-02-15 12:00:00',
+        '2024-02-15 14:00:00', 'CK', 'BROKEN', 'Auto-generated test data', 1, 1, 1.203, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-120', 'Factory 1 - Zone C', 'Worker B', 23.41, 49.23, 1014.26, 4.6209, 2, '2024-02-15 11:00:00',
+        '2024-02-15 14:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 1, 2, 1.537, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-121', 'Factory 1 - Zone A', 'Worker A', 22.40, 42.01, 1016.50, 1.3755, 2, '2024-02-15 10:00:00',
+        '2024-02-15 11:00:00', 'AK', 'INVALID', 'Auto-generated test data', 1, 1, 2.769, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-122', 'Factory 1 - Zone C', 'Worker C', 24.53, 69.08, 1004.96, 4.6258, 2, '2024-02-15 08:00:00',
+        '2024-02-15 10:00:00', 'CK', 'INVALID', 'Auto-generated test data', 2, 1, 1.574, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-123', 'Factory 1 - Zone B', 'Worker C', 21.61, 54.46, 1012.06, 2.2112, 2, '2024-02-15 12:00:00',
+        '2024-02-15 13:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 1, 2, 2.389, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-124', 'Factory 1 - Zone C', 'Worker D', 25.69, 65.78, 1009.42, 2.7788, 2, '2024-02-15 09:00:00',
+        '2024-02-15 12:00:00', 'AK', 'BROKEN', 'Auto-generated test data', 2, 2, 2.644, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-125', 'Factory 1 - Zone B', 'Worker D', 20.74, 34.58, 1012.29, 3.9671, 2, '2024-02-15 08:00:00',
+        '2024-02-15 10:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 1, 1, 2.354, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-130', 'Factory 1 - Zone A', 'Worker B', 25.39, 46.53, 1016.33, 3.6220, 2, '2024-02-15 12:00:00',
+        '2024-02-15 15:00:00', 'CK', 'BROKEN', 'Auto-generated test data', 2, 1, 2.010, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34'),
+       (1, 'SMP-131', 'Factory 1 - Zone A', 'Worker B', 25.39, 46.53, 1016.33, 3.6220, 2, '2024-02-15 12:00:00',
+        '2024-02-15 15:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 2, 1, 2.010, '2025-03-15 08:42:34',
+        '2025-03-15 08:42:34');
+
+
+
+INSERT INTO sample_contaminants (
+    fk_sample_id, fk_contaminant_id, created_at, updated_at
+) VALUES
+      (3, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (12, 6, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (8, 14, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (18, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (22, 2, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (6, 8, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (12, 12, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (12, 13, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (22, 18, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (8, 16, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (21, 15, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (4, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (14, 20, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (14, 17, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (6, 9, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (19, 2, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (25, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (11, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (13, 12, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (15, 5, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (26, 19, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (1, 4, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (9, 1, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (27, 9, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (27, 18, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (15, 8, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (21, 16, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (30, 15, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (15, 1, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
+      (28, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47');
+
+-- Insert into sample_analytical_results (Using sample_contaminant_id)
+INSERT INTO sample_analytical_results (sample_contaminant_id, result_main, result_measurement_unit, detection_limit,
+                                       measurement_uncertainty, analysis_method, lab_report_id, analysis_date,
+                                       calculated_concentration, calculated_concentration_measurement_unit)
+VALUES ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 3 AND fk_contaminant_id = 7), 0.35, 1, 0.1, 5.0,
+        'GC-MS', 1, '2024-02-17 12:00:00', 0.35, 1),
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 6), 1.25, 2, 0.2, 4.5,
+        'HPLC', 2, '2024-02-18 14:00:00', 1.25, 2);
 
 
 

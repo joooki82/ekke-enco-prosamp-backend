@@ -270,11 +270,15 @@ public class TestReportService {
         List<Sample> samples = testReport.getSamplingRecord().getSamples();
         List<Sample> samplesAverage = samples.stream()
                 .filter(sample -> "AK".equals(sample.getSampleType()))
+                .sorted(Comparator.comparing(Sample::getLocation)
+                        .thenComparing(Sample::getSampleIdentifier)) // Sort by Location, then by Identifier
                 .toList();
         reportData.put("sampleDetailsAverage", generateSampleDetails(samplesAverage));
 
         List<Sample> samplesPeak = samples.stream()
                 .filter(sample -> "CK".equals(sample.getSampleType()))
+                .sorted(Comparator.comparing(Sample::getLocation)
+                        .thenComparing(Sample::getSampleIdentifier)) // Sort by Location, then by Identifier
                 .toList();
         reportData.put("sampleDetailsPeak", generateSampleDetails(samplesPeak));
 
@@ -384,7 +388,7 @@ public class TestReportService {
 
             sampleDetails.append("\\begin{minipage}{3.5cm} ")
                     .append("\\centering \\vspace{3pt} ")
-                    .append("\\textbf{"+ sample.getId() + " /} \\\\ \\textit{" +contaminantGroups+ "} \\vspace{3pt}")
+                    .append("\\textbf{"+ sample.getSampleIdentifier() + " /} \\\\ \\textit{" +contaminantGroups+ "} \\vspace{3pt}")
                     .append("\\end{minipage} & ")
                     .append("\\begin{minipage}{2cm} ")
                     .append("\\centering ")
@@ -407,6 +411,42 @@ public class TestReportService {
     private String formatBigDecimal(BigDecimal value, int scale) {
         if (value == null) return "-"; // Return placeholder if value is missing
         return value.setScale(scale, RoundingMode.HALF_UP).toString(); // Round to 1 decimal place
+    }
+
+    public String generateEquipmentList(SamplingRecordDatM200 samplingReport) {
+
+        List<Equipment> equipments = samplingReport.getEquipmentList();
+
+        if (equipments.isEmpty()) {
+            return "No equipment available.";
+        }
+
+        StringBuilder latexBuilder = new StringBuilder();
+
+        latexBuilder.append("\\section*{Equipment List}\n")
+                .append("\\vspace{1.0em} % Small space for better readability\n")
+                .append("\\noindent\n")
+                .append("\\centering\n")
+                .append("\\begin{tabular}{ p{5.5cm} p{8cm} } \n")
+                .append("\\hline\n")
+                .append("\\textbf{Name} & \\textbf{Manufacturer} & \\textbf{Identifier} & \\textbf{Type} & \\textbf{Measuring Range} & \\textbf{Resolution} & \\textbf{Accuracy} \\\\\n")
+                .append("\\hline\n");
+
+        // Append each equipment data
+        for (Equipment equipment : equipments) {
+            latexBuilder.append(equipment.getName()).append(" & ")
+                    .append(equipment.getManufacturer() != null ? equipment.getManufacturer() : "N/A").append(" & ")
+                    .append(equipment.getIdentifier()).append(" & ")
+                    .append(equipment.getType() != null ? equipment.getType() : "N/A").append(" & ")
+                    .append(equipment.getMeasuringRange() != null ? equipment.getMeasuringRange() : "N/A").append(" & ")
+                    .append(equipment.getResolution() != null ? equipment.getResolution() : "N/A").append(" & ")
+                    .append(equipment.getAccuracy() != null ? equipment.getAccuracy() : "N/A").append(" \\\\\n");
+        }
+
+        latexBuilder.append("\\hline\n")
+                .append("\\end{tabular}\n");
+
+        return latexBuilder.toString();
     }
 
 
