@@ -18,8 +18,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.function.Function;
@@ -259,11 +261,22 @@ public class TestReportService {
 
         String samplingDate = formatDateInHungarian(testReport.getSamplingRecord().getSamplingDate().toLocalDate());
         reportData.put("samplingDate", samplingDate);
-        reportData.put("temperature", String.valueOf(testReport.getSamplingRecord().getTemperature().setScale(0, RoundingMode.HALF_UP).intValue()));
-        reportData.put("humidity", String.valueOf(testReport.getSamplingRecord().getHumidity().setScale(0, RoundingMode.HALF_UP).intValue()));
-        reportData.put("pressure", String.valueOf(testReport.getSamplingRecord().getPressure1().setScale(0, RoundingMode.HALF_UP).intValue()));
+        reportData.put("temperature", formatBigDecimal(testReport.getSamplingRecord().getTemperature(), 0));
+        reportData.put("humidity", formatBigDecimal(testReport.getSamplingRecord().getHumidity(), 0));
+        reportData.put("pressure", formatBigDecimal(testReport.getSamplingRecord().getPressure1(), 0));
         reportData.put("technology", testReport.getTechnology());
         reportData.put("samplingConditions", testReport.getSamplingConditionsDates());
+
+        List<Sample> samples = testReport.getSamplingRecord().getSamples();
+        List<Sample> samplesAverage = samples.stream()
+                .filter(sample -> "AK".equals(sample.getSampleType()))
+                .toList();
+        reportData.put("sampleDetailsAverage", generateSampleDetails(samplesAverage));
+
+        List<Sample> samplesPeak = samples.stream()
+                .filter(sample -> "CK".equals(sample.getSampleType()))
+                .toList();
+        reportData.put("sampleDetailsPeak", generateSampleDetails(samplesPeak));
 
 
         // Generate the LaTeX-based PDF and return byte array
@@ -342,6 +355,59 @@ public class TestReportService {
                 date.getDayOfMonth() + ".";
     }
 
+    public String generateSampleDetails(List<Sample> samples) {
+        if (samples == null || samples.isEmpty()) {
+            return "No sample data available.";
+
+        }
+        StringBuilder sampleDetails = new StringBuilder();
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.ENGLISH);
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("H:mm"); // Fixed pattern
+
+        for (Sample sample : samples) {
+            // Extract and format data
+            String formattedDate = sample.getStartTime().format(dateFormatter);
+            String formattedStartTime = sample.getStartTime().format(timeFormatter)
+                    .replace(":", "\\textsuperscript{") + "}"; // Fix LaTeX superscript
+            String formattedEndTime = sample.getEndTime().format(timeFormatter)
+                    .replace(":", "\\textsuperscript{") + "}";
+
+            // Collect contaminant groups into a comma-separated string
+            String contaminantGroups = sample.getSampleContaminants().stream()
+                    .map(SampleContaminant::getContaminant)
+                    .map(Contaminant::getContaminantGroup)
+                    .distinct()
+                    .map(ContaminantGroup::getName)
+                    .collect(Collectors.joining(", "));
+
+
+            sampleDetails.append("\\begin{minipage}{3.5cm} ")
+                    .append("\\centering \\vspace{3pt} ")
+                    .append("\\textbf{"+ sample.getId() + " /} \\\\ \\textit{" +contaminantGroups+ "} \\vspace{3pt}")
+                    .append("\\end{minipage} & ")
+                    .append("\\begin{minipage}{2cm} ")
+                    .append("\\centering ")
+                    .append( formattedDate + "\\\\ " + formattedStartTime + " - " + formattedEndTime)
+                    .append("\\end{minipage} & ")
+                    .append("\\begin{minipage}{3.5cm} ")
+                    .append("\\centering \\vspace{3pt}  ")
+                    .append(sample.getLocation())
+                    .append("\\end{minipage} & ")
+                    .append("\\begin{minipage}{2cm} \\centering "+ (sample.getEmployeeName() != null ? sample.getEmployeeName() : "-") +" \\end{minipage} & ")
+                    .append("\\begin{minipage}{1cm} \\centering "+ (sample.getTemperature() != null ? sample.getTemperature() : "-") +" \\end{minipage} & ")
+                    .append("\\begin{minipage}{1cm} \\centering "+ (sample.getHumidity() != null ? sample.getHumidity() : "-") +" \\end{minipage} \\\\ ")
+                    .append("\\hline");
+
+        }
+
+        return sampleDetails.toString();
+    }
+
+    private String formatBigDecimal(BigDecimal value, int scale) {
+        if (value == null) return "-"; // Return placeholder if value is missing
+        return value.setScale(scale, RoundingMode.HALF_UP).toString(); // Round to 1 decimal place
+    }
 
 
 }

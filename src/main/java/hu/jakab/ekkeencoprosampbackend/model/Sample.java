@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "samples", uniqueConstraints = {
@@ -76,6 +77,8 @@ public class Sample {
     @JoinColumn(name = "adjustment_method_id", foreignKey = @ForeignKey(name = "fk_adjustment_method"))
     private AdjustmentMethod adjustmentMethod;
 
+    @OneToMany(mappedBy = "sample", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SampleContaminant> sampleContaminants;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
