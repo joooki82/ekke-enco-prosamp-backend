@@ -265,23 +265,52 @@ public class TestReportService {
         reportData.put("pressure", latexContentBuilder.formatBigDecimal(testReport.getSamplingRecord().getPressure1(), 0));
         reportData.put("technology", testReport.getTechnology());
         reportData.put("samplingConditions", testReport.getSamplingConditionsDates());
+        reportData.put("determinationOfPollutantConcentration", testReport.getDeterminationOfPollutantConcentration());
+
 
         List<Sample> samples = testReport.getSamplingRecord().getSamples();
         List<Sample> samplesAverage = samples.stream()
-                .filter(sample -> "AK".equals(sample.getSampleType()))
+                .filter(sample -> "AK" .equals(sample.getSampleType()))
                 .sorted(Comparator.comparing(Sample::getLocation)
                         .thenComparing(Sample::getSampleIdentifier)) // Sort by Location, then by Identifier
                 .toList();
         reportData.put("sampleDetailsAverage", latexContentBuilder.generateSampleDetails(samplesAverage));
 
         List<Sample> samplesPeak = samples.stream()
-                .filter(sample -> "CK".equals(sample.getSampleType()))
+                .filter(sample -> "CK" .equals(sample.getSampleType()))
                 .sorted(Comparator.comparing(Sample::getLocation)
                         .thenComparing(Sample::getSampleIdentifier)) // Sort by Location, then by Identifier
                 .toList();
         reportData.put("sampleDetailsPeak", latexContentBuilder.generateSampleDetails(samplesPeak));
 
         reportData.put("equipmentList", latexContentBuilder.generateEquipmentList(testReport));
+
+        List<Standard> samplingStandards = testReport.getTestReportStandards().stream()
+                .map(TestReportStandard::getStandard)
+                .filter(standard -> standard.getStandardType().toString().contains("SAMPLING"))
+                .collect(Collectors.toList());
+
+        reportData.put("samplingStandards", latexContentBuilder.generateStandardList(samplingStandards));
+
+        List<Standard> encotechStandards = testReport.getTestReportStandards().stream()
+                .map(TestReportStandard::getStandard)
+                .filter(standard -> standard.getLaboratoryStandards().stream()
+                        .map(LaboratoryStandard::getLaboratory)
+                        .anyMatch(laboratory -> laboratory.getName().contains("Encotech")))
+                .filter(standard -> standard.getStandardType().toString().contains("ANALYSES"))
+                .collect(Collectors.toList());
+
+        reportData.put("encotechStandards", latexContentBuilder.generateStandardList(encotechStandards));
+
+        List<Standard> balintStandards = testReport.getTestReportStandards().stream()
+                .map(TestReportStandard::getStandard)
+                .filter(standard -> standard.getLaboratoryStandards().stream()
+                        .map(LaboratoryStandard::getLaboratory)
+                        .anyMatch(laboratory -> laboratory.getName().contains("Bálint")))
+                .filter(standard -> standard.getStandardType().toString().contains("ANALYSES"))
+                .collect(Collectors.toList());
+
+        reportData.put("balintStandards", latexContentBuilder.generateStandardList(balintStandards));
 
 
         // Generate the LaTeX-based PDF and return byte array
@@ -293,5 +322,5 @@ public class TestReportService {
     }
 
 
-
 }
+

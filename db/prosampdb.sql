@@ -110,10 +110,10 @@ CREATE TABLE equipments
 CREATE TABLE standards
 (
     id              BIGSERIAL PRIMARY KEY,
-    standard_number VARCHAR(255)        NOT NULL,
+    standard_number VARCHAR(255)                                                  NOT NULL,
     description     TEXT,
     standard_type   VARCHAR(50) CHECK (standard_type IN ('SAMPLING', 'ANALYSES')) NOT NULL,
-    identifier      VARCHAR(255) UNIQUE NOT NULL,
+    identifier      VARCHAR(255) UNIQUE                                           NOT NULL,
     created_at      TIMESTAMP DEFAULT NOW(),
     updated_at      TIMESTAMP DEFAULT NOW()
 );
@@ -434,11 +434,14 @@ CREATE TABLE regulatory_limits_workplace
 
 CREATE TABLE laboratory_standards
 (
+    id            BIGSERIAL PRIMARY KEY,
     laboratory_id BIGINT NOT NULL,
     standard_id   BIGINT NOT NULL,
-    PRIMARY KEY (laboratory_id, standard_id),
-    FOREIGN KEY (laboratory_id) REFERENCES laboratories(id) ON DELETE CASCADE,
-    FOREIGN KEY (standard_id) REFERENCES standards(id) ON DELETE CASCADE
+    created_at    TIMESTAMP DEFAULT NOW(),
+    updated_at    TIMESTAMP DEFAULT NOW(),
+    UNIQUE (laboratory_id, standard_id),
+    FOREIGN KEY (laboratory_id) REFERENCES laboratories (id) ON DELETE CASCADE,
+    FOREIGN KEY (standard_id) REFERENCES standards (id) ON DELETE CASCADE
 );
 
 
@@ -756,23 +759,38 @@ VALUES ('TESTOTHERM', 'AGD-4001',
 
 -- Insert Standards
 INSERT INTO standards (standard_number, description, standard_type, identifier, created_at, updated_at)
-VALUES
-    ('MSZ EN 689:2018+AC:2019', 'Munkahelyi levegő. Útmutató az inhalatív vegyianyag-expozíció becslésére a határértékekkel való összehasonlításhoz és mérési stratégiához.', 'SAMPLING', 'MSZ_EN_689_2018', NOW(), NOW()),
-    ('MSZ EN 482:2012+A1:2016', 'A vegyi anyagok mérési eljárásai teljesítőképességének általános követelményei.', 'SAMPLING', 'MSZ_EN_482_2012', NOW(), NOW()),
-    ('MSZ 21452-1:1975', 'A levegő állapotjelzőinek meghatározása. Nedvességtartalom mérése.', 'SAMPLING', 'MSZ_21452_1_1975', NOW(), NOW()),
-    ('MSZ 21452-3:1975', 'A levegő állapotjelzőinek meghatározása. Hőmérséklet mérése.', 'SAMPLING', 'MSZ_21452_3_1975', NOW(), NOW()),
-    ('MSZ ISO 8756:1995', 'Levegőminőség. A hőmérséklet-, a légnyomás- és a légnedvességi adatok figyelembevétele.', 'SAMPLING', 'MSZ_ISO_8756_1995', NOW(), NOW()),
-    ('MDHS 14/4:2014', 'Respirábilis, torakális és belélegezhető por mintavételének és gravimetriás elemzésének általános eljárásai.', 'ANALYSES', 'MDHS_14_4_2014', NOW(), NOW()),
-    ('MSZ 21862-22:1982', 'Munkahelyek gázállapotú légszennyezőinek vizsgálata. Gázkromatográfiás mintavétel és vizsgálat általános előírásai.', 'SAMPLING', 'MSZ_21862_22_1982', NOW(), NOW()),
-    ('MDHS 70:1993', 'Mintavétel illékony szerves anyagok meghatározásához.', 'SAMPLING', 'MDHS_70_1993', NOW(), NOW()),
-    ('OSHA ID-165SGS:1985', 'Mintavétel szervetlen savak meghatározásához.', 'SAMPLING', 'OSHA_ID_165SGS_1985', NOW(), NOW()),
-    ('MSZ EN ISO 10882-2:2001', 'Egészségvédelem és biztonság a hegesztés és a rokon eljárások területén. A szilárd por és a gázok mintavétele a hegesztő légzési zónájában. 2. rész: A gázok mintavétele.', 'SAMPLING', 'MSZ_EN_ISO_10882_2_2001', NOW(), NOW()),
-    ('MSZ EN 45544-4:2016', 'Szervetlen gázok mérése folyamatos gázelemző készülékkel.', 'SAMPLING', 'MSZ_EN_45544_4_2016', NOW(), NOW()),
-    ('ISO 16200-1:2001', 'Illékony szerves komponensek meghatározása.', 'ANALYSES', 'ISO_16200_1_2001', NOW(), NOW()),
-    ('MSZ 448-18:2009', 'Oldott orto-foszfát tartalom meghatározása.', 'ANALYSES', 'MSZ_448_18_2009', NOW(), NOW()),
-    ('MSZ 21862-9:1981', 'HF tartalom meghatározása.', 'ANALYSES', 'MSZ_21862_9_1981', NOW(), NOW()),
-    ('EPA 1-3.5:1998', 'Mintaelőkészítés elemek meghatározásához.', 'ANALYSES', 'EPA_1_3_5_1998', NOW(), NOW()),
-    ('EPA 60208:2014', 'Elemtartalom meghatározása (ICP-MS).', 'ANALYSES', 'EPA_60208_2014', NOW(), NOW());
+VALUES ('MSZ EN 689:2018+AC:2019',
+        'Munkahelyi levegő. Útmutató az inhalatív vegyianyag-expozíció becslésére a határértékekkel való összehasonlításhoz és mérési stratégiához.',
+        'SAMPLING', 'MSZ_EN_689_2018', NOW(), NOW()),
+       ('MSZ EN 482:2012+A1:2016', 'A vegyi anyagok mérési eljárásai teljesítőképességének általános követelményei.',
+        'SAMPLING', 'MSZ_EN_482_2012', NOW(), NOW()),
+       ('MSZ 21452-1:1975', 'A levegő állapotjelzőinek meghatározása. Nedvességtartalom mérése.', 'SAMPLING',
+        'MSZ_21452_1_1975', NOW(), NOW()),
+       ('MSZ 21452-3:1975', 'A levegő állapotjelzőinek meghatározása. Hőmérséklet mérése.', 'SAMPLING',
+        'MSZ_21452_3_1975', NOW(), NOW()),
+       ('MSZ ISO 8756:1995', 'Levegőminőség. A hőmérséklet-, a légnyomás- és a légnedvességi adatok figyelembevétele.',
+        'SAMPLING', 'MSZ_ISO_8756_1995', NOW(), NOW()),
+       ('MDHS 14/4:2014',
+        'Respirábilis, torakális és belélegezhető por mintavételének és gravimetriás elemzésének általános eljárásai.',
+        'ANALYSES', 'MDHS_14_4_2014', NOW(), NOW()),
+       ('MSZ 21862-22:1982',
+        'Munkahelyek gázállapotú légszennyezőinek vizsgálata. Gázkromatográfiás mintavétel és vizsgálat általános előírásai.',
+        'SAMPLING', 'MSZ_21862_22_1982', NOW(), NOW()),
+       ('MDHS 70:1993', 'Mintavétel illékony szerves anyagok meghatározásához.', 'SAMPLING', 'MDHS_70_1993', NOW(),
+        NOW()),
+       ('OSHA ID-165SGS:1985', 'Mintavétel szervetlen savak meghatározásához.', 'SAMPLING', 'OSHA_ID_165SGS_1985',
+        NOW(), NOW()),
+       ('MSZ EN ISO 10882-2:2001',
+        'Egészségvédelem és biztonság a hegesztés és a rokon eljárások területén. A szilárd por és a gázok mintavétele a hegesztő légzési zónájában. 2. rész: A gázok mintavétele.',
+        'SAMPLING', 'MSZ_EN_ISO_10882_2_2001', NOW(), NOW()),
+       ('MSZ EN 45544-4:2016', 'Szervetlen gázok mérése folyamatos gázelemző készülékkel.', 'SAMPLING',
+        'MSZ_EN_45544_4_2016', NOW(), NOW()),
+       ('ISO 16200-1:2001', 'Illékony szerves komponensek meghatározása.', 'ANALYSES', 'ISO_16200_1_2001', NOW(),
+        NOW()),
+       ('MSZ 448-18:2009', 'Oldott orto-foszfát tartalom meghatározása.', 'ANALYSES', 'MSZ_448_18_2009', NOW(), NOW()),
+       ('MSZ 21862-9:1981', 'HF tartalom meghatározása.', 'ANALYSES', 'MSZ_21862_9_1981', NOW(), NOW()),
+       ('EPA 1-3.5:1998', 'Mintaelőkészítés elemek meghatározásához.', 'ANALYSES', 'EPA_1_3_5_1998', NOW(), NOW()),
+       ('EPA 60208:2014', 'Elemtartalom meghatározása (ICP-MS).', 'ANALYSES', 'EPA_60208_2014', NOW(), NOW());
 
 -- Insert Sampling Types
 INSERT INTO sampling_types (code, description)
@@ -810,10 +828,19 @@ VALUES (1, 'SMP-001', 'Factory 1 - Zone A', 'Worker A', 22.5, 45.0, 1013.2, 2.5,
         '2024-02-16 11:00:00', 'CK', 'ACTIVE', 2, 2, 2.0);
 
 -- Insert Analytical Laboratories
-INSERT INTO laboratories (name, accreditation, contact_email, phone, address, website)
-VALUES ('National Lab', 'NAH-1-1666/2019', 'lab@nationallab.com', '+4455667788', 'Lab Street 1, Berlin',
-        'www.nationallab.com'),
-       ('EcoLab', 'ISO-17025', 'contact@ecolab.com', '+3355667788', 'Eco Road 5, London', 'www.ecolab.com');
+INSERT INTO laboratories (name, accreditation, contact_email, phone, address, website, created_at, updated_at)
+VALUES ('Bálint Analitika Kft.', 'NAH-1-1666/2019', 'titkarsag@balintanalitika.hu', '+36 1 206 0732',
+        '1116 Budapest, Kondorfa utca 6.', 'https://balintanalitika.hu/', NOW(), NOW()),
+       ('Encotech Kft.', 'NAH-1-1201/2019', 'info@encotech.hu', '+36 1 303 7848', '1089 Budapest, Bláthy Ottó u. 41.',
+        'https://encotech.hu/en', NOW(), NOW()),
+       ('Biokör Kft.', 'NAH-1-5678/2021', 'info@biokor.hu', '+36 1 876 5432', '1037 Budapest, Montevideo utca 3.',
+        'http://www.biokor.hu', NOW(), NOW()),
+       ('SGS Hungária Kft.', 'NAH-1-4321/2019', 'sgs.hungaria@sgs.com', '+36 1 309 3300',
+        '1124 Budapest, Sirály utca 4.', 'https://www.sgs.com/en-hu', NOW(), NOW()),
+       ('Eurofins Analytical Services Hungary Kft.', 'NAH-1-8765/2022', 'info@eurofins.hu', '+36 1 555 1234',
+        '1047 Budapest, Attila utca 1.', 'https://www.eurofins.hu/hu/environment-testing-en/', NOW(), NOW()),
+       ('TÜV Rheinland InterCert Kft.', 'NAH-1-2345/2018', 'info@hu.tuv.com', '+36 1 461 1100',
+        '1143 Budapest, Gizella út 51-57.', 'https://www.tuv.com/hungary/en/', NOW(), NOW());
 
 -- Insert Analytical Lab Reports
 INSERT INTO analytical_lab_reports (report_number, issue_date, laboratory_id)
@@ -855,7 +882,7 @@ akkreditált laboratóriumában végezték. A laboratóriumi vizsgálati jegyző
 1. sz. mellékletként csatoljuk. \\
 A szén-monoxid koncentráció meghatározása BW Gas Alert Micro Clip XL műszerhez
 kapcsolódó gázmérő szondával (CO: elektrokémiai) történt az MSZ EN 45544-4:2016 sz.
-szabvány figyelembevételével.','2024-02-20','FINALIZED');
+szabvány figyelembevételével.', '2024-02-20', 'FINALIZED');
 
 
 
@@ -1009,5 +1036,44 @@ VALUES (1, 1, '2025-03-15 14:21:45'),
        (1, 2, '2025-03-15 14:21:45'),
        (2, 3, '2025-03-15 14:21:45'),
        (2, 4, '2025-03-15 14:21:45');
+
+
+INSERT INTO laboratory_standards (laboratory_id, standard_id)
+VALUES (1, 1),
+       (1, 2),
+       (2, 3),
+       (2, 4),
+       (2, 5),
+       (2, 6),
+       (2, 7),
+       (2, 8),
+       (2, 9),
+       (2, 10),
+       (1, 11),
+       (1, 12),
+       (1, 13),
+       (1, 14),
+       (2, 15),
+       (2, 16);
+
+INSERT INTO test_report_standards (fk_test_report_id, fk_standard_id)
+VALUES (1, 1),
+       (1, 2),
+       (1, 3),
+       (1, 4),
+       (1, 5),
+       (1, 6),
+       (1, 7),
+       (1, 8),
+       (1, 9),
+       (1, 10),
+       (1, 11),
+       (1, 12),
+       (1, 13),
+       (1, 14),
+       (1, 15),
+       (1, 16);
+
+
 
 

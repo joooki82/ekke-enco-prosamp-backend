@@ -181,11 +181,29 @@ public class LatexContentBuilder {
             equipmentListBuilder.append("\t\\end{tabular}\n")
                     .append("\\end{adjustwidth}\n");
         }
-        logger.info(equipmentListBuilder.toString());
+//        logger.info(equipmentListBuilder.toString());
 
         return equipmentListBuilder.toString();
-
     }
+
+    public String generateStandardList(List<Standard> standards) {
+        if (standards == null || standards.isEmpty()) {
+            return "\\ No standard data available. & \\ \\hline";
+        }
+
+        StringBuilder standardDetails = new StringBuilder();
+
+        for (Standard standard : standards) {
+//            logger.info(standard.toString());
+            standardDetails.append(standard.getStandardNumber()).append(" & ").append(standard.getDescription()).append(" \\")
+                    .append(" \\hline ");
+        }
+
+        logger.info(standardDetails.toString());
+
+        return standardDetails.toString();
+    }
+
 
     private String escapeLatex(String input) {
         if (input == null) {
