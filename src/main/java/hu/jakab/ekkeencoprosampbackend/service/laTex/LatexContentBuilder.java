@@ -238,9 +238,21 @@ public class LatexContentBuilder {
 
                     BigDecimal sampleVolume = SignificantFiguresUtil.roundToSignificantFigures(sampleContaminant.getSample().getSampleVolumeFlowRate(),3);
 
-                    BigDecimal adsorbedAmount = SignificantFiguresUtil.roundToSignificantFigures(analyticalResult.getResultMain(),3);
+                    BigDecimal resultMainControl = analyticalResult.getResultMainControl();
+                    BigDecimal calculatedConcentration = analyticalResult.getCalculatedConcentration();
 
-                    BigDecimal concentration = SignificantFiguresUtil.roundToSignificantFigures(analyticalResult.getCalculatedConcentration(),3);
+                    String adsorbedAmount = (resultMainControl != null)
+                            ? String.valueOf(SignificantFiguresUtil.roundToSignificantFigures(resultMainControl, 3))
+                            : "N/A";
+
+                    String concentration = (calculatedConcentration != null)
+                            ? String.valueOf(SignificantFiguresUtil.roundToSignificantFigures(calculatedConcentration, 3))
+                            : "N/A";
+
+                    if (Boolean.TRUE.equals(analyticalResult.getIsBelowDetectionLimit())) {
+                        adsorbedAmount = "< " + adsorbedAmount;
+                        concentration = "< " + concentration;
+                    }
 
                     // Append row to LaTeX table
                     sampleResults.append("\t\\begin{minipage}{2.5cm} \\centering \\vspace{3pt} \\textbf{")

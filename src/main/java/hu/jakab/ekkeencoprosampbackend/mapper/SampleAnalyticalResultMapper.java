@@ -17,6 +17,7 @@ public interface SampleAnalyticalResultMapper {
     @Mapping(target = "resultMeasurementUnit", source = "resultMeasurementUnitId", qualifiedByName = "mapMeasurementUnit")
     @Mapping(target = "sampleContaminant", source = "sampleContaminantId", qualifiedByName = "mapSampleContaminant")
     @Mapping(target = "labReport", source = "labReportId", qualifiedByName = "mapAnalyticalLabReport")
+    @Mapping(target = "isBelowDetectionLimit", source = "isBelowDetectionLimit")
     SampleAnalyticalResult toEntity(SampleAnalyticalResultRequestDTO dto);
 
     @Mapping(target = "sampleContaminant", source = "sampleContaminant")

@@ -64,12 +64,13 @@ public class SampleAnalyticalResultService {
     @Transactional
     public SampleAnalyticalResultCreatedDTO save(SampleAnalyticalResultRequestDTO dto) {
         logger.info("Creating a new SampleAnalyticalResult with sampleContaminantId: {}", dto.getSampleContaminantId());
+        logger.info("Request: {}", dto);
         SampleAnalyticalResult sampleAnalyticalResult = mapper.toEntity(dto);
 
-        BigDecimal analyticalResultMain = dto.getResultMain();
+        BigDecimal analyticalResultMainControl = dto.getResultMainControl();
 
-        if (Objects.equals(analyticalResultMain, BigDecimal.valueOf(0)))  {
-            analyticalResultMain = dto.getDetectionLimit();
+        if (Objects.equals(analyticalResultMainControl, BigDecimal.valueOf(0))) {
+            analyticalResultMainControl = dto.getDetectionLimit();
         }
 
         Sample sample = sampleRepository.findById(sampleAnalyticalResult.getSampleContaminant().getSample().getId())
@@ -77,7 +78,10 @@ public class SampleAnalyticalResultService {
 
         BigDecimal calculateAdjustedTotalSampledVolume = calculationEngine.calculateAdjustedTotalSampledVolume(sample);
 
-        sampleAnalyticalResult.setCalculatedConcentration(analyticalResultMain.multiply(calculateAdjustedTotalSampledVolume));
+        sampleAnalyticalResult.setCalculatedConcentration(analyticalResultMainControl.multiply(calculateAdjustedTotalSampledVolume));
+
+        sampleAnalyticalResult.setCalculatedConcentrationMeasurementUnit(sampleAnalyticalResult.getResultMeasurementUnit());
+
 
         try {
             SampleAnalyticalResult savedSampleAnalyticalResult = repository.save(sampleAnalyticalResult);
@@ -137,10 +141,10 @@ public class SampleAnalyticalResultService {
             existing.setAnalysisDate(dto.getAnalysisDate());
         }
 
-        BigDecimal analyticalResultMain = existing.getResultMain();
+        BigDecimal analyticalResultMainControl = dto.getResultMainControl();
 
-        if (Objects.equals(analyticalResultMain, BigDecimal.valueOf(0)))  {
-            analyticalResultMain = existing.getDetectionLimit();
+        if (Objects.equals(analyticalResultMainControl, BigDecimal.valueOf(0))) {
+            analyticalResultMainControl = dto.getDetectionLimit();
         }
 
         Sample sample = sampleRepository.findById(existing.getSampleContaminant().getSample().getId())
@@ -148,7 +152,7 @@ public class SampleAnalyticalResultService {
 
         BigDecimal calculateAdjustedTotalSampledVolume = calculationEngine.calculateAdjustedTotalSampledVolume(sample);
 
-        existing.setCalculatedConcentration(analyticalResultMain.multiply(calculateAdjustedTotalSampledVolume));
+        existing.setCalculatedConcentration(analyticalResultMainControl.multiply(calculateAdjustedTotalSampledVolume));
 
         try {
             SampleAnalyticalResult updatedSampleAnalyticalResult = repository.save(existing);

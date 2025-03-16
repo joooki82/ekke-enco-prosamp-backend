@@ -46,8 +46,10 @@ VALUES ('22222222-2222-2222-2222-222222222222', 'dr. Csókási Pál', 'benonymou
        ('33333333-3333-3333-3333-333333333333', 'Mászáros Poci László', 'vazulnymus@ananas.hu', 'technician');
 
 INSERT INTO users (id, username, email, role, created_at, updated_at)
-VALUES ('44444444-2222-2222-2222-222222222222', 'Poremba Marcell Áron', 'john.doe@example.com', 'vizsgáló mérnök', NOW(), NOW()),
-       ('55555555-3333-3333-3333-333333333333', 'Göndös Dorottya', 'jane.smith@example.com', 'vizsgáló mérnök', NOW(), NOW());
+VALUES ('44444444-2222-2222-2222-222222222222', 'Poremba Marcell Áron', 'john.doe@example.com', 'vizsgáló mérnök',
+        NOW(), NOW()),
+       ('55555555-3333-3333-3333-333333333333', 'Göndös Dorottya', 'jane.smith@example.com', 'vizsgáló mérnök', NOW(),
+        NOW());
 
 -- #############################################################################
 -- TABLE: Companies
@@ -368,6 +370,7 @@ CREATE TABLE sample_analytical_results
     result_control                            NUMERIC(10, 4) CHECK (result_control IS NULL OR result_control >= 0)           DEFAULT NULL,
     result_main_control                       NUMERIC(10, 4) CHECK (result_main_control IS NULL OR result_main_control >= 0) DEFAULT NULL,
     result_measurement_unit                   BIGINT                                                         NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
+    is_below_detection_limit                  BOOLEAN                                                        NOT NULL        DEFAULT FALSE,
     detection_limit                           NUMERIC(10, 4) CHECK (detection_limit IS NULL OR detection_limit >= 0),
     measurement_uncertainty                   NUMERIC(5, 2) CHECK (measurement_uncertainty IS NULL OR
                                                                    measurement_uncertainty BETWEEN 0 AND 100),
@@ -733,10 +736,10 @@ VALUES ('Kálium-hidroxid', 'Potassium hydroxide', (SELECT id FROM contaminant_g
        ('n-Heptán', 'n-Heptane', (SELECT id FROM contaminant_groups WHERE name = 'Solvents'));
 
 
-
 -- Insert Companies
 INSERT INTO companies (name, address, contact_person, email, phone, country, city)
-VALUES ('Robert Bosch Automotive Steering Kft.', '3397 Maklár, Havasi László u. 2.', 'Alice Johnson', 'contact@techsolutions.com', '+123456789', 'USA',
+VALUES ('Robert Bosch Automotive Steering Kft.', '3397 Maklár, Havasi László u. 2.', 'Alice Johnson',
+        'contact@techsolutions.com', '+123456789', 'USA',
         'Maklár'),
        ('Industrial Safety Inc.', '456 Safety Ave', 'Bob Brown', 'info@safetyinc.com', '+987654321', 'Germany',
         'Berlin')
@@ -744,7 +747,8 @@ RETURNING id;
 
 -- Insert Locations
 INSERT INTO locations (company_id, name, address, contact_person, email, phone, country, city, postal_code)
-VALUES (1, 'Robert Bosch Automotive Steering Kft.', '3397 Maklár, Havasi László u. 2.', 'Alice Johnson', 'alice.johnson@techsolutions.com', '+123456789',
+VALUES (1, 'Robert Bosch Automotive Steering Kft.', '3397 Maklár, Havasi László u. 2.', 'Alice Johnson',
+        'alice.johnson@techsolutions.com', '+123456789',
         'USA', 'Maklár', '10001'),
        (2, 'Industrial Safety Branch', '456 Safety Ave', 'Bob Brown', 'bob.brown@safetyinc.com', '+987654321',
         'Germany', 'Berlin', '10115')
@@ -1063,44 +1067,80 @@ VALUES (3, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
 --         'GC-MS', 1, '2024-02-17 12:00:00', 0.35, 1),
 --        ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 6), 1.25, 2, 0.2, 4.5,
 --         'HPLC', 2, '2024-02-18 14:00:00', 1.25, 2);
-INSERT INTO sample_analytical_results (
-    sample_contaminant_id,
-    result_main,
-    result_control,
-    result_main_control,
-    result_measurement_unit,
-    detection_limit,
-    measurement_uncertainty,
-    analysis_method,
-    lab_report_id,
-    analysis_date,
-    calculated_concentration,
-    calculated_concentration_measurement_unit,
-    created_at,
-    updated_at
-)
-VALUES
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 3 AND fk_contaminant_id = 7), 0.50, 0.48, 0.49, 1, 0.05, 4.5, 'Gas Chromatography', 1, '2024-02-17 10:30:00', 0.50, 1, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 6), 1.80, 1.75, 1.78, 2, 0.10, 5.0, 'Liquid Chromatography', 2, '2024-02-18 11:15:00', 1.80, 2, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 8 AND fk_contaminant_id = 14), 0.92, 0.89, 0.91, 1, 0.05, 4.0, 'Mass Spectrometry', 1, '2024-02-19 09:45:00', 0.92, 1, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 18 AND fk_contaminant_id = 7), 2.35, 2.30, 2.32, 2, 0.08, 3.8, 'Atomic Absorption', 2, '2024-02-20 13:10:00', 2.35, 2, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 22 AND fk_contaminant_id = 2), 0.76, 0.73, 0.75, 1, 0.03, 2.5, 'UV-Vis Spectroscopy', 1, '2024-02-21 15:20:00', 0.76, 1, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 6 AND fk_contaminant_id = 8), 3.20, 3.15, 3.18, 2, 0.20, 6.0, 'Inductively Coupled Plasma', 2, '2024-02-22 10:00:00', 3.20, 2, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 12), 1.14, 1.10, 1.12, 1, 0.07, 4.5, 'Ion Chromatography', 1, '2024-02-23 12:30:00', 1.14, 1, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 13), 2.60, 2.55, 2.58, 2, 0.05, 3.2, 'Fourier Transform Infrared', 2, '2024-02-24 14:00:00', 2.60, 2, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 22 AND fk_contaminant_id = 18), 1.05, 1.02, 1.03, 1, 0.02, 2.0, 'Spectrophotometry', 1, '2024-02-25 11:30:00', 1.05, 1, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 8 AND fk_contaminant_id = 16), 0.89, 0.87, 0.88, 2, 0.04, 3.0, 'Electrochemical Analysis', 2, '2024-02-26 16:45:00', 0.89, 2, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 21 AND fk_contaminant_id = 15), 3.45, 3.40, 3.42, 1, 0.10, 4.8, 'Microbial Analysis', 1, '2024-02-27 09:15:00', 3.45, 1, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 4 AND fk_contaminant_id = 7), 1.76, 1.72, 1.74, 2, 0.06, 3.5, 'Flame Photometry', 2, '2024-02-28 10:20:00', 1.76, 2, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 14 AND fk_contaminant_id = 20), 0.63, 0.60, 0.62, 1, 0.03, 2.2, 'Neutron Activation Analysis', 1, '2024-03-01 14:30:00', 0.63, 1, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 14 AND fk_contaminant_id = 17), 2.89, 2.85, 2.87, 2, 0.09, 5.0, 'UV-Vis Spectroscopy', 2, '2024-03-02 12:45:00', 2.89, 2, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 6 AND fk_contaminant_id = 9), 1.35, 1.30, 1.32, 1, 0.07, 3.8, 'Gas Chromatography', 1, '2024-03-03 15:00:00', 1.35, 1, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 19 AND fk_contaminant_id = 2), 0.97, 0.95, 0.96, 2, 0.04, 3.0, 'Liquid Chromatography', 2, '2024-03-04 09:10:00', 0.97, 2, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 25 AND fk_contaminant_id = 7), 1.72, 1.68, 1.70, 1, 0.08, 4.5, 'Mass Spectrometry', 1, '2024-03-05 13:40:00', 1.72, 1, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 11 AND fk_contaminant_id = 7), 2.58, 2.55, 2.57, 2, 0.05, 3.5, 'Atomic Absorption', 2, '2024-03-06 11:25:00', 2.58, 2, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 27 AND fk_contaminant_id = 18), 0.82, 0.79, 0.81, 1, 0.03, 2.8, 'Gas Chromatography', 1, '2024-03-07 16:10:00', 0.82, 1, NOW(), NOW()),
-    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 30 AND fk_contaminant_id = 15), 1.45, 1.42, 1.43, 2, 0.06, 3.2, 'UV-Vis Spectroscopy', 2, '2024-03-08 14:55:00', 1.45, 2, NOW(), NOW());
+INSERT INTO sample_analytical_results (sample_contaminant_id,
+                                       result_main,
+                                       result_control,
+                                       result_main_control,
+                                       result_measurement_unit,
+                                       detection_limit,
+                                       measurement_uncertainty,
+                                       analysis_method,
+                                       lab_report_id,
+                                       analysis_date,
+                                       calculated_concentration,
+                                       calculated_concentration_measurement_unit,
+                                       created_at,
+                                       updated_at,
+                                       is_below_detection_limit)
+VALUES ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 3 AND fk_contaminant_id = 7), 0.50, 0.48, 0.49, 1,
+        0.5, 4.5, 'Gas Chromatography', 1, '2024-02-17 10:30:00', 0.50, 1, NOW(), NOW(), TRUE),
 
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 6), 1.80, 1.75, 1.78, 2,
+        0.10, 5.0, 'Liquid Chromatography', 2, '2024-02-18 11:15:00', 1.80, 2, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 8 AND fk_contaminant_id = 14), 0.92, 0.89, 0.91, 1,
+        0.05, 4.0, 'Mass Spectrometry', 1, '2024-02-19 09:45:00', 0.92, 1, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 18 AND fk_contaminant_id = 7), 2.35, 2.30, 2.32, 2,
+        0.08, 3.8, 'Atomic Absorption', 2, '2024-02-20 13:10:00', 2.35, 2, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 22 AND fk_contaminant_id = 2), 0.76, 0.73, 0.75, 1,
+        0.03, 2.5, 'UV-Vis Spectroscopy', 1, '2024-02-21 15:20:00', 0.76, 1, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 6 AND fk_contaminant_id = 8), 3.20, 3.15, 3.18, 2,
+        0.20, 6.0, 'Inductively Coupled Plasma', 2, '2024-02-22 10:00:00', 3.20, 2, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 12), 1.14, 1.10, 1.12, 1,
+        0.07, 4.5, 'Ion Chromatography', 1, '2024-02-23 12:30:00', 1.14, 1, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 13), 2.60, 2.55, 2.58, 2,
+        0.05, 3.2, 'Fourier Transform Infrared', 2, '2024-02-24 14:00:00', 2.60, 2, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 22 AND fk_contaminant_id = 18), 1.05, 1.02, 1.03, 1,
+        0.02, 2.0, 'Spectrophotometry', 1, '2024-02-25 11:30:00', 1.05, 1, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 8 AND fk_contaminant_id = 16), 0.89, 0.87, 0.88, 2,
+        0.04, 3.0, 'Electrochemical Analysis', 2, '2024-02-26 16:45:00', 0.89, 2, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 21 AND fk_contaminant_id = 15), 3.45, 3.40, 0.42, 1,
+        0.50, 4.8, 'Microbial Analysis', 1, '2024-02-27 09:15:00', 3.45, 1, NOW(), NOW(), TRUE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 4 AND fk_contaminant_id = 7), 1.76, 1.72, 1.74, 2,
+        0.06, 3.5, 'Flame Photometry', 2, '2024-02-28 10:20:00', 1.76, 2, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 14 AND fk_contaminant_id = 20), 0.63, 0.60, 0.62, 1,
+        0.03, 2.2, 'Neutron Activation Analysis', 1, '2024-03-01 14:30:00', 0.63, 1, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 14 AND fk_contaminant_id = 17), 2.89, 2.85, 2.87, 2,
+        0.09, 5.0, 'UV-Vis Spectroscopy', 2, '2024-03-02 12:45:00', 2.89, 2, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 6 AND fk_contaminant_id = 9), 1.35, 1.30, 1.32, 1,
+        0.07, 3.8, 'Gas Chromatography', 1, '2024-03-03 15:00:00', 1.35, 1, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 19 AND fk_contaminant_id = 2), 0.97, 0.95, 0.96, 2,
+        0.04, 3.0, 'Liquid Chromatography', 2, '2024-03-04 09:10:00', 0.97, 2, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 25 AND fk_contaminant_id = 7), 1.72, 1.68, 1.70, 1,
+        0.08, 4.5, 'Mass Spectrometry', 1, '2024-03-05 13:40:00', 1.72, 1, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 11 AND fk_contaminant_id = 7), 2.58, 2.55, 2.57, 2,
+        0.05, 3.5, 'Atomic Absorption', 2, '2024-03-06 11:25:00', 2.58, 2, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 27 AND fk_contaminant_id = 18), 0.82, 0.79, 0.81, 1,
+        0.03, 2.8, 'Gas Chromatography', 1, '2024-03-07 16:10:00', 0.82, 1, NOW(), NOW(), FALSE),
+
+       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 30 AND fk_contaminant_id = 15), 1.45, 1.42, 1.43, 2,
+        0.06, 3.2, 'UV-Vis Spectroscopy', 2, '2024-03-08 14:55:00', 1.45, 2, NOW(), NOW(), FALSE);
 
 
 

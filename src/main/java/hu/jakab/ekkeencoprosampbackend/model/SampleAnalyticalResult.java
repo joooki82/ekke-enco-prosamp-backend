@@ -40,6 +40,9 @@ public class SampleAnalyticalResult {
     @JoinColumn(name = "result_measurement_unit", nullable = false, foreignKey = @ForeignKey(name = "fk_measurement_unit"))
     private MeasurementUnit resultMeasurementUnit;
 
+    @Column(name = "is_below_detection_limit", nullable = false)
+    private Boolean isBelowDetectionLimit;
+
     @Column(name = "detection_limit", precision = 10, scale = 4)
     private BigDecimal detectionLimit;
 
