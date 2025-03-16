@@ -520,37 +520,23 @@
 				
 				\hline
 				\endlastfoot
-				
-				
-				
-				\begin{minipage}{2.5cm} 
-					\centering \vspace{3pt} 
-					\textbf{DT-A-KA} 
-					\vspace{3pt} 
-				\end{minipage} &
-				\begin{minipage}{5cm} 
-					\centering 
-					Kálium-hidroxid
-				\end{minipage} &
-				\begin{minipage}{3cm} 
-					\centering \vspace{3pt}  
-					43,1
-				\end{minipage} &
-				\begin{minipage}{2cm} \centering 0,4428 \end{minipage} &
-				\begin{minipage}{2cm} \centering 0,1 \end{minipage} \\
-				\hline
-				
-			\end{longtable}
-			\vspace{-\baselineskip}
-			\parbox{\textwidth}{\raggedright \footnotesize 
+
+				{{averageConcentration}}
+
+				\vspace{-\baselineskip}
+				\parbox{\textwidth}{\raggedright \footnotesize
 				*20 °C-ra és 101,3 kPa légköri nyomásra számított koncentráció
-			}
+				}
+			\end{longtable}
+
 			
 			
 		\end{center}
-		
+
+		\newpage
+
 		\subsection{CSÚCSKONCENTRÁCIÓ MINTAVÉTELE}
-		
+
 		\begin{center}
 			\begin{longtable}{|m{2.5cm}|m{5cm}|m{3cm}|m{2cm}|m{2cm}|}
 				
@@ -572,62 +558,53 @@
 				\hline
 				\endlastfoot
 
-				\begin{minipage}{2.5cm} 
-					\centering \vspace{3pt} 
-					\textbf{DT-A-KA} 
-					\vspace{3pt} 
-				\end{minipage} &
-				\begin{minipage}{5cm} 
-					\centering 
-					Kálium-hidroxid
-				\end{minipage} &
-				\begin{minipage}{3cm} 
-					\centering \vspace{3pt}  
-					43,1
-				\end{minipage} &
-				\begin{minipage}{2cm} \centering 0,4428 \end{minipage} &
-				\begin{minipage}{2cm} \centering 0,1 \end{minipage} \\
-				\hline
+				{{peakConcentration}}
 
-				
-			\end{longtable}
-			\vspace{-\baselineskip}
-			\parbox{\textwidth}{\raggedright \footnotesize 
+				\vspace{-\baselineskip}
+				\parbox{\textwidth}{\raggedright \footnotesize
 				*20 °C-ra és 101,3 kPa légköri nyomásra számított koncentráció
-			}
-			
+				}
+
+				\parbox{\textwidth}{\raggedright \footnotesize
+				Budapest, {{issueDate}}				}
+%				\noindent\textbf{Budapest, {{issueDate}}} % Date aligned to the left
+
+				\vspace{1em} % Adjust vertical space
+
+				\begin{center}
+					\begin{tabular}{p{7cm} c m{7cm}} % Column widths and alignment
+						\textbf{A Vizsgálati Jegyzőkönyvet készítette:} & &
+						\begin{center}
+							\textbf{{{preparedBy}}} \\
+							{{preparedByRole}}
+						\end{center} \\[6em] % Increased space for signature
+
+						\textbf{A Vizsgálati Jegyzőkönyvet ellenőrizte:} & &
+						\begin{center}
+							\textbf{{{checkedBy}}} \\
+							{{checkedByRole}}
+						\end{center} \\
+					\end{tabular}
+				\end{center}
+
+				\vspace{1em}
+
+				\begin{center}
+					\textbf{-- Vizsgálati Jegyzőkönyv vége --}
+				\end{center}
+
+
+			\end{longtable}
+
+
 
 		\end{center}
-		
-		\vspace{1em} % Adjust spacing if needed
-		
-		\noindent\textbf{Budapest, 2024. május 17.} % Date aligned to the left
-		
-		\vspace{1em} % Adjust vertical space
-		
-		\begin{center}
-			\begin{tabular}{p{7cm} c m{7cm}} % Column widths and alignment
-				\textbf{A Vizsgálati Jegyzőkönyvet készítette:} & & 
-				\begin{center} 
-					\textbf{Poremba Marcell Áron} \\ 
-					vizsgáló mérnök
-				\end{center} \\[6em] % Increased space for signature
-				
-				\textbf{A Vizsgálati Jegyzőkönyvet ellenőrizte:} & & 
-				\begin{center} 
-					\textbf{Iga Benedek} \\ 
-					vezető mérnök
-				\end{center} \\
-			\end{tabular}
-		\end{center}
-		
-		\vspace{1em}
-		
-		\begin{center}
-			\textbf{-- Vizsgálati Jegyzőkönyv vége --}
-		\end{center}
 
-	
+
+
+
+
+
 	% --- Appendices Section (MELLÉKLETEK) ---
 	\newpage
 	\appendix

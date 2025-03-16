@@ -19,6 +19,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -269,6 +270,7 @@ public class TestReportService {
 
 
         List<Sample> samples = testReport.getSamplingRecord().getSamples();
+
         List<Sample> samplesAverage = samples.stream()
                 .filter(sample -> "AK" .equals(sample.getSampleType()))
                 .sorted(Comparator.comparing(Sample::getLocation)
@@ -312,8 +314,22 @@ public class TestReportService {
 
         reportData.put("balintStandards", latexContentBuilder.generateStandardList(balintStandards));
 
+        reportData.put("averageConcentration", latexContentBuilder.generateSampleResults(samplesAverage));
 
-        // Generate the LaTeX-based PDF and return byte array
+        reportData.put("peakConcentration", latexContentBuilder.generateSampleResults(samplesPeak));
+
+        testReport.setIssueDate(LocalDate.now());
+
+        reportData.put("issueDate", testReport.getIssueDate().toString());
+
+        reportData.put("preparedBy", testReport.getPreparedBy().getUsername());
+
+        reportData.put("preparedByRole", testReport.getPreparedBy().getRole());
+
+        reportData.put("checkedBy", testReport.getCheckedBy().getUsername());
+
+        reportData.put("checkedByRole", testReport.getCheckedBy().getRole());
+
         try {
             return latexReportService.generatePdfReport(reportData);
         } catch (IOException | InterruptedException e) {

@@ -31,6 +31,9 @@ public class SampleContaminant {
     @JoinColumn(name = "fk_contaminant_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sample_contaminants_contaminant"))
     private Contaminant contaminant;
 
+    @OneToOne(mappedBy = "sampleContaminant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private SampleAnalyticalResult analyticalResult;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

@@ -2,6 +2,7 @@ package hu.jakab.ekkeencoprosampbackend.service.laTex;
 
 import hu.jakab.ekkeencoprosampbackend.model.*;
 import hu.jakab.ekkeencoprosampbackend.service.TestReportService;
+import hu.jakab.ekkeencoprosampbackend.service.utils.SignificantFiguresUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -119,19 +120,30 @@ public class LatexContentBuilder {
 
             sampleDetails.append("\\begin{minipage}{3.5cm} ")
                     .append("\\centering \\vspace{3pt} ")
-                    .append("\\textbf{" + sample.getSampleIdentifier() + " /} \\\\ \\textit{" + contaminantGroups + "} \\vspace{3pt}")
+                    .append("\\textbf{").append(sample.getSampleIdentifier())
+                    .append(" /} \\\\ \\textit{")
+                    .append(contaminantGroups).append("} \\vspace{3pt}")
                     .append("\\end{minipage} & ")
                     .append("\\begin{minipage}{2cm} ")
                     .append("\\centering ")
-                    .append(formattedDate + "\\\\ " + formattedStartTime + " - " + formattedEndTime)
+                    .append(formattedDate).append("\\\\ ")
+                    .append(formattedStartTime)
+                    .append(" - ")
+                    .append(formattedEndTime)
                     .append("\\end{minipage} & ")
                     .append("\\begin{minipage}{3.5cm} ")
                     .append("\\centering \\vspace{3pt}  ")
                     .append(sample.getLocation())
                     .append("\\end{minipage} & ")
-                    .append("\\begin{minipage}{2cm} \\centering " + (sample.getEmployeeName() != null ? sample.getEmployeeName() : "-") + " \\end{minipage} & ")
-                    .append("\\begin{minipage}{1cm} \\centering " + (sample.getTemperature() != null ? sample.getTemperature() : "-") + " \\end{minipage} & ")
-                    .append("\\begin{minipage}{1cm} \\centering " + (sample.getHumidity() != null ? sample.getHumidity() : "-") + " \\end{minipage} \\\\ ")
+                    .append("\\begin{minipage}{2cm} \\centering ")
+                    .append(sample.getEmployeeName() != null ? sample.getEmployeeName() : "-")
+                    .append(" \\end{minipage} & ")
+                    .append("\\begin{minipage}{1cm} \\centering ")
+                    .append(sample.getTemperature() != null ? sample.getTemperature() : "-")
+                    .append(" \\end{minipage} & ")
+                    .append("\\begin{minipage}{1cm} \\centering ")
+                    .append(sample.getHumidity() != null ? sample.getHumidity() : "-")
+                    .append(" \\end{minipage} \\\\ ")
                     .append("\\hline");
 
         }
@@ -204,13 +216,70 @@ public class LatexContentBuilder {
         return standardDetails.toString();
     }
 
+    public String generateSampleResults(List<Sample> samples) {
+        StringBuilder sampleResults = new StringBuilder();
+
+        for (Sample sample : samples) {
+
+//            String sampleIdentifier = sample.getSampleIdentifier();
+//            BigDecimal sampleVolume = sample.getSampleVolumeFlowRate();
+
+            List<SampleContaminant> sampleContaminants = sample.getSampleContaminants();
+
+            for (SampleContaminant sampleContaminant : sampleContaminants) {
+
+                SampleAnalyticalResult analyticalResult = sampleContaminant.getAnalyticalResult();
+
+                if (analyticalResult != null) {
+
+                    String contaminantName = sampleContaminant.getContaminant().getName();
+
+                    String sampleIdentifier = sampleContaminant.getSample().getSampleIdentifier();
+
+                    BigDecimal sampleVolume = SignificantFiguresUtil.roundToSignificantFigures(sampleContaminant.getSample().getSampleVolumeFlowRate(),3);
+
+                    BigDecimal adsorbedAmount = SignificantFiguresUtil.roundToSignificantFigures(analyticalResult.getResultMain(),3);
+
+                    BigDecimal concentration = SignificantFiguresUtil.roundToSignificantFigures(analyticalResult.getCalculatedConcentration(),3);
+
+                    // Append row to LaTeX table
+                    sampleResults.append("\t\\begin{minipage}{2.5cm} \\centering \\vspace{3pt} \\textbf{")
+                            .append(sampleIdentifier)
+                            .append("} \\vspace{3pt} \\end{minipage} &\n");
+
+                    sampleResults.append("\t\\begin{minipage}{5cm} \\centering ")
+                            .append(contaminantName)
+                            .append(" \\end{minipage} &\n");
+
+                    sampleResults.append("\t\\begin{minipage}{3cm} \\centering \\vspace{3pt} ")
+                            .append(adsorbedAmount)
+                            .append(" \\end{minipage} &\n");
+
+                    sampleResults.append("\t\\begin{minipage}{2cm} \\centering ")
+                            .append(sampleVolume)
+                            .append(" \\end{minipage} &\n");
+
+                    sampleResults.append("\t\\begin{minipage}{2cm} \\centering ")
+                            .append(concentration)
+                            .append(" \\end{minipage} \\\\\n");
+
+                    sampleResults.append("\\hline\n");
+                }
+            }
+        }
+
+        // End LaTeX table
+        sampleResults.append("\\end{longtable}\n");
+
+        return sampleResults.toString();
+    }
+
 
     private String escapeLatex(String input) {
         if (input == null) {
             return "";
         }
         return input.replace("%", "\\%");
-
     }
 
 }

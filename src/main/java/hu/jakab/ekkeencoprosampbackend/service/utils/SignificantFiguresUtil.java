@@ -19,6 +19,14 @@ public final class SignificantFiguresUtil {
         int scale = significantFigures - value.precision() + value.scale();
 
         // Apply rounding with HALF_UP
-        return value.setScale(scale, RoundingMode.HALF_UP);
+        BigDecimal roundedValue = value.setScale(scale, RoundingMode.HALF_UP);
+
+        // Enforce minimum value of 0.001
+        BigDecimal minValue = new BigDecimal("0.001");
+        if (roundedValue.compareTo(minValue) < 0) {
+            return minValue;
+        }
+
+        return roundedValue;
     }
 }

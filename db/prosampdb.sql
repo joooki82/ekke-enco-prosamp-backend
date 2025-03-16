@@ -25,6 +25,8 @@ SELECT current_user, session_user;
 -- #############################################################################
 -- TABLE: Users
 -- #############################################################################
+
+DROP TABLE IF EXISTS users;
 CREATE TABLE users
 (
     id         UUID PRIMARY KEY, -- Stores Keycloak User ID
@@ -36,13 +38,16 @@ CREATE TABLE users
 );
 
 INSERT INTO users (id, username, email, role, created_at, updated_at)
-VALUES ('11111111-1111-1111-1111-111111111111', 'anonymous', 'anonymous@example.com', 'manager', NOW(), NOW())
+VALUES ('11111111-1111-1111-1111-111111111111', 'Iga Benedek', 'anonymous@example.com', 'manager', NOW(), NOW())
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO users (id, username, email, role)
-VALUES ('22222222-2222-2222-2222-222222222222', 'benonymous', 'benonymous@encotech.hu', 'admin'),
-       ('33333333-3333-3333-3333-333333333333', 'vazulnymus', 'vazulnymus@ananas.hu', 'technician');
+VALUES ('22222222-2222-2222-2222-222222222222', 'dr. Csókási Pál', 'benonymous@encotech.hu', 'műszaki igazgató'),
+       ('33333333-3333-3333-3333-333333333333', 'Mászáros Poci László', 'vazulnymus@ananas.hu', 'technician');
 
+INSERT INTO users (id, username, email, role, created_at, updated_at)
+VALUES ('44444444-2222-2222-2222-222222222222', 'Poremba Marcell Áron', 'john.doe@example.com', 'vizsgáló mérnök', NOW(), NOW()),
+       ('55555555-3333-3333-3333-333333333333', 'Göndös Dorottya', 'jane.smith@example.com', 'vizsgáló mérnök', NOW(), NOW());
 
 -- #############################################################################
 -- TABLE: Companies
@@ -366,13 +371,14 @@ CREATE TABLE sample_analytical_results
     detection_limit                           NUMERIC(10, 4) CHECK (detection_limit IS NULL OR detection_limit >= 0),
     measurement_uncertainty                   NUMERIC(5, 2) CHECK (measurement_uncertainty IS NULL OR
                                                                    measurement_uncertainty BETWEEN 0 AND 100),
-    analysis_method                           VARCHAR(255) CHECK (LENGTH(analysis_method) > 3),
+    analysis_method                           VARCHAR(255),
     lab_report_id                             BIGINT                                                         NOT NULL REFERENCES analytical_lab_reports (id) ON DELETE CASCADE,
     analysis_date                             TIMESTAMP CHECK (analysis_date <= CURRENT_TIMESTAMP),
     calculated_concentration                  NUMERIC(10, 4) CHECK (calculated_concentration >= 0),
     calculated_concentration_measurement_unit BIGINT                                                         NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
     created_at                                TIMESTAMP                                                                      DEFAULT NOW(),
     updated_at                                TIMESTAMP                                                                      DEFAULT NOW(),
+    CONSTRAINT unique_sample_contaminant UNIQUE (sample_contaminant_id),
     CONSTRAINT fk_sample_contaminant FOREIGN KEY (sample_contaminant_id)
         REFERENCES sample_contaminants (id) ON DELETE CASCADE
 );
@@ -661,59 +667,85 @@ $$;
 
 -- Insert Users
 
-INSERT INTO contaminant_groups (id, name, description, created_at, updated_at)
-VALUES (1, 'Volatile Organic Compounds', 'Group of organic chemicals that evaporate easily', NOW(), NOW()),
-       (2, 'Heavy Metals', 'Metallic elements that can be toxic at low concentrations', NOW(), NOW()),
-       (3, 'Particulate Matter', 'Small solid or liquid particles in the air', NOW(), NOW()),
-       (4, 'Pesticides', 'Chemicals used to kill pests, can be harmful to humans', NOW(), NOW()),
-       (5, 'Industrial Gases', 'Gases emitted from industrial processes', NOW(), NOW()),
-       (6, 'Combustion Byproducts', 'Substances produced during burning of fuels', NOW(), NOW()),
-       (7, 'Radioactive Contaminants', 'Radioactive substances that pose health risks', NOW(), NOW()),
-       (8, 'Pathogenic Microorganisms', 'Microbes that can cause disease', NOW(), NOW()),
-       (9, 'Endocrine Disruptors', 'Chemicals that interfere with hormonal functions', NOW(), NOW()),
-       (10, 'Pharmaceutical Residues', 'Traces of pharmaceutical substances in the environment', NOW(), NOW());
+INSERT INTO contaminant_groups (name, description, created_at, updated_at)
+VALUES ('Volatile Organic Compounds', 'Group of organic chemicals that evaporate easily', NOW(), NOW()),
+       ('Heavy Metals', 'Metallic elements that can be toxic at low concentrations', NOW(), NOW()),
+       ('Particulate Matter', 'Small solid or liquid particles in the air', NOW(), NOW()),
+       ('Pesticides', 'Chemicals used to kill pests, can be harmful to humans', NOW(), NOW()),
+       ('Industrial Gases', 'Gases emitted from industrial processes', NOW(), NOW()),
+       ('Combustion Byproducts', 'Substances produced during burning of fuels', NOW(), NOW()),
+       ('Radioactive Contaminants', 'Radioactive substances that pose health risks', NOW(), NOW()),
+       ('Pathogenic Microorganisms', 'Microbes that can cause disease', NOW(), NOW()),
+       ('Endocrine Disruptors', 'Chemicals that interfere with hormonal functions', NOW(), NOW()),
+       ('Pharmaceutical Residues', 'Traces of pharmaceutical substances in the environment', NOW(), NOW());
 
-INSERT INTO contaminants (id, name, description, contaminant_group_id, created_at, updated_at)
-VALUES (1, 'Benzene', 'A volatile organic compound found in industrial emissions', 1, NOW(), NOW()),
-       (2, 'Toluene', 'A solvent commonly used in paints and coatings', 1, NOW(), NOW()),
-       (3, 'Lead', 'A heavy metal that can cause serious health problems', 2, NOW(), NOW()),
-       (4, 'Mercury', 'A toxic heavy metal often found in fish', 2, NOW(), NOW()),
-       (5, 'PM10', 'Particulate matter less than 10 micrometers in diameter', 3, NOW(), NOW()),
-       (6, 'PM2.5', 'Fine particulate matter that can penetrate deep into the lungs', 3, NOW(), NOW()),
-       (7, 'DDT', 'A banned pesticide with long-lasting environmental effects', 4, NOW(), NOW()),
-       (8, 'Glyphosate', 'A widely used herbicide with potential health concerns', 4, NOW(), NOW()),
-       (9, 'Carbon Monoxide', 'A colorless, odorless gas produced by combustion', 5, NOW(), NOW()),
-       (10, 'Sulfur Dioxide', 'A gas produced by burning fossil fuels', 5, NOW(), NOW()),
-       (11, 'Dioxins', 'Highly toxic compounds formed during combustion', 6, NOW(), NOW()),
-       (12, 'Polycyclic Aromatic Hydrocarbons (PAHs)', 'A class of chemicals formed during incomplete combustion', 6,
+INSERT INTO contaminant_groups (name, description)
+VALUES ('Metals', 'Various metal contaminants'),
+       ('Acids', 'Acidic contaminants'),
+       ('Alcohols', 'Alcohol-based contaminants'),
+       ('Solvents', 'Organic solvents and hydrocarbons'),
+       ('Other', 'Miscellaneous contaminants');
+
+
+INSERT INTO contaminants (name, description, contaminant_group_id, created_at, updated_at)
+VALUES ('Benzene', 'A volatile organic compound found in industrial emissions', 1, NOW(), NOW()),
+       ('Toluene', 'A solvent commonly used in paints and coatings', 1, NOW(), NOW()),
+       ('Lead', 'A heavy metal that can cause serious health problems', 2, NOW(), NOW()),
+       ('Mercury', 'A toxic heavy metal often found in fish', 2, NOW(), NOW()),
+       ('PM10', 'Particulate matter less than 10 micrometers in diameter', 3, NOW(), NOW()),
+       ('PM2.5', 'Fine particulate matter that can penetrate deep into the lungs', 3, NOW(), NOW()),
+       ('DDT', 'A banned pesticide with long-lasting environmental effects', 4, NOW(), NOW()),
+       ('Glyphosate', 'A widely used herbicide with potential health concerns', 4, NOW(), NOW()),
+       ('Carbon Monoxide', 'A colorless, odorless gas produced by combustion', 5, NOW(), NOW()),
+       ('Sulfur Dioxide', 'A gas produced by burning fossil fuels', 5, NOW(), NOW()),
+       ('Dioxins', 'Highly toxic compounds formed during combustion', 6, NOW(), NOW()),
+       ('Polycyclic Aromatic Hydrocarbons (PAHs)', 'A class of chemicals formed during incomplete combustion', 6,
         NOW(), NOW()),
-       (13, 'Radon', 'A radioactive gas naturally found in soil and rock', 7, NOW(), NOW()),
-       (14, 'Cesium-137', 'A radioactive isotope from nuclear fallout', 7, NOW(), NOW()),
-       (15, 'E. coli', 'A bacteria that can cause serious foodborne illness', 8, NOW(), NOW()),
-       (16, 'Legionella', 'A bacteria that thrives in water systems', 8, NOW(), NOW()),
-       (17, 'Bisphenol A (BPA)', 'A chemical used in plastics that may disrupt hormones', 9, NOW(), NOW()),
-       (18, 'Phthalates', 'Plasticizers that can affect human development', 9, NOW(), NOW()),
-       (19, 'Ibuprofen', 'A common painkiller that can be found in water sources', 10, NOW(), NOW()),
-       (20, 'Antibiotic Residues', 'Traces of antibiotics in the environment leading to resistance', 10, NOW(), NOW());
+       ('Radon', 'A radioactive gas naturally found in soil and rock', 7, NOW(), NOW()),
+       ('Cesium-137', 'A radioactive isotope from nuclear fallout', 7, NOW(), NOW()),
+       ('E. coli', 'A bacteria that can cause serious foodborne illness', 8, NOW(), NOW()),
+       ('Legionella', 'A bacteria that thrives in water systems', 8, NOW(), NOW()),
+       ('Bisphenol A (BPA)', 'A chemical used in plastics that may disrupt hormones', 9, NOW(), NOW()),
+       ('Phthalates', 'Plasticizers that can affect human development', 9, NOW(), NOW()),
+       ('Ibuprofen', 'A common painkiller that can be found in water sources', 10, NOW(), NOW()),
+       ('Antibiotic Residues', 'Traces of antibiotics in the environment leading to resistance', 10, NOW(), NOW());
+
+INSERT INTO contaminants (name, description, contaminant_group_id)
+VALUES ('Kálium-hidroxid', 'Potassium hydroxide', (SELECT id FROM contaminant_groups WHERE name = 'Other')),
+       ('Nátrium-hidroxid', 'Sodium hydroxide', (SELECT id FROM contaminant_groups WHERE name = 'Other')),
+       ('Nikkel', 'Nickel', (SELECT id FROM contaminant_groups WHERE name = 'Metals')),
+       ('Mangán (respirabilis)', 'Respirable Manganese', (SELECT id FROM contaminant_groups WHERE name = 'Metals')),
+       ('Mangán (belélegezhető)', 'Inhalable Manganese', (SELECT id FROM contaminant_groups WHERE name = 'Metals')),
+       ('Kobalt', 'Cobalt', (SELECT id FROM contaminant_groups WHERE name = 'Metals')),
+       ('Cink-oxid por', 'Zinc Oxide Dust', (SELECT id FROM contaminant_groups WHERE name = 'Metals')),
+       ('Foszforsav', 'Phosphoric Acid', (SELECT id FROM contaminant_groups WHERE name = 'Acids')),
+       ('Fluorid', 'Fluoride', (SELECT id FROM contaminant_groups WHERE name = 'Other')),
+       ('Toluol', 'Toluene', (SELECT id FROM contaminant_groups WHERE name = 'Solvents')),
+       ('i-Propil-alkohol', 'Isopropyl Alcohol', (SELECT id FROM contaminant_groups WHERE name = 'Alcohols')),
+       ('Etanol', 'Ethanol', (SELECT id FROM contaminant_groups WHERE name = 'Alcohols')),
+       ('n-Butanol', 'n-Butanol', (SELECT id FROM contaminant_groups WHERE name = 'Alcohols')),
+       ('Aceton', 'Acetone', (SELECT id FROM contaminant_groups WHERE name = 'Solvents')),
+       ('n-Butil-acetát', 'n-Butyl Acetate', (SELECT id FROM contaminant_groups WHERE name = 'Solvents')),
+       ('1-Metoxi-2-propil-acetát', '1-Methoxy-2-propyl Acetate',
+        (SELECT id FROM contaminant_groups WHERE name = 'Solvents')),
+       ('1-Metoxi-2-propanol', '1-Methoxy-2-Propanol', (SELECT id FROM contaminant_groups WHERE name = 'Solvents')),
+       ('2-Butoxi-etanol', '2-Butoxy Ethanol', (SELECT id FROM contaminant_groups WHERE name = 'Solvents')),
+       ('n-Heptán', 'n-Heptane', (SELECT id FROM contaminant_groups WHERE name = 'Solvents'));
 
 
-
-INSERT INTO users (id, username, email, role, created_at, updated_at)
-VALUES ('44444444-2222-2222-2222-222222222222', 'john_doe', 'john.doe@example.com', 'admin', NOW(), NOW()),
-       ('55555555-3333-3333-3333-333333333333', 'jane_smith', 'jane.smith@example.com', 'technician', NOW(), NOW());
 
 -- Insert Companies
 INSERT INTO companies (name, address, contact_person, email, phone, country, city)
-VALUES ('Tech Solutions Ltd.', '123 Tech Street', 'Alice Johnson', 'contact@techsolutions.com', '+123456789', 'USA',
-        'New York'),
+VALUES ('Robert Bosch Automotive Steering Kft.', '3397 Maklár, Havasi László u. 2.', 'Alice Johnson', 'contact@techsolutions.com', '+123456789', 'USA',
+        'Maklár'),
        ('Industrial Safety Inc.', '456 Safety Ave', 'Bob Brown', 'info@safetyinc.com', '+987654321', 'Germany',
         'Berlin')
 RETURNING id;
 
 -- Insert Locations
 INSERT INTO locations (company_id, name, address, contact_person, email, phone, country, city, postal_code)
-VALUES (1, 'Tech Solutions HQ', '123 Tech Street', 'Alice Johnson', 'alice.johnson@techsolutions.com', '+123456789',
-        'USA', 'New York', '10001'),
+VALUES (1, 'Robert Bosch Automotive Steering Kft.', '3397 Maklár, Havasi László u. 2.', 'Alice Johnson', 'alice.johnson@techsolutions.com', '+123456789',
+        'USA', 'Maklár', '10001'),
        (2, 'Industrial Safety Branch', '456 Safety Ave', 'Bob Brown', 'bob.brown@safetyinc.com', '+987654321',
         'Germany', 'Berlin', '10115')
 RETURNING id;
@@ -727,7 +759,7 @@ VALUES ('Global Engineering', 'Michael Scott', 'michael.scott@globaleng.com', '+
 
 -- Insert Projects
 INSERT INTO projects (project_number, client_id, project_name, start_date, end_date, status, description)
-VALUES ('PROJ-001', 1, 'Air Quality Testing', '2024-01-01', '2024-12-31', 'ONGOING',
+VALUES ('M-177/2024', 1, 'Munkahelyi légszennyezettség mérés', '2024-01-01', '2024-12-31', 'ONGOING',
         'Testing air quality at industrial sites.'),
        ('PROJ-002', 2, 'Safety Compliance Audit', '2024-03-01', NULL, 'ONGOING', 'Ensuring safety standards are met.');
 
@@ -852,9 +884,10 @@ VALUES ('LAB-001', '2024-02-17', 1),
 INSERT INTO test_reports (report_number, title, approved_by, prepared_by, checked_by, aim_of_test, project_id,
                           location_id, sampling_record_id, technology, sampling_conditions_dates,
                           determination_of_pollutant_concentration, issue_date, report_status)
-VALUES ('TR-001', 'Air Quality Test Report', '22222222-2222-2222-2222-222222222222',
+VALUES ('1-177 /2024', 'Robert Bosch Automotive Steering Kft. maklári telephelyén
+végzett munkahelyi légszennyezettség mérésekről', '22222222-2222-2222-2222-222222222222',
         '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222',
-        'Evaluate air quality in factory', 1, 1, 1, 'A Robert Bosch Automotive Steering Kft. maklári telephelyén elektromos kormányművek,
+        'Munkahelyi légszennyezettség mérés', 1, 1, 1, 'A Robert Bosch Automotive Steering Kft. maklári telephelyén elektromos kormányművek,
 kormányművekhez fogaslécek és kormányanyák gyártását végzik. A vizsgált területek a
 festősor környezetében találhatóak.', 'vizsgálatok ideje alatt a telephelyen folyamatos, normál üzemmenetnek megfelelő
 munka folyt. Az üzemvitelt megzavaró körülményt nem tapasztaltunk. A mintavételek
@@ -1022,14 +1055,54 @@ VALUES (3, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
        (15, 1, '2025-03-15 09:04:47', '2025-03-15 09:04:47'),
        (28, 7, '2025-03-15 09:04:47', '2025-03-15 09:04:47');
 
--- Insert into sample_analytical_results (Using sample_contaminant_id)
-INSERT INTO sample_analytical_results (sample_contaminant_id, result_main, result_measurement_unit, detection_limit,
-                                       measurement_uncertainty, analysis_method, lab_report_id, analysis_date,
-                                       calculated_concentration, calculated_concentration_measurement_unit)
-VALUES ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 3 AND fk_contaminant_id = 7), 0.35, 1, 0.1, 5.0,
-        'GC-MS', 1, '2024-02-17 12:00:00', 0.35, 1),
-       ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 6), 1.25, 2, 0.2, 4.5,
-        'HPLC', 2, '2024-02-18 14:00:00', 1.25, 2);
+-- -- Insert into sample_analytical_results (Using sample_contaminant_id)
+-- INSERT INTO sample_analytical_results (sample_contaminant_id, result_main, result_measurement_unit, detection_limit,
+--                                        measurement_uncertainty, analysis_method, lab_report_id, analysis_date,
+--                                        calculated_concentration, calculated_concentration_measurement_unit)
+-- VALUES ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 3 AND fk_contaminant_id = 7), 0.35, 1, 0.1, 5.0,
+--         'GC-MS', 1, '2024-02-17 12:00:00', 0.35, 1),
+--        ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 6), 1.25, 2, 0.2, 4.5,
+--         'HPLC', 2, '2024-02-18 14:00:00', 1.25, 2);
+INSERT INTO sample_analytical_results (
+    sample_contaminant_id,
+    result_main,
+    result_control,
+    result_main_control,
+    result_measurement_unit,
+    detection_limit,
+    measurement_uncertainty,
+    analysis_method,
+    lab_report_id,
+    analysis_date,
+    calculated_concentration,
+    calculated_concentration_measurement_unit,
+    created_at,
+    updated_at
+)
+VALUES
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 3 AND fk_contaminant_id = 7), 0.50, 0.48, 0.49, 1, 0.05, 4.5, 'Gas Chromatography', 1, '2024-02-17 10:30:00', 0.50, 1, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 6), 1.80, 1.75, 1.78, 2, 0.10, 5.0, 'Liquid Chromatography', 2, '2024-02-18 11:15:00', 1.80, 2, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 8 AND fk_contaminant_id = 14), 0.92, 0.89, 0.91, 1, 0.05, 4.0, 'Mass Spectrometry', 1, '2024-02-19 09:45:00', 0.92, 1, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 18 AND fk_contaminant_id = 7), 2.35, 2.30, 2.32, 2, 0.08, 3.8, 'Atomic Absorption', 2, '2024-02-20 13:10:00', 2.35, 2, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 22 AND fk_contaminant_id = 2), 0.76, 0.73, 0.75, 1, 0.03, 2.5, 'UV-Vis Spectroscopy', 1, '2024-02-21 15:20:00', 0.76, 1, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 6 AND fk_contaminant_id = 8), 3.20, 3.15, 3.18, 2, 0.20, 6.0, 'Inductively Coupled Plasma', 2, '2024-02-22 10:00:00', 3.20, 2, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 12), 1.14, 1.10, 1.12, 1, 0.07, 4.5, 'Ion Chromatography', 1, '2024-02-23 12:30:00', 1.14, 1, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 12 AND fk_contaminant_id = 13), 2.60, 2.55, 2.58, 2, 0.05, 3.2, 'Fourier Transform Infrared', 2, '2024-02-24 14:00:00', 2.60, 2, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 22 AND fk_contaminant_id = 18), 1.05, 1.02, 1.03, 1, 0.02, 2.0, 'Spectrophotometry', 1, '2024-02-25 11:30:00', 1.05, 1, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 8 AND fk_contaminant_id = 16), 0.89, 0.87, 0.88, 2, 0.04, 3.0, 'Electrochemical Analysis', 2, '2024-02-26 16:45:00', 0.89, 2, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 21 AND fk_contaminant_id = 15), 3.45, 3.40, 3.42, 1, 0.10, 4.8, 'Microbial Analysis', 1, '2024-02-27 09:15:00', 3.45, 1, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 4 AND fk_contaminant_id = 7), 1.76, 1.72, 1.74, 2, 0.06, 3.5, 'Flame Photometry', 2, '2024-02-28 10:20:00', 1.76, 2, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 14 AND fk_contaminant_id = 20), 0.63, 0.60, 0.62, 1, 0.03, 2.2, 'Neutron Activation Analysis', 1, '2024-03-01 14:30:00', 0.63, 1, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 14 AND fk_contaminant_id = 17), 2.89, 2.85, 2.87, 2, 0.09, 5.0, 'UV-Vis Spectroscopy', 2, '2024-03-02 12:45:00', 2.89, 2, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 6 AND fk_contaminant_id = 9), 1.35, 1.30, 1.32, 1, 0.07, 3.8, 'Gas Chromatography', 1, '2024-03-03 15:00:00', 1.35, 1, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 19 AND fk_contaminant_id = 2), 0.97, 0.95, 0.96, 2, 0.04, 3.0, 'Liquid Chromatography', 2, '2024-03-04 09:10:00', 0.97, 2, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 25 AND fk_contaminant_id = 7), 1.72, 1.68, 1.70, 1, 0.08, 4.5, 'Mass Spectrometry', 1, '2024-03-05 13:40:00', 1.72, 1, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 11 AND fk_contaminant_id = 7), 2.58, 2.55, 2.57, 2, 0.05, 3.5, 'Atomic Absorption', 2, '2024-03-06 11:25:00', 2.58, 2, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 27 AND fk_contaminant_id = 18), 0.82, 0.79, 0.81, 1, 0.03, 2.8, 'Gas Chromatography', 1, '2024-03-07 16:10:00', 0.82, 1, NOW(), NOW()),
+    ((SELECT id FROM sample_contaminants WHERE fk_sample_id = 30 AND fk_contaminant_id = 15), 1.45, 1.42, 1.43, 2, 0.06, 3.2, 'UV-Vis Spectroscopy', 2, '2024-03-08 14:55:00', 1.45, 2, NOW(), NOW());
+
+
+
 
 INSERT INTO sampling_record_equipments (fk_sampling_record_id, fk_equipment_id, created_at)
 VALUES (1, 1, '2025-03-15 14:21:45'),
@@ -1074,6 +1147,6 @@ VALUES (1, 1),
        (1, 15),
        (1, 16);
 
-
-
-
+INSERT INTO test_report_samplers (fk_test_report_id, fk_user_id)
+VALUES (1, '44444444-2222-2222-2222-222222222222'),
+       (1, '55555555-3333-3333-3333-333333333333');
