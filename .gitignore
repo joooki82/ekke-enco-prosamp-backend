@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+/src/main/resources/templates/test_report_template_placeholder.aux
+/src/main/resources/templates/test_report_template_placeholder.log
+/src/main/resources/templates/test_report_template_placeholder.pdf
+/src/main/resources/templates/test_report_template_placeholder.synctex.gz
+/src/main/resources/templates/test_report_template_placeholder.toc
