@@ -75,6 +75,9 @@ public class LaTeXReportService {
             Files.deleteIfExists(Paths.get(texFileName));
             Files.deleteIfExists(Paths.get(OUTPUT_DIR + "generated_report.aux"));
             Files.deleteIfExists(Paths.get(OUTPUT_DIR + "generated_report.log"));
+            Files.deleteIfExists(Paths.get(TEMPLATE_PATH + "test_report_template_placeholder.log"));
+            Files.deleteIfExists(Paths.get(TEMPLATE_PATH + "test_report_template_placeholder.aux"));
+
 
             logger.info("PDF Report generated successfully.");
             return pdfBytes;
