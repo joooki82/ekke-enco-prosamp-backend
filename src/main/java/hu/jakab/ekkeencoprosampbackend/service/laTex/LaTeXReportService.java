@@ -72,9 +72,9 @@ public class LaTeXReportService {
             byte[] pdfBytes = Files.readAllBytes(pdfPath);
 
             // Cleanup (Optional: Remove generated files to prevent clutter)
-//            Files.deleteIfExists(Paths.get(texFileName));
-//            Files.deleteIfExists(Paths.get(OUTPUT_DIR + "generated_report.aux"));
-//            Files.deleteIfExists(Paths.get(OUTPUT_DIR + "generated_report.log"));
+            Files.deleteIfExists(Paths.get(texFileName));
+            Files.deleteIfExists(Paths.get(OUTPUT_DIR + "generated_report.aux"));
+            Files.deleteIfExists(Paths.get(OUTPUT_DIR + "generated_report.log"));
 
             logger.info("PDF Report generated successfully.");
             return pdfBytes;
