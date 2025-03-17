@@ -206,8 +206,7 @@ public class LatexContentBuilder {
         StringBuilder standardDetails = new StringBuilder();
 
         for (Standard standard : standards) {
-//            logger.info(standard.toString());
-            standardDetails.append(standard.getStandardNumber()).append(" & ").append(standard.getDescription()).append(" \\")
+            standardDetails.append(standard.getStandardNumber()).append(" & ").append(standard.getDescription()).append(" \\\\")
                     .append(" \\hline ");
         }
 
@@ -220,9 +219,6 @@ public class LatexContentBuilder {
         StringBuilder sampleResults = new StringBuilder();
 
         for (Sample sample : samples) {
-
-//            String sampleIdentifier = sample.getSampleIdentifier();
-//            BigDecimal sampleVolume = sample.getSampleVolumeFlowRate();
 
             List<SampleContaminant> sampleContaminants = sample.getSampleContaminants();
 
