@@ -166,9 +166,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleInvalidEnum(HttpMessageNotReadableException ex) {
-        return ResponseEntity.badRequest().body("Invalid value provided for enum field.");
-    }
+
 
 }
