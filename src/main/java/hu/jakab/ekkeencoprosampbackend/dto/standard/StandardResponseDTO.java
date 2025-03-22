@@ -15,6 +15,7 @@ public class StandardResponseDTO {
     private String standardNumber;
     private String description;
     private String standardType;
+    private String standardTypeMagyar;
     private String identifier;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

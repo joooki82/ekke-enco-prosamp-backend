@@ -43,7 +43,6 @@ public class Standard {
     @JsonBackReference
     private List<LaboratoryStandard> laboratoryStandards = new ArrayList<>();
 
-
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

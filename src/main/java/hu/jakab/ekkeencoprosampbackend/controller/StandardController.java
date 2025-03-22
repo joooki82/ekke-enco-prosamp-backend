@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/standard")
+@RequestMapping("/api/standards")
 public class StandardController {
 
     private static final Logger logger = LoggerFactory.getLogger(StandardController.class);
