@@ -2,6 +2,7 @@ package hu.jakab.ekkeencoprosampbackend.dto.standard;
 
 import hu.jakab.ekkeencoprosampbackend.model.StandardType;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -19,7 +20,7 @@ public class StandardRequestDTO {
     @Size(max = 65535, message = "Description is too long")
     private String description;
 
-    @Size(max = 255, message = "Standard type must be at most 255 characters long")
+    @NotNull(message = "Standard type cannot be null")
     private StandardType standardType;
 
     @NotBlank(message = "Identifier cannot be blank")
