@@ -1190,3 +1190,4 @@ VALUES (1, 1),
 INSERT INTO test_report_samplers (fk_test_report_id, fk_user_id)
 VALUES (1, '44444444-2222-2222-2222-222222222222'),
        (1, '55555555-3333-3333-3333-333333333333');
+
