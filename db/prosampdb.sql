@@ -589,36 +589,55 @@ BEGIN
             current_user_uuid := '11111111-1111-1111-1111-111111111111'; -- Default Anonymous User
     END;
 
-    -- Determine the type of NEW.id and assign to local variables accordingly
-    IF pg_typeof(NEW.id)::text = 'uuid' THEN
-        rec_uuid := NEW.id;
-        rec_bigint := NULL;
-    ELSIF pg_typeof(NEW.id)::text = 'bigint' THEN
-        rec_bigint := NEW.id;
-        rec_uuid := NULL;
+    -- Determine the ID type depending on the operation
+    IF TG_OP IN ('DELETE', 'UPDATE') THEN
+        IF pg_typeof(OLD.id)::text = 'uuid' THEN
+            rec_uuid := OLD.id;
+            rec_bigint := NULL;
+        ELSIF pg_typeof(OLD.id)::text = 'bigint' THEN
+            rec_bigint := OLD.id;
+            rec_uuid := NULL;
+        ELSE
+            rec_uuid := NULL;
+            rec_bigint := NULL;
+        END IF;
     ELSE
-        rec_uuid := NULL;
-        rec_bigint := NULL;
+        IF pg_typeof(NEW.id)::text = 'uuid' THEN
+            rec_uuid := NEW.id;
+            rec_bigint := NULL;
+        ELSIF pg_typeof(NEW.id)::text = 'bigint' THEN
+            rec_bigint := NEW.id;
+            rec_uuid := NULL;
+        ELSE
+            rec_uuid := NULL;
+            rec_bigint := NULL;
+        END IF;
+    END IF;
+    -- Insert audit log only if a valid ID was found
+    IF rec_uuid IS NOT NULL OR rec_bigint IS NOT NULL THEN
+        INSERT INTO audit_logs (
+            user_id,
+            table_name,
+            action,
+            record_id_uuid,
+            record_id_bigint,
+            changes
+        ) VALUES (
+                     current_user_uuid,
+                     TG_TABLE_NAME,
+                     TG_OP,
+                     rec_uuid,
+                     rec_bigint,
+                     jsonb_build_object(
+                             'old', CASE WHEN TG_OP IN ('UPDATE', 'DELETE') THEN row_to_json(OLD) ELSE NULL END,
+                             'new', CASE WHEN TG_OP IN ('INSERT', 'UPDATE') THEN row_to_json(NEW) ELSE NULL END
+                     )
+                 );
+    ELSE
+        RAISE NOTICE 'Could not determine ID type for audit log entry on table %', TG_TABLE_NAME;
     END IF;
 
-    -- Insert the audit log record with the correctly typed values
-    INSERT INTO audit_logs (user_id,
-                            table_name,
-                            action,
-                            record_id_uuid,
-                            record_id_bigint,
-                            changes)
-    VALUES (current_user_uuid, -- current user
-            TG_TABLE_NAME, -- table triggering the audit
-            TG_OP, -- type of operation (INSERT, UPDATE, DELETE)
-            rec_uuid,
-            rec_bigint,
-            jsonb_build_object(
-                    'old', CASE WHEN TG_OP IN ('UPDATE', 'DELETE') THEN row_to_json(OLD) ELSE NULL END,
-                    'new', CASE WHEN TG_OP IN ('INSERT', 'UPDATE') THEN row_to_json(NEW) ELSE NULL END
-            ));
-
-    -- Return the appropriate record for the operation
+    -- Return the appropriate record
     RETURN CASE WHEN TG_OP = 'DELETE' THEN OLD ELSE NEW END;
 END;
 $$ LANGUAGE plpgsql;
