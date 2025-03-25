@@ -177,7 +177,7 @@ public class EntityMapperHelper {
             return null;
         }
         return standardList.stream()
-                .map(standard -> new StandardListItemDTO(standard.getStandard().getId(), standard.getStandard().getStandardNumber(),  standard.getStandard().getDescription()))
+                .map(standard -> new StandardListItemDTO(standard.getStandard().getId(), standard.getStandard().getStandardNumber(), standard.getStandard().getDescription()))
                 .toList();
     }
 
@@ -192,15 +192,20 @@ public class EntityMapperHelper {
     }
 
     @Named("mapSampleList")
-    public List<SampleIdentifierDTO> mapSampleList(List<Sample> samples) {
+    public List<SampleListItemDTO> mapSampleList(List<Sample> samples) {
         if (samples == null) {
             return null;
         }
         return samples.stream()
-                .map(sample -> new SampleIdentifierDTO(
+                .map(sample -> new SampleListItemDTO(
                         sample.getId(),
-                        sample.getSampleIdentifier())
-                )
+                        sample.getSampleIdentifier(),
+                        sample.getSamplingRecord().getId(),
+                        sample.getLocation(),
+                        sample.getEmployeeName(),
+                        sample.getStartTime(),
+                        sample.getEndTime()
+                ))
                 .toList();
     }
 
