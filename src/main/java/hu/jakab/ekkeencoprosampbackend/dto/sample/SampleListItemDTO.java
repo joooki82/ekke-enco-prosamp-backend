@@ -18,5 +18,10 @@ public class SampleListItemDTO {
     private String sampleIdentifier;
     private Long samplingRecordId;
     private String location;
+    private String employeeName;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+
+
 
 }
