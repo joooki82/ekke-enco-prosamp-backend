@@ -73,7 +73,7 @@ public class SamplingRecordDatM200ResponseDTO {
 
     private List<EquipmentListNameDTO> samplingRecordEquipments;
 
-    private List<SampleIdentifierDTO> samples;
+    private List<SampleListItemDTO> samples;
 
     private LocalDateTime createdAt;
 
