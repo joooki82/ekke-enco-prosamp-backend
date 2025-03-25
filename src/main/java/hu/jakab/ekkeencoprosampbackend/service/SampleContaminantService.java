@@ -50,11 +50,11 @@ public class SampleContaminantService {
 
         Optional<SampleContaminant> existingLink = sampleContaminantRepository.findBySampleAndContaminant(sample, contaminant);
         if (existingLink.isPresent()) {
-            throw new DuplicateResourceException("This contaminant is already linked to the sample.");
+            logger.info("Sample ID {} is already linked to Contaminant ID {}, returning existing link", sample.getId(), contaminant.getId());
+            return mapper.toCreatedDTO(existingLink.get());
         }
 
         SampleContaminant sampleContaminant = mapper.toEntity(requestDTO);
-
         return mapper.toCreatedDTO(sampleContaminantRepository.save(sampleContaminant));
     }
 
@@ -69,9 +69,9 @@ public class SampleContaminantService {
                 .orElseThrow(() -> new ResourceNotFoundException("Contaminant with ID " + requestDTO.getContaminantId() + " not found"));
 
         sampleContaminantRepository.findBySampleAndContaminant(sample, contaminant)
-                .ifPresentOrElse(sampleContaminantRepository::delete, () -> {
-                    throw new ResourceNotFoundException("No link exists between Sample and Contaminant.");
-                });
+                .ifPresentOrElse(sampleContaminantRepository::delete, () ->
+                        logger.info("No link to remove between Sample ID {} and Contaminant ID {} — treating as no-op", sample.getId(), contaminant.getId())
+                );
     }
 
     public SampleWithContaminantsDTO getContaminantsBySample(Long sampleId) {
