@@ -47,7 +47,7 @@ public class Sample {
     @Column(name = "pressure", precision = 7, scale = 2)
     private BigDecimal pressure;
 
-    @Column(name = "sample_volume_flow_rate", precision = 5, scale = 4)
+    @Column(name = "sample_volume_flow_rate", precision = 7, scale = 4)
     private BigDecimal sampleVolumeFlowRate;
 
     @ManyToOne
