@@ -38,6 +38,10 @@ public interface SampleContaminantMapper {
     @Mapping(source = "name", target = "name")
     ContaminantListNameDTO contaminantToContaminantListNameDTO(Contaminant contaminant);
 
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "contaminant", target = "contaminant")
+    SampleContaminantListItem2DTO sampleContaminantToSampleContaminantListItem2DTO(SampleContaminant sampleContaminant);
+
 
     default SampleWithContaminantsDTO mapToSampleWithContaminantsDTO(List<SampleContaminant> sampleContaminants) {
         if (sampleContaminants == null || sampleContaminants.isEmpty()) {
@@ -57,5 +61,22 @@ public interface SampleContaminantMapper {
                 .build();
     }
 
+    default SampleWithSampleContaminantsDTO mapToSampleWithSampleContaminantsDTO(List<SampleContaminant> sampleContaminants) {
+        if (sampleContaminants == null || sampleContaminants.isEmpty()) {
+            return null;
+        }
+
+        Sample sample = sampleContaminants.getFirst().getSample(); // All contaminants belong to the same sample
+        SampleIdentifierDTO sampleDTO = sampleToSampleIdentifierDTO(sample);
+
+        List<SampleContaminantListItem2DTO> contaminantsDTO = sampleContaminants.stream()
+                .map(this::sampleContaminantToSampleContaminantListItem2DTO)
+                .collect(Collectors.toList());
+
+        return SampleWithSampleContaminantsDTO.builder()
+                .sample(sampleDTO)
+                .sampleContaminants(contaminantsDTO)
+                .build();
+    }
 
 }

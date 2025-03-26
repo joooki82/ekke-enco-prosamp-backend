@@ -1,20 +1,13 @@
 package hu.jakab.ekkeencoprosampbackend.controller;
 
-import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.SampleContaminantCreatedDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.SampleContaminantRequestDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.SampleContaminantResponseDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.SampleWithContaminantsDTO;
-import hu.jakab.ekkeencoprosampbackend.model.Contaminant;
-import hu.jakab.ekkeencoprosampbackend.model.SampleContaminant;
+import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.*;
 import hu.jakab.ekkeencoprosampbackend.service.SampleContaminantService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/sample-contaminants")
@@ -47,6 +40,13 @@ public class SampleContaminantController {
     public ResponseEntity<SampleWithContaminantsDTO> getContaminantsBySample(@PathVariable Long sampleId) {
         logger.info("Fetching contaminants for Sample ID {}", sampleId);
         SampleWithContaminantsDTO contaminants = sampleContaminantService.getContaminantsBySample(sampleId);
+        return ResponseEntity.ok(contaminants);
+    }
+
+    @GetMapping("/{sampleId}/samplecontaminants")
+    public ResponseEntity<SampleWithSampleContaminantsDTO> getSampleWithSampleContaminantsBySample(@PathVariable Long sampleId) {
+        logger.info("Fetching sample with samplecontaminants for Sample ID {}", sampleId);
+        SampleWithSampleContaminantsDTO contaminants = sampleContaminantService.getSampleContaminantsBySample(sampleId);
         return ResponseEntity.ok(contaminants);
     }
 

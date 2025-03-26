@@ -1,11 +1,7 @@
 package hu.jakab.ekkeencoprosampbackend.service;
 
 import hu.jakab.ekkeencoprosampbackend.controller.SampleAnalyticalResultController;
-import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.SampleContaminantCreatedDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.SampleContaminantRequestDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.SampleContaminantResponseDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.SampleWithContaminantsDTO;
-import hu.jakab.ekkeencoprosampbackend.exception.DuplicateResourceException;
+import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.*;
 import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.mapper.SampleContaminantMapper;
 import hu.jakab.ekkeencoprosampbackend.model.Contaminant;
@@ -21,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class SampleContaminantService {
@@ -84,6 +79,19 @@ public class SampleContaminantService {
         }
 
         return mapper.mapToSampleWithContaminantsDTO(sampleContaminants);
+
+    }
+
+    public SampleWithSampleContaminantsDTO getSampleContaminantsBySample(Long sampleId) {
+        logger.info("Fetching contaminants for Sample ID {}", sampleId);
+
+        List<SampleContaminant> sampleContaminants = sampleContaminantRepository.findBySample(Sample.builder().id(sampleId).build());
+
+        if (sampleContaminants.isEmpty()) {
+            return null; // or throw an exception
+        }
+
+        return mapper.mapToSampleWithSampleContaminantsDTO(sampleContaminants);
 
     }
 
