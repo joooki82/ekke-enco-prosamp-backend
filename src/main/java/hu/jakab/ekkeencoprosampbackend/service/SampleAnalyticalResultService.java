@@ -54,6 +54,13 @@ public class SampleAnalyticalResultService {
                 .toList();
     }
 
+    public SampleAnalyticalResultResponseDTO getBySampleContaminantId(Long sampleContaminantId) {
+        logger.info("Fetching SampleAnalyticalResult by sampleContaminantId: {}", sampleContaminantId);
+        return repository.findBySampleContaminantId(sampleContaminantId)
+                .map(mapper::toResponseDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("SampleAnalyticalResult with ID " + sampleContaminantId + " not found"));
+    }
+
     public SampleAnalyticalResultResponseDTO getById(Long id) {
         logger.info("Fetching SampleAnalyticalResult by ID: {}", id);
         return repository.findById(id)

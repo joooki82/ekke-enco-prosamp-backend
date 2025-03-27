@@ -56,4 +56,10 @@ public class SampleAnalyticalResultController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/by-sample-contaminant/{sampleContaminantId}")
+    public ResponseEntity<SampleAnalyticalResultResponseDTO> getSampleAnalyticalResultBySampleContaminantId(@PathVariable Long sampleContaminantId) {
+        logger.info("Fetching SampleAnalyticalResult by sampleContaminantId: {}", sampleContaminantId);
+        return ResponseEntity.ok(service.getBySampleContaminantId(sampleContaminantId));
+    }
 }
