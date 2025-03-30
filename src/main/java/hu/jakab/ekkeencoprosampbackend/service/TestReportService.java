@@ -179,30 +179,54 @@ public class TestReportService {
 
         // Update related standards if provided
         if (dto.getTestReportStandardIds() != null) {
-            List<Standard> standards = standardRepository.findAllById(dto.getTestReportStandardIds());
-            List<TestReportStandard> testReportStandards = standards.stream()
-                    .map(standard -> TestReportStandard.builder()
+            Set<Long> newStandardIds = new HashSet<>(dto.getTestReportStandardIds());
+            List<TestReportStandard> currentStandards = existing.getTestReportStandards();
+
+            // Remove standards that are not in the new list
+            currentStandards.removeIf(existingStandard ->
+                    !newStandardIds.contains(existingStandard.getStandard().getId()));
+
+            // Add new standards that do not already exist in the list
+            for (Long standardId : newStandardIds) {
+                boolean exists = currentStandards.stream()
+                        .anyMatch(existingStandard -> existingStandard.getStandard().getId().equals(standardId));
+
+                if (!exists) {
+                    Standard standard = standardRepository.findById(standardId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Standard with ID " + standardId + " not found"));
+                    currentStandards.add(TestReportStandard.builder()
                             .testReport(existing)
                             .standard(standard)
-                            .build())
-                    .toList();
-
-            existing.getTestReportStandards().clear();
-            existing.getTestReportStandards().addAll(testReportStandards);
+                            .build());
+                }
+            }
+            existing.setTestReportStandards(currentStandards);
         }
 
         // Update related samplers if provided
         if (dto.getTestReportSamplerIds() != null) {
-            List<User> samplers = userRepository.findAllById(dto.getTestReportSamplerIds());
-            List<TestReportSampler> testReportSamplers = samplers.stream()
-                    .map(user -> TestReportSampler.builder()
-                            .testReport(existing)
-                            .user(user)
-                            .build())
-                    .toList();
+            Set<UUID> newSamplerIds = new HashSet<>(dto.getTestReportSamplerIds());
+            List<TestReportSampler> currentSamplers = existing.getTestReportSamplers();
 
-            existing.getTestReportSamplers().clear();
-            existing.getTestReportSamplers().addAll(testReportSamplers);
+            // Remove samplers that are not in the new list
+            currentSamplers.removeIf(existingSampler ->
+                    !newSamplerIds.contains(existingSampler.getUser().getId()));
+
+            // Add new samplers that do not already exist in the list
+            for (UUID samplerId : newSamplerIds) {
+                boolean exists = currentSamplers.stream()
+                        .anyMatch(existingSampler -> existingSampler.getUser().getId().equals(samplerId));
+
+                if (!exists) {
+                    User sampler = userRepository.findById(samplerId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Sampler with ID " + samplerId + " not found"));
+                    currentSamplers.add(TestReportSampler.builder()
+                            .testReport(existing)
+                            .user(sampler)
+                            .build());
+                }
+            }
+            existing.setTestReportSamplers(currentSamplers);
         }
 
         try {
@@ -210,9 +234,8 @@ public class TestReportService {
             return mapper.toResponseDTO(updatedTestReport);
         } catch (DataIntegrityViolationException e) {
             logger.error("Failed to update TestReport (ID: {}): {}", id, e.getMessage());
-            throw new RuntimeException("Update failed: Duplicate TestReport report number detected");
+            throw new RuntimeException("Update failed: Duplicate TestReport report number or standard detected");
         }
-
     }
 
     @Transactional
