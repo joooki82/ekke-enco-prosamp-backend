@@ -13,7 +13,15 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8082/realms/encotech
+          jwk-set-uri: http://localhost:8082/realms/encotech/protocol/openid-connect/certs
 
 server:
   port: 8081
   address: localhost
+
+
