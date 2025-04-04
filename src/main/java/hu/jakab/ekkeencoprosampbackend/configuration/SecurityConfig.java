@@ -31,8 +31,9 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(HttpMethod.POST, "/api/laboratories/**").hasRole("head_of_laboratory")
-                        .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("head_of_laboratory")
+                        .requestMatchers(HttpMethod.POST, "/api/accredited_laboratory/**").hasRole("head_of_laboratory")
+                        .requestMatchers(HttpMethod.PUT, "/api/accredited_laboratory/**").hasRole("head_of_laboratory")
+                        .requestMatchers(HttpMethod.DELETE, "/api/accredited_laboratory/**").hasRole("head_of_laboratory")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
