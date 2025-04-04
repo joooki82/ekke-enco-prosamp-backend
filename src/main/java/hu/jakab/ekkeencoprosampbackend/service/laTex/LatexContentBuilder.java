@@ -36,7 +36,8 @@ public class LatexContentBuilder {
             samplersTable.append("& ")
                     .append(sampler.getUser().getUsername())
                     .append(", ")
-                    .append(sampler.getUser().getRole())
+//                    .append(sampler.getUser().getRole())
+                    .append("TODO a ROLE-t is kiírni")
                     .append(" \\\\ ");
         }
 

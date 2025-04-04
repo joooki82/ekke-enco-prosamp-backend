@@ -263,7 +263,7 @@ public class TestReportService {
         reportData.put("title", testReport.getTitle());
         reportData.put("projectNumber", testReport.getProject().getProjectNumber());
         reportData.put("approvedBy", testReport.getApprovedBy().getUsername());
-        reportData.put("approvedByRole", testReport.getApprovedBy().getRole());
+//        reportData.put("approvedByRole", testReport.getApprovedBy().getRole());
         reportData.put("issueDate", testReport.getIssueDate().toString());
 
         String samplersString = latexContentBuilder.generateSamplersList(testReport.getTestReportSamplers());
@@ -347,11 +347,11 @@ public class TestReportService {
 
         reportData.put("preparedBy", testReport.getPreparedBy().getUsername());
 
-        reportData.put("preparedByRole", testReport.getPreparedBy().getRole());
+//        reportData.put("preparedByRole", testReport.getPreparedBy().getRole());
 
         reportData.put("checkedBy", testReport.getCheckedBy().getUsername());
 
-        reportData.put("checkedByRole", testReport.getCheckedBy().getRole());
+//        reportData.put("checkedByRole", testReport.getCheckedBy().getRole());
 
         try {
             return latexReportService.generatePdfReport(reportData);

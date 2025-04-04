@@ -29,27 +29,47 @@ SELECT current_user, session_user;
 DROP TABLE IF EXISTS users;
 CREATE TABLE users
 (
-    id         UUID PRIMARY KEY, -- Stores Keycloak User ID
+    id         UUID PRIMARY KEY, -- Keycloak User ID
     username   VARCHAR(100) UNIQUE NOT NULL,
     email      VARCHAR(255) UNIQUE NOT NULL,
-    role       VARCHAR(255)        NOT NULL,
+    first_name VARCHAR(100),
+    last_name  VARCHAR(100),
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-INSERT INTO users (id, username, email, role, created_at, updated_at)
-VALUES ('11111111-1111-1111-1111-111111111111', 'Iga Benedek', 'anonymous@example.com', 'manager', NOW(), NOW())
+-- #############################################################################
+-- TABLE: ROLES
+-- #############################################################################
+
+DROP TABLE IF EXISTS roles;
+CREATE TABLE roles
+(
+    id        BIGSERIAL PRIMARY KEY,
+    role_name VARCHAR(100) UNIQUE NOT NULL
+);
+
+DROP TABLE IF EXISTS user_role_assignments;
+CREATE TABLE user_role_assignments
+(
+    id         BIGSERIAL PRIMARY KEY,
+    user_id    UUID REFERENCES users (id) ON DELETE CASCADE,
+    role_id    BIGINT REFERENCES roles (id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+
+INSERT INTO users (id, username, email)
+VALUES ('11111111-1111-1111-1111-111111111111', 'Iga Benedek', 'anonymous@example.com')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO users (id, username, email, role)
-VALUES ('22222222-2222-2222-2222-222222222222', 'dr. Csókási Pál', 'benonymous@encotech.hu', 'műszaki igazgató'),
-       ('33333333-3333-3333-3333-333333333333', 'Mászáros Poci László', 'vazulnymus@ananas.hu', 'technician');
+INSERT INTO users (id, username, email)
+VALUES ('22222222-2222-2222-2222-222222222222', 'dr. Csókási Pál', 'benonymous@encotech.hu'),
+       ('33333333-3333-3333-3333-333333333333', 'Mászáros Poci László', 'vazulnymus@ananas.hu');
 
-INSERT INTO users (id, username, email, role, created_at, updated_at)
-VALUES ('44444444-2222-2222-2222-222222222222', 'Poremba Marcell Áron', 'john.doe@example.com', 'vizsgáló mérnök',
-        NOW(), NOW()),
-       ('55555555-3333-3333-3333-333333333333', 'Göndös Dorottya', 'jane.smith@example.com', 'vizsgáló mérnök', NOW(),
-        NOW());
+INSERT INTO users (id, username, email)
+VALUES ('44444444-2222-2222-2222-222222222222', 'Poremba Marcell Áron', 'john.doe@example.com'),
+       ('55555555-3333-3333-3333-333333333333', 'Göndös Dorottya', 'jane.smith@example.com');
 
 -- #############################################################################
 -- TABLE: Companies
@@ -614,24 +634,21 @@ BEGIN
     END IF;
     -- Insert audit log only if a valid ID was found
     IF rec_uuid IS NOT NULL OR rec_bigint IS NOT NULL THEN
-        INSERT INTO audit_logs (
-            user_id,
-            table_name,
-            action,
-            record_id_uuid,
-            record_id_bigint,
-            changes
-        ) VALUES (
-                     current_user_uuid,
-                     TG_TABLE_NAME,
-                     TG_OP,
-                     rec_uuid,
-                     rec_bigint,
-                     jsonb_build_object(
-                             'old', CASE WHEN TG_OP IN ('UPDATE', 'DELETE') THEN row_to_json(OLD) ELSE NULL END,
-                             'new', CASE WHEN TG_OP IN ('INSERT', 'UPDATE') THEN row_to_json(NEW) ELSE NULL END
-                     )
-                 );
+        INSERT INTO audit_logs (user_id,
+                                table_name,
+                                action,
+                                record_id_uuid,
+                                record_id_bigint,
+                                changes)
+        VALUES (current_user_uuid,
+                TG_TABLE_NAME,
+                TG_OP,
+                rec_uuid,
+                rec_bigint,
+                jsonb_build_object(
+                        'old', CASE WHEN TG_OP IN ('UPDATE', 'DELETE') THEN row_to_json(OLD) ELSE NULL END,
+                        'new', CASE WHEN TG_OP IN ('INSERT', 'UPDATE') THEN row_to_json(NEW) ELSE NULL END
+                ));
     ELSE
         RAISE NOTICE 'Could not determine ID type for audit log entry on table %', TG_TABLE_NAME;
     END IF;
@@ -879,7 +896,7 @@ INSERT INTO samples (sampling_record_id, sample_identifier, location, employee_n
 VALUES (1, 'SMP-001', 'Factory 1 - Zone A', 'Worker A', 22.5, 45.0, 1013.2, 2.5, 1, '2024-02-15 08:30:00',
         '2024-02-15 10:00:00', 'AK', 'ACTIVE', 1, 1),
        (2, 'SMP-002', 'Plant 2 - Zone B', 'Worker B', 18.0, 50.0, 1012.5, 3.0, 2, '2024-02-16 09:30:00',
-        '2024-02-16 11:00:00', 'CK', 'ACTIVE', 2, 2 );
+        '2024-02-16 11:00:00', 'CK', 'ACTIVE', 2, 2);
 
 -- Insert Analytical Laboratories
 INSERT INTO laboratories (name, accreditation, contact_email, phone, address, website, created_at, updated_at)
@@ -965,10 +982,10 @@ VALUES (1, 'SMP-101', 'Factory 1 - Zone A', 'Worker A', 20.45, 44.64, 1006.98, 2
         '2024-02-15 11:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 1, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-103', 'Factory 1 - Zone A', 'Worker C', 23.72, 47.40, 1005.01, 4.5677, 1, '2024-02-15 12:00:00',
-        '2024-02-15 14:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 1, 1,  '2025-03-15 08:42:34',
+        '2024-02-15 14:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 1, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-104', 'Factory 1 - Zone A', 'Worker A', 23.40, 48.32, 1010.34, 4.3860, 1, '2024-02-15 08:00:00',
-        '2024-02-15 10:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 2, 1,  '2025-03-15 08:42:34',
+        '2024-02-15 10:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 2, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-105', 'Factory 1 - Zone A', 'Worker D', 22.94, 69.15, 1008.94, 1.0780, 1, '2024-02-15 12:00:00',
         '2024-02-15 14:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 2, 2, '2025-03-15 08:42:34',
@@ -977,16 +994,16 @@ VALUES (1, 'SMP-101', 'Factory 1 - Zone A', 'Worker A', 20.45, 44.64, 1006.98, 2
         '2024-02-15 12:00:00', 'CK', 'LOST', 'Auto-generated test data', 1, 2, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-107', 'Factory 1 - Zone C', 'Worker A', 27.96, 65.00, 1005.17, 1.0831, 2, '2024-02-15 09:00:00',
-        '2024-02-15 11:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 1, 2,  '2025-03-15 08:42:34',
+        '2024-02-15 11:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 1, 2, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-108', 'Factory 1 - Zone B', 'Worker A', 22.78, 44.09, 1003.92, 3.0844, 1, '2024-02-15 08:00:00',
-        '2024-02-15 09:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 1, 1,  '2025-03-15 08:42:34',
+        '2024-02-15 09:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 1, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-109', 'Factory 1 - Zone A', 'Worker B', 27.75, 33.32, 1011.63, 2.0787, 2, '2024-02-15 11:00:00',
         '2024-02-15 14:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 2, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-110', 'Factory 1 - Zone C', 'Worker A', 16.74, 31.00, 1015.03, 4.3690, 2, '2024-02-15 08:00:00',
-        '2024-02-15 10:00:00', 'AK', 'BROKEN', 'Auto-generated test data', 2, 1,  '2025-03-15 08:42:34',
+        '2024-02-15 10:00:00', 'AK', 'BROKEN', 'Auto-generated test data', 2, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-130', 'Factory 1 - Zone A', 'Worker B', 25.39, 46.53, 1016.33, 3.6220, 2, '2024-02-15 12:00:00',
         '2024-02-15 15:00:00', 'CK', 'BROKEN', 'Auto-generated test data', 2, 1, '2025-03-15 08:42:34',
@@ -995,46 +1012,46 @@ VALUES (1, 'SMP-101', 'Factory 1 - Zone A', 'Worker A', 20.45, 44.64, 1006.98, 2
         '2024-02-15 13:00:00', 'CK', 'INVALID', 'Auto-generated test data', 1, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-112', 'Factory 1 - Zone B', 'Worker B', 22.37, 65.37, 1018.21, 4.0541, 1, '2024-02-15 09:00:00',
-        '2024-02-15 11:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 2, 2,  '2025-03-15 08:42:34',
+        '2024-02-15 11:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 2, 2, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-113', 'Factory 1 - Zone A', 'Worker A', 28.97, 66.43, 1016.12, 1.5, 1, '2024-02-15 09:00:00',
-        '2024-02-15 11:00:00', 'CK', 'LOST', 'Auto-generated test data', 2, 1,  '2025-03-15 08:42:34',
+        '2024-02-15 11:00:00', 'CK', 'LOST', 'Auto-generated test data', 2, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-114', 'Factory 1 - Zone B', 'Worker C', 20.03, 46.00, 1009.77, 4.9908, 2, '2024-02-15 11:00:00',
-        '2024-02-15 12:00:00', 'CK', 'LOST', 'Auto-generated test data', 2, 2,  '2025-03-15 08:42:34',
+        '2024-02-15 12:00:00', 'CK', 'LOST', 'Auto-generated test data', 2, 2, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-115', 'Factory 1 - Zone A', 'Worker A', 18.12, 34.47, 1012.89, 4.3047, 2, '2024-02-15 10:00:00',
         '2024-02-15 12:00:00', 'CK', 'BROKEN', 'Auto-generated test data', 2, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-116', 'Factory 1 - Zone B', 'Worker C', 17.53, 52.72, 1013.43, 4.6970, 1, '2024-02-15 10:00:00',
-        '2024-02-15 11:00:00', 'AK', 'LOST', 'Auto-generated test data', 1, 1,  '2025-03-15 08:42:34',
+        '2024-02-15 11:00:00', 'AK', 'LOST', 'Auto-generated test data', 1, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-117', 'Factory 1 - Zone C', 'Worker A', 27.89, 38.41, 1002.54, 4.9744, 2, '2024-02-15 12:00:00',
-        '2024-02-15 14:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 2, 1,  '2025-03-15 08:42:34',
+        '2024-02-15 14:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 2, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-118', 'Factory 1 - Zone B', 'Worker D', 23.62, 57.82, 1008.68, 1.1326, 2, '2024-02-15 10:00:00',
         '2024-02-15 11:00:00', 'AK', 'BROKEN', 'Auto-generated test data', 2, 2, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-119', 'Factory 1 - Zone B', 'Worker C', 24.84, 41.01, 1003.58, 3.2086, 1, '2024-02-15 12:00:00',
-        '2024-02-15 14:00:00', 'CK', 'BROKEN', 'Auto-generated test data', 1, 1,  '2025-03-15 08:42:34',
+        '2024-02-15 14:00:00', 'CK', 'BROKEN', 'Auto-generated test data', 1, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-120', 'Factory 1 - Zone C', 'Worker B', 23.41, 49.23, 1014.26, 4.6209, 2, '2024-02-15 11:00:00',
         '2024-02-15 14:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 1, 2, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-121', 'Factory 1 - Zone A', 'Worker A', 22.40, 42.01, 1016.50, 1.3755, 2, '2024-02-15 10:00:00',
-        '2024-02-15 11:00:00', 'AK', 'INVALID', 'Auto-generated test data', 1, 1,  '2025-03-15 08:42:34',
+        '2024-02-15 11:00:00', 'AK', 'INVALID', 'Auto-generated test data', 1, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-122', 'Factory 1 - Zone C', 'Worker C', 24.53, 69.08, 1004.96, 4.6258, 2, '2024-02-15 08:00:00',
         '2024-02-15 10:00:00', 'CK', 'INVALID', 'Auto-generated test data', 2, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-123', 'Factory 1 - Zone B', 'Worker C', 21.61, 54.46, 1012.06, 2.2112, 2, '2024-02-15 12:00:00',
-        '2024-02-15 13:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 1, 2,  '2025-03-15 08:42:34',
+        '2024-02-15 13:00:00', 'AK', 'ACTIVE', 'Auto-generated test data', 1, 2, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-124', 'Factory 1 - Zone C', 'Worker D', 25.69, 65.78, 1009.42, 2.7788, 2, '2024-02-15 09:00:00',
         '2024-02-15 12:00:00', 'AK', 'BROKEN', 'Auto-generated test data', 2, 2, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-125', 'Factory 1 - Zone B', 'Worker D', 20.74, 34.58, 1012.29, 3.9671, 2, '2024-02-15 08:00:00',
-        '2024-02-15 10:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 1, 1,  '2025-03-15 08:42:34',
+        '2024-02-15 10:00:00', 'CK', 'ACTIVE', 'Auto-generated test data', 1, 1, '2025-03-15 08:42:34',
         '2025-03-15 08:42:34'),
        (1, 'SMP-130', 'Factory 1 - Zone A', 'Worker B', 25.39, 46.53, 1016.33, 3.6220, 2, '2024-02-15 12:00:00',
         '2024-02-15 15:00:00', 'CK', 'BROKEN', 'Auto-generated test data', 2, 1, '2025-03-15 08:42:34',

@@ -22,6 +22,7 @@ import java.util.UUID;
 @Builder
 public class User {
 
+
     @Id
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
@@ -32,11 +33,11 @@ public class User {
     @Column(name = "email", length = 255, nullable = false, unique = true)
     private String email;
 
-    @Column(name = "role", length = 255, nullable = false)
-    private String role;
+    @Column(name = "first_name", length = 100)
+    private String firstName;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<TestReportSampler> testReportSamplers = new HashSet<>();
+    @Column(name = "last_name", length = 100)
+    private String lastName;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -45,4 +46,13 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<UserRoleAssignment> roleAssignments = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TestReportSampler> testReportSamplers = new HashSet<>();
+
+
 }
