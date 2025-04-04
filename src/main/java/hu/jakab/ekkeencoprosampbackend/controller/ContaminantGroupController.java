@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/contaminant-groups")
+@RequestMapping("/api/accredited_laboratory/contaminant-groups")
 public class ContaminantGroupController {
 
     private static final Logger logger = LoggerFactory.getLogger(ContaminantGroupController.class);

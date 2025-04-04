@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/sampling-types")
+@RequestMapping("/api/accredited_laboratory/sampling-types")
 public class SamplingTypeController {
 
     private static final Logger logger = LoggerFactory.getLogger(SamplingTypeController.class);

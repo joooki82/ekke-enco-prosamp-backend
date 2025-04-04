@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/contaminants")
+@RequestMapping("/api/accredited_laboratory/contaminants")
 public class ContaminantController {
 
     private static final Logger logger = LoggerFactory.getLogger(ContaminantController.class);

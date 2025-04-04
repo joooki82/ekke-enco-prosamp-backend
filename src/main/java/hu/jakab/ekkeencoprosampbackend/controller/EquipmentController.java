@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/equipments")
+@RequestMapping("/api/accredited_laboratory/equipments")
 public class EquipmentController {
 
     private static final Logger logger = LoggerFactory.getLogger(EquipmentController.class);

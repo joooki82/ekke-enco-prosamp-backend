@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/measurement-units")
+@RequestMapping("/api/accredited_laboratory/measurement-units")
 public class MeasurementUnitController {
 
     private static final Logger logger = LoggerFactory.getLogger(MeasurementUnitController.class);

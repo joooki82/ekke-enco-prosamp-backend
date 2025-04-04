@@ -30,8 +30,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/public/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/laboratories/**").hasRole("head_of_laboratory")
+                        .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("head_of_laboratory")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

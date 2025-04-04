@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/adjustment-methods")
+@RequestMapping("/api/accredited_laboratory/adjustment-methods")
 public class AdjustmentMethodController {
 
     private static final Logger logger = LoggerFactory.getLogger(AdjustmentMethodController.class);
