@@ -14,13 +14,19 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.springframework.security.config.Elements.JWT;
 
@@ -30,9 +36,11 @@ public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService service;
+    private final DataSource dataSource;
 
-    public UserController(UserService service) {
+    public UserController(UserService service, DataSource dataSource) {
         this.service = service;
+        this.dataSource = dataSource;
     }
 
     @GetMapping
@@ -51,80 +59,22 @@ public class UserController {
     @PostMapping("/sync")
     public ResponseEntity<Void> syncUserData(Authentication authentication) {
 
-        // Check if the authentication object is an instance of JwtAuthenticationToken
-        if (authentication instanceof JwtAuthenticationToken) {
-            JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) authentication;
-            Jwt jwt = jwtAuth.getToken();
-
-            // Log the JWT claims and headers
-            logger.info("JWT Token Value: {}", jwt.getTokenValue());
-            logger.info("JWT Claims: {}", jwt.getClaims());
-
-            logger.info("JWT Headers: {}", jwt.getHeaders());
-
-            // Optionally, log specific claims like 'sub' or 'email'
-            String subject = jwt.getClaimAsString("sub");
-            String email = jwt.getClaimAsString("email");
-            logger.info("JWT Subject: {}", subject);
-            logger.info("JWT Email: {}", email);
-            logger.info("JWT Issuer: {}", jwt.getIssuer());
-            logger.info("JWT Audience: {}", jwt.getAudience());
-            logger.info("JWT Expiration: {}", jwt.getExpiresAt());
-            logger.info("JWT Issued At: {}", jwt.getIssuedAt());
-
-        } else {
-            logger.warn("Authentication is not an instance of JwtAuthenticationToken. Actual type: {}", authentication.getClass().getName());
-        }
-
-        if (authentication instanceof JwtAuthenticationToken) {
-            JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) authentication;
-            Jwt jwt = jwtAuth.getToken();
-
-            // Extract the claims map
-            Map<String, Object> claims = jwt.getClaims();
-
-            // Extract resource access
-            Map<String, Object> resourceAccess = (Map<String, Object>) claims.get("resource_access");
-            if (resourceAccess != null) {
-                Map<String, Object> encoProsampUi = (Map<String, Object>) resourceAccess.get("enco-prosamp-angular-ui");
-                if (encoProsampUi != null) {
-                    List<String> roles = (List<String>) encoProsampUi.get("roles");
-                    if (roles != null) {
-                        // Log the roles
-                        logger.info("Extracted Roles: {}", roles);
-
-                        // Save the roles to an array
-                        String[] rolesArray = roles.toArray(new String[0]);
-                        logger.info("Roles Array: {}", Arrays.toString(rolesArray));
-
-                        // You can now use the rolesArray as needed
-                    } else {
-                        logger.warn("No roles found in enco-prosamp-angular-ui");
-                    }
-                } else {
-                    logger.warn("No enco-prosamp-angular-ui found in resource_access");
-                }
-            } else {
-                logger.warn("No resource_access found in JWT claims");
-            }
-        } else {
-            logger.warn("Authentication is not an instance of JwtAuthenticationToken. Actual type: {}", authentication.getClass().getName());
-        }
-
-
-
-        logger.info("Syncing user data for: {}", authentication.getName());
-        logger.info("User roles: {}", authentication.getAuthorities());
-        logger.info("User details: {}", authentication.getDetails());
-        logger.info("User principal: {}", authentication.getPrincipal());
-        logger.info("User credentials: {}", authentication.getCredentials());
-        logger.info("User name: {}", authentication.getName());
-        logger.info("User authentication: {}", authentication);
-        logger.info("User is authenticated: {}", authentication.isAuthenticated());
-        logger.info("JWT: {}", (authentication));
+//        if (authentication != null && authentication.getPrincipal() instanceof Jwt) {
+//            Jwt jwt = (Jwt) authentication.getPrincipal();
+//            String userId = jwt.getClaimAsString("sub"); // Assuming "sub" claim holds the user ID
+//
+//            try (Connection connection = dataSource.getConnection();
+//                 Statement statement = connection.createStatement()) {
+//
+//
+//                statement.execute("SET session.currentUserId = '" + userId + "'");
+//                logger.info("Set current user ID in PostgreSQL session: " + userId);
+//                logger.info("STATEMENT" + statement);
+//            } catch (SQLException e) {
+//                logger.error("Failed to set user ID in PostgreSQL session", e);
+//            }
+//        }
         service.saveOrUpdateUser(authentication);
-
-
         return ResponseEntity.ok().build();
     }
 
