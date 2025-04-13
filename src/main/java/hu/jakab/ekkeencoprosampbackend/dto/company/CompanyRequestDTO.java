@@ -9,15 +9,16 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class CompanyRequestDTO {
-    @NotBlank(message = "Company name cannot be empty")
+
+    @NotBlank(message = "A cég név megadása kötelező.")
     private String name;
 
     private String address;
 
-    @NotBlank(message = "Contact person cannot be empty")
+    @NotBlank(message = "A kapcsolattartó megadása kötelező.")
     private String contactPerson;
 
-    @Email(message = "Invalid email format")
+    @Email(message = "Érvénytelen email formátum.")
     private String email;
 
     private String phone;
