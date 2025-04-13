@@ -55,8 +55,8 @@ public class ContaminantGroupService {
             ContaminantGroup savedContaminantGroup = repository.save(ContaminantGroup);
             return mapper.toCreatedDTO(savedContaminantGroup);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving ContaminantGroup: Duplicate ContaminantGroup name detected");
-            throw new DuplicateResourceException("Failed to create ContaminantGroup: Duplicate ContaminantGroup name detected");
+            logger.error("Failed to save contaminant group with name '{}': Constraint violation - {}", dto.getName(), e.getMessage(), e);
+            throw new DuplicateResourceException("A contaminant group with the name '" + dto.getName() + "' already exists.");
         }
     }
 
@@ -65,7 +65,10 @@ public class ContaminantGroupService {
         logger.info("Updating ContaminantGroup (ID: {}) with new details", id);
         
         ContaminantGroup existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("ContaminantGroup with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Update failed: Contaminant group with ID {} not found", id);
+                    return new ResourceNotFoundException("Contaminant group with ID " + id + " not found.");
+                });
 
         if (dto.getName() != null) existing.setName(dto.getName());
         if (dto.getDescription() != null) existing.setDescription(dto.getDescription());
@@ -74,8 +77,8 @@ public class ContaminantGroupService {
             ContaminantGroup updatedContaminantGroup = repository.save(existing);
             return mapper.toResponseDTO(updatedContaminantGroup);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update ContaminantGroup: Duplicate ContaminantGroup name detected");
-            throw new RuntimeException("Update failed: Duplicate ContaminantGroup name detected");
+            logger.error("Failed to update contaminant group with ID {} and name '{}': Constraint violation - {}", id, dto.getName(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: A contaminant group with the name '" + dto.getName() + "' already exists.");
         }
     }
 
@@ -83,8 +86,8 @@ public class ContaminantGroupService {
     public void delete(Long id) {
         logger.info("Deleting ContaminantGroup with ID: {}", id);
         if (!repository.existsById(id)) {
-            logger.warn("Cannot delete: ContaminantGroup with ID {} not found", id);
-            throw new ResourceNotFoundException("ContaminantGroup with ID " + id + " not found");
+            logger.warn("Delete failed: Contaminant group with ID {} not found", id);
+            throw new ResourceNotFoundException("Contaminant group with ID " + id + " not found.");
         }
         repository.deleteById(id);
         logger.info("Successfully deleted ContaminantGroup with ID: {}", id);
