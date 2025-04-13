@@ -5,6 +5,7 @@ import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.SampleContaminantCr
 import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.SampleContaminantRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.SampleWithContaminantsDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sampleContaminant.SampleWithSampleContaminantsDTO;
+import hu.jakab.ekkeencoprosampbackend.exception.DuplicateResourceException;
 import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.mapper.SampleContaminantMapper;
 import hu.jakab.ekkeencoprosampbackend.model.Contaminant;
@@ -19,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SampleContaminantService {
@@ -38,37 +38,44 @@ public class SampleContaminantService {
     }
     @Transactional
     public SampleContaminantCreatedDTO linkSampleToContaminant(SampleContaminantRequestDTO requestDTO) {
-        logger.info("Linking Sample ID {} to Contaminant ID {}", requestDTO.getSampleId(), requestDTO.getContaminantId());
+        logger.info("Linking Sample ID '{}' to Contaminant ID '{}'", requestDTO.getSampleId(), requestDTO.getContaminantId());
 
         Sample sample = sampleRepository.findById(requestDTO.getSampleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + requestDTO.getSampleId() + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + requestDTO.getSampleId() + " not found."));
 
         Contaminant contaminant = contaminantRepository.findById(requestDTO.getContaminantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Contaminant with ID " + requestDTO.getContaminantId() + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Contaminant with ID " + requestDTO.getContaminantId() + " not found."));
 
-        Optional<SampleContaminant> existingLink = sampleContaminantRepository.findBySampleAndContaminant(sample, contaminant);
-        if (existingLink.isPresent()) {
-            logger.info("Sample ID {} is already linked to Contaminant ID {}, returning existing link", sample.getId(), contaminant.getId());
-            return mapper.toCreatedDTO(existingLink.get());
-        }
+        sampleContaminantRepository.findBySampleAndContaminant(sample, contaminant)
+                .ifPresent(existing -> {
+                    logger.warn("Duplicate link attempt: Sample ID {} is already linked to Contaminant ID {}", sample.getId(), contaminant.getId());
+                    throw new DuplicateResourceException("This sample is already linked to the given contaminant.");
+                });
 
-        SampleContaminant sampleContaminant = mapper.toEntity(requestDTO);
-        return mapper.toCreatedDTO(sampleContaminantRepository.save(sampleContaminant));
+        SampleContaminant newLink = mapper.toEntity(requestDTO);
+        SampleContaminant saved = sampleContaminantRepository.save(newLink);
+
+        logger.info("Successfully linked Sample ID {} to Contaminant ID {}", sample.getId(), contaminant.getId());
+        return mapper.toCreatedDTO(saved);
     }
 
     @Transactional
     public void unlinkSampleFromContaminant(SampleContaminantRequestDTO requestDTO) {
-        logger.info("Unlinking Sample ID {} from Contaminant ID {}", requestDTO.getSampleId(), requestDTO.getContaminantId());
+        logger.info("Unlinking Sample ID '{}' from Contaminant ID '{}'", requestDTO.getSampleId(), requestDTO.getContaminantId());
 
         Sample sample = sampleRepository.findById(requestDTO.getSampleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + requestDTO.getSampleId() + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + requestDTO.getSampleId() + " not found."));
 
         Contaminant contaminant = contaminantRepository.findById(requestDTO.getContaminantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Contaminant with ID " + requestDTO.getContaminantId() + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Contaminant with ID " + requestDTO.getContaminantId() + " not found."));
 
         sampleContaminantRepository.findBySampleAndContaminant(sample, contaminant)
-                .ifPresentOrElse(sampleContaminantRepository::delete, () ->
-                        logger.info("No link to remove between Sample ID {} and Contaminant ID {} — treating as no-op", sample.getId(), contaminant.getId())
+                .ifPresentOrElse(
+                        sampleContaminant -> {
+                            sampleContaminantRepository.delete(sampleContaminant);
+                            logger.info("Successfully unlinked Sample ID {} from Contaminant ID {}", sample.getId(), contaminant.getId());
+                        },
+                        () -> logger.warn("No link found to remove between Sample ID {} and Contaminant ID {}", sample.getId(), contaminant.getId())
                 );
     }
 
@@ -78,6 +85,7 @@ public class SampleContaminantService {
         List<SampleContaminant> sampleContaminants = sampleContaminantRepository.findBySample(Sample.builder().id(sampleId).build());
 
         if (sampleContaminants.isEmpty()) {
+            logger.warn("No contaminants found for Sample ID {}", sampleId);
             return null;
         }
 
