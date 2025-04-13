@@ -1,12 +1,10 @@
 package hu.jakab.ekkeencoprosampbackend.dto.project;
 
 import hu.jakab.ekkeencoprosampbackend.dto.testreport.TestReportListItemDTO;
-import hu.jakab.ekkeencoprosampbackend.model.Client;
-import hu.jakab.ekkeencoprosampbackend.model.TestReport;
-import jakarta.persistence.Column;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
