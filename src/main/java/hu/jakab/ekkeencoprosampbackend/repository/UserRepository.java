@@ -3,7 +3,6 @@ package hu.jakab.ekkeencoprosampbackend.repository;
 import hu.jakab.ekkeencoprosampbackend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
