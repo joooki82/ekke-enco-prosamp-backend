@@ -68,8 +68,8 @@ public class SampleAnalyticalResultService {
 
     @Transactional
     public SampleAnalyticalResultCreatedDTO save(SampleAnalyticalResultRequestDTO dto) {
-        logger.info("Creating a new SampleAnalyticalResult with sampleContaminantId: {}", dto.getSampleContaminantId());
-        logger.info("Request: {}", dto);
+        logger.info("Creating a new SampleAnalyticalResult for sampleContaminantId: {}", dto.getSampleContaminantId());
+
         SampleAnalyticalResult sampleAnalyticalResult = mapper.toEntity(dto);
 
         BigDecimal analyticalResultMainControl = dto.getResultMainControl();
@@ -78,8 +78,9 @@ public class SampleAnalyticalResultService {
             analyticalResultMainControl = dto.getDetectionLimit();
         }
 
-        Sample sample = sampleRepository.findById(sampleAnalyticalResult.getSampleContaminant().getSample().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + sampleAnalyticalResult.getSampleContaminant().getSample().getId() + " not found"));
+        Long sampleId = sampleAnalyticalResult.getSampleContaminant().getSample().getId();
+        Sample sample = sampleRepository.findById(sampleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + sampleId + " not found."));
 
         BigDecimal calculateAdjustedTotalSampledVolume = calculationEngine.calculateAdjustedTotalSampledVolume(sample);
 
@@ -92,28 +93,27 @@ public class SampleAnalyticalResultService {
             SampleAnalyticalResult savedSampleAnalyticalResult = repository.save(sampleAnalyticalResult);
             return mapper.toCreatedDTO(savedSampleAnalyticalResult);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving SampleAnalyticalResult: Duplicate report number");
-            logger.error(dto.toString());
-            throw new DuplicateResourceException("Failed to create SampleAnalyticalResult: Duplicate report number");
+            logger.error("Failed to save SampleAnalyticalResult for sampleContaminantId '{}': Constraint violation - {}", dto.getSampleContaminantId(), e.getMessage(), e);
+            throw new DuplicateResourceException("A SampleAnalyticalResult for the given sampleContaminantId already exists.");
         }
     }
 
     @Transactional
     public SampleAnalyticalResultResponseDTO update(Long id, SampleAnalyticalResultRequestDTO dto) {
-        logger.info("Updating SampleAnalyticalResult (ID: {}) with new details", id);
+        logger.info("Updating SampleAnalyticalResult with ID: {}", id);
 
         SampleAnalyticalResult existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("SampleAnalyticalResult with ID " + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("SampleAnalyticalResult with ID " + id + " not found."));
 
         if (dto.getLabReportId() != null) {
             AnalyticalLabReport labReport = analyticalLabReportRepository.findById(dto.getLabReportId())
-                    .orElseThrow(() -> new ResourceNotFoundException("LabReport with ID " + dto.getLabReportId() + " not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("LabReport with ID " + dto.getLabReportId() + " not found."));
             existing.setLabReport(labReport);
         }
 
         if (dto.getSampleContaminantId() != null) {
             SampleContaminant sampleContaminant = sampleContaminantRepository.findById(dto.getSampleContaminantId())
-                    .orElseThrow(() -> new ResourceNotFoundException("SampleContaminant with ID " + dto.getSampleContaminantId() + " not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("SampleContaminant with ID " + dto.getSampleContaminantId() + " not found."));
             existing.setSampleContaminant(sampleContaminant);
         }
         if (dto.getResultMain() != null) {
@@ -126,10 +126,11 @@ public class SampleAnalyticalResultService {
             existing.setResultMainControl(dto.getResultMainControl());
         }
         if (dto.getResultMeasurementUnitId() != null) {
-            MeasurementUnit measurementUnit = measurementUnitRepository.findById(dto.getResultMeasurementUnitId())
-                    .orElseThrow(() -> new ResourceNotFoundException("MeasurementUnit with ID " + dto.getResultMeasurementUnitId() + " not found"));
-            existing.setResultMeasurementUnit(measurementUnit);
+            MeasurementUnit unit = measurementUnitRepository.findById(dto.getResultMeasurementUnitId())
+                    .orElseThrow(() -> new ResourceNotFoundException("MeasurementUnit with ID " + dto.getResultMeasurementUnitId() + " not found."));
+            existing.setResultMeasurementUnit(unit);
         }
+
         if (dto.getDetectionLimit() != null) {
             existing.setDetectionLimit(dto.getDetectionLimit());
         }
@@ -149,8 +150,9 @@ public class SampleAnalyticalResultService {
             analyticalResultMainControl = dto.getDetectionLimit();
         }
 
-        Sample sample = sampleRepository.findById(existing.getSampleContaminant().getSample().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + existing.getSampleContaminant().getSample().getId() + " not found"));
+        Long sampleId = existing.getSampleContaminant().getSample().getId();
+        Sample sample = sampleRepository.findById(sampleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + sampleId + " not found."));
 
         BigDecimal calculateAdjustedTotalSampledVolume = calculationEngine.calculateAdjustedTotalSampledVolume(sample);
 
@@ -158,13 +160,11 @@ public class SampleAnalyticalResultService {
 
         try {
             SampleAnalyticalResult updatedSampleAnalyticalResult = repository.save(existing);
+            logger.info("Successfully updated SampleAnalyticalResult with ID: {}", id);
             return mapper.toResponseDTO(updatedSampleAnalyticalResult);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update SampleAnalyticalResult due to data integrity violation", e);
-            throw new DuplicateResourceException("Update failed due to a duplicate or conflicting data entry.");
-        } catch (Exception e) {
-            logger.error("An unexpected error occurred while updating SampleAnalyticalResult", e);
-            throw new RuntimeException("Unexpected error while updating SampleAnalyticalResult.");
+            logger.error("Failed to update SampleAnalyticalResult with ID {}: Constraint violation - {}", id, e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: Duplicate data for given sample contaminant.");
         }
 
     }
