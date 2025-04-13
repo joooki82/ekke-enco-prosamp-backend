@@ -50,10 +50,13 @@ public class ProjectService {
 
     @Transactional
     public ProjectCreatedDTO save(ProjectRequestDTO dto) {
-        logger.info("Creating a new project with project number: {}", dto.getProjectNumber());
+        logger.info("Creating new project with project number: '{}'", dto.getProjectNumber());
 
         Client client = clientRepository.findById(dto.getClientId())
-                .orElseThrow(() -> new ResourceNotFoundException("Client with ID " + dto.getClientId() + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Save failed: Client with ID {} not found", dto.getClientId());
+                    return new ResourceNotFoundException("Client with ID " + dto.getClientId() + " not found.");
+                });
 
         Project project = mapper.toEntity(dto);
         project.setClient(client);
@@ -62,17 +65,20 @@ public class ProjectService {
             Project savedProject = repository.save(project);
             return mapper.toCreatedDTO(savedProject);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving project: Duplicate project number detected");
-            throw new DuplicateResourceException("Failed to create project: Duplicate project number detected");
+            logger.error("Failed to save project with project number '{}': Constraint violation - {}", dto.getProjectNumber(), e.getMessage(), e);
+            throw new DuplicateResourceException("A project with number '" + dto.getProjectNumber() + "' already exists.");
         }
     }
 
     @Transactional
     public ProjectResponseDTO update(Long id, ProjectRequestDTO dto) {
-        logger.info("Updating project (ID: {}) with new details", id);
+        logger.info("Updating project with ID: {}", id);
 
         Project existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Project with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Update failed: Project with ID {} not found", id);
+                    return new ResourceNotFoundException("Project with ID " + id + " not found.");
+                });
 
         if (dto.getProjectNumber() != null) existing.setProjectNumber(dto.getProjectNumber());
         if (dto.getProjectName() != null) existing.setProjectName(dto.getProjectName());
@@ -83,16 +89,20 @@ public class ProjectService {
 
         if (dto.getClientId() != null) {
             Client client = clientRepository.findById(dto.getClientId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Client with ID " + dto.getClientId() + " not found"));
+                    .orElseThrow(() -> {
+                        logger.warn("Update failed: Client with ID {} not found", dto.getClientId());
+                        return new ResourceNotFoundException("Client with ID " + dto.getClientId() + " not found.");
+                    });
             existing.setClient(client);
         }
 
         try {
             Project updatedProject = repository.save(existing);
+            logger.info("Successfully updated project with ID: {}", id);
             return mapper.toResponseDTO(updatedProject);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update project: Duplicate project number detected");
-            throw new RuntimeException("Update failed: Duplicate project number detected");
+            logger.error("Failed to update project with ID {}, number '{}': Constraint violation - {}", id, dto.getProjectNumber(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: A project with number '" + dto.getProjectNumber() + "' already exists.");
         }
     }
 
