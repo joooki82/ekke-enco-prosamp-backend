@@ -54,8 +54,8 @@ public class AdjustmentMethodService {
             AdjustmentMethod savedMethod = repository.save(adjustmentMethod);
             return mapper.toCreatedDTO(savedMethod);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving adjustment method: Duplicate 'code' detected");
-            throw new DuplicateResourceException("Failed to create adjustment method: Duplicate 'code' detected");
+            logger.error("Failed to save adjustment method with code '{}': Constraint violation - {}", dto.getCode(), e.getMessage(), e);
+            throw new DuplicateResourceException("An adjustment method with code '" + dto.getCode() + "' already exists.");
         }
     }
 
@@ -63,8 +63,10 @@ public class AdjustmentMethodService {
     public AdjustmentMethodResponseDTO update(Long id, AdjustmentMethodRequestDTO dto) {
         logger.info("Updating adjustment method with ID: {}", id);
         AdjustmentMethod existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Adjustment method with ID " + id + " not found"));
-
+                .orElseThrow(() -> {
+                    logger.warn("Update failed: Adjustment method with ID {} not found", id);
+                    return new ResourceNotFoundException("Adjustment method with ID " + id + " not found.");
+                });
         if (dto.getCode() != null) existing.setCode(dto.getCode());
         if (dto.getDescription() != null) existing.setDescription(dto.getDescription());
 
@@ -72,22 +74,20 @@ public class AdjustmentMethodService {
             AdjustmentMethod updatedMethod = repository.save(existing);
             return mapper.toResponseDTO(updatedMethod);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update adjustment method: Duplicate 'code' detected");
-            throw new DuplicateResourceException("Update failed: Duplicate 'code' value");
+            logger.error("Failed to update adjustment method with ID {} and code '{}': Constraint violation - {}", id, dto.getCode(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: An adjustment method with code '" + dto.getCode() + "' already exists.");
         }
     }
-
 
     @Transactional
     public void delete(Long id) {
         logger.info("Deleting adjustment method with ID: {}", id);
         if (!repository.existsById(id)) {
-            logger.warn("Cannot delete: Adjustment method with ID {} not found", id);
-            throw new ResourceNotFoundException("Adjustment method with ID " + id + " not found");
+            logger.warn("Delete failed: Adjustment method with ID {} not found", id);
+            throw new ResourceNotFoundException("Adjustment method with ID " + id + " not found.");
         }
         repository.deleteById(id);
         logger.info("Successfully deleted adjustment method with ID: {}", id);
     }
-
 
 }
