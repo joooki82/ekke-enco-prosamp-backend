@@ -46,7 +46,7 @@ public class EquipmentService {
 
     @Transactional
     public EquipmentCreatedDTO save(EquipmentRequestDTO dto) {
-        logger.info("Creating a new Equipment with Equipment number: {}", dto.getName());
+        logger.info("Creating new equipment with name: '{}', identifier: '{}'", dto.getName(), dto.getIdentifier());
 
         Equipment Equipment = mapper.toEntity(dto);
 
@@ -54,8 +54,8 @@ public class EquipmentService {
             Equipment savedEquipment = repository.save(Equipment);
             return mapper.toCreatedDTO(savedEquipment);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving Equipment: Duplicate Equipment identifier detected");
-            throw new DuplicateResourceException("Failed to create Equipment: Duplicate Equipment identifier detected");
+            logger.error("Failed to save equipment with identifier '{}': Constraint violation - {}", dto.getIdentifier(), e.getMessage(), e);
+            throw new DuplicateResourceException("An equipment with the identifier '" + dto.getIdentifier() + "' already exists.");
         }
     }
 
@@ -64,7 +64,10 @@ public class EquipmentService {
         logger.info("Updating Equipment (ID: {}) with new details", id);
         
         Equipment existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Equipment with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Update failed: Equipment with ID {} not found", id);
+                    return new ResourceNotFoundException("Equipment with ID " + id + " not found.");
+                });
 
         if (dto.getName() != null) existing.setName(dto.getName());
         if (dto.getIdentifier() != null) existing.setIdentifier(dto.getIdentifier());
@@ -84,11 +87,8 @@ public class EquipmentService {
             logger.info("Successfully updated Equipment (ID: {})", id);
             return mapper.toResponseDTO(updatedEquipment);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update Equipment (ID: {}): Duplicate Identifier detected", id);
-            throw new RuntimeException("Update failed: Duplicate identifier detected");
-        } catch (Exception e) {
-            logger.error("Unexpected error while updating Equipment (ID: {}): {}", id, e.getMessage());
-            throw new RuntimeException("Update failed: " + e.getMessage());
+            logger.error("Failed to update equipment with ID {}, identifier '{}': Constraint violation - {}", id, dto.getIdentifier(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: An equipment with the identifier '" + dto.getIdentifier() + "' already exists.");
         }
     }
 
@@ -96,8 +96,8 @@ public class EquipmentService {
     public void delete(Long id) {
         logger.info("Deleting Equipment with ID: {}", id);
         if (!repository.existsById(id)) {
-            logger.warn("Cannot delete: Equipment with ID {} not found", id);
-            throw new ResourceNotFoundException("Equipment with ID " + id + " not found");
+            logger.warn("Delete failed: Equipment with ID {} not found", id);
+            throw new ResourceNotFoundException("Equipment with ID " + id + " not found.");
         }
         repository.deleteById(id);
         logger.info("Successfully deleted Equipment with ID: {}", id);
