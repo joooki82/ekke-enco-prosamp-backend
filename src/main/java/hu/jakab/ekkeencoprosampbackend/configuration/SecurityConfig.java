@@ -26,9 +26,6 @@ public class SecurityConfig  {
     @Value("${app.cors.allowedOrigins:http://localhost:4200}")
     private List<String> allowedOrigins;
 
-//    @Autowired
-//    private UserIdSettingFilter userIdSettingFilter;
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
