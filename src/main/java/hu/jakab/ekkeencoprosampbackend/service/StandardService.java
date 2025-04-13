@@ -47,7 +47,7 @@ public class StandardService {
 
     @Transactional
     public StandardCreatedDTO save(StandardRequestDTO dto) {
-        logger.info("Creating a new Standard with Standard standardNumber: {}", dto.getStandardNumber());
+        logger.info("Creating new Standard with standardNumber: '{}', identifier: '{}'", dto.getStandardNumber(), dto.getIdentifier());
 
         Standard standard = mapper.toEntity(dto);
 
@@ -55,21 +55,25 @@ public class StandardService {
             Standard savedStandard = repository.save(standard);
             return mapper.toCreatedDTO(savedStandard);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving Standard: Duplicate Standard standardNumber detected");
-            throw new DuplicateResourceException("Failed to create Standard: Duplicate Standard standardNumber detected");
+            logger.error("Failed to save Standard with standardNumber '{}': Constraint violation - {}", dto.getStandardNumber(), e.getMessage(), e);
+            throw new DuplicateResourceException("A standard with number '" + dto.getStandardNumber() + "' or identifier '" + dto.getIdentifier() + "' already exists.");
         }
     }
 
     @Transactional
     public StandardResponseDTO update(Long id, StandardRequestDTO dto) {
-        logger.info("Updating Standard (ID: {}) with new details", id);
+        logger.info("Updating Standard with ID: {}", id);
 
         Standard existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Standard with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Update failed: Standard with ID {} not found", id);
+                    return new ResourceNotFoundException("Standard with ID " + id + " not found.");
+                });
 
         if (dto.getIdentifier() != null && !dto.getIdentifier().equals(existing.getIdentifier())) {
             if (repository.existsByIdentifier(dto.getIdentifier())) {
-                throw new DataIntegrityViolationException("Standard with identifier " + dto.getIdentifier() + " already exists");
+                logger.warn("Update conflict: Standard with identifier '{}' already exists", dto.getIdentifier());
+                throw new DuplicateResourceException("A standard with identifier '" + dto.getIdentifier() + "' already exists.");
             }
             existing.setIdentifier(dto.getIdentifier());
         }
@@ -86,10 +90,11 @@ public class StandardService {
 
         try {
             Standard updatedStandard = repository.save(existing);
+            logger.info("Successfully updated Standard with ID: {}", id);
             return mapper.toResponseDTO(updatedStandard);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update Standard (ID: {}): {}", id, e.getMessage());
-            throw new RuntimeException("Update failed: Duplicate Standard identifier detected");
+            logger.error("Failed to update Standard with ID {}, identifier '{}': Constraint violation - {}", id, dto.getIdentifier(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: A standard with identifier '" + dto.getIdentifier() + "' already exists.");
         }
     }
 
