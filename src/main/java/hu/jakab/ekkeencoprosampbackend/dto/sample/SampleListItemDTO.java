@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class SampleListItemDTO {
-    
+
     private Long id;
     private String sampleIdentifier;
     private Long samplingRecordId;
@@ -21,7 +20,6 @@ public class SampleListItemDTO {
     private String employeeName;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-
 
 
 }

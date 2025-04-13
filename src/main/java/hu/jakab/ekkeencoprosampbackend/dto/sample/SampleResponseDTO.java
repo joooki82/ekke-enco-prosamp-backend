@@ -4,8 +4,10 @@ import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodList
 import hu.jakab.ekkeencoprosampbackend.dto.measurementUnit.MeasurementUnitListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.samplingRecordDatM200.SamplingRecordDatM200ListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.samplingType.SamplingTypeListItemDTO;
-import hu.jakab.ekkeencoprosampbackend.model.MeasurementUnit;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
