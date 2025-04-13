@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.10.13)  13 APR 2025 16:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.10.13)  13 APR 2025 16:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -553,25 +553,21 @@ LaTeX Font Info:    Font shape `T1/phv/b/n' will be
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
 (Font)              scaled to size 11.39996pt on input line 155.
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <12> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 172.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 173.
 LaTeX Font Info:    Font shape `T1/phv/m/sl' will be
-(Font)              scaled to size 11.39996pt on input line 172.
-
-LaTeX Warning: Reference `totalappendices' on page 1 undefined on input line 18
-4.
-
+(Font)              scaled to size 11.39996pt on input line 173.
 LaTeX Font Info:    Font shape `T1/phv/m/n' will be
-(Font)              scaled to size 7.59998pt on input line 188.
+(Font)              scaled to size 7.59998pt on input line 189.
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <8> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 192.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 193.
 LaTeX Font Info:    Font shape `T1/phv/m/sl' will be
-(Font)              scaled to size 7.59998pt on input line 192.
+(Font)              scaled to size 7.59998pt on input line 193.
 
 
 <logo.png, id=1, 186.4566pt x 40.953pt>
 File: logo.png Graphic file (type png)
 <use logo.png>
-Package pdftex.def Info: logo.png  used on input line 196.
+Package pdftex.def Info: logo.png  used on input line 197.
 (pdftex.def)             Requested size: 199.16928pt x 43.74551pt.
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -582,38 +578,38 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-36.09555pt}.
 
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1
-96.
+97.
 (c:/texlive/2024/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
-96.
+97.
 
 (c:/texlive/2024/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-196.
+197.
 
 (c:/texlive/2024/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-196.
+197.
 
 (c:/texlive/2024/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 196.
+(Font)              <8> on input line 197.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 196.
+(Font)              <6> on input line 197.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 196.
+(Font)              <5> on input line 197.
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
-(Font)              scaled to size 7.59998pt on input line 196.
+(Font)              scaled to size 7.59998pt on input line 197.
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 1
-96.
+97.
 
 (c:/texlive/2024/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
@@ -624,9 +620,9 @@ File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 texmf-dist/fonts/enc/dvips/base/8r.enc}{c:/texlive/2024/texmf-dist/fonts/enc/dv
 ips/lm/lm-ec.enc} <src/main/resources/reports//logo.png>]
 LaTeX Font Info:    Font shape `T1/phv/m/n' will be
-(Font)              scaled to size 16.41594pt on input line 203.
+(Font)              scaled to size 16.41594pt on input line 204.
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
-(Font)              scaled to size 16.41594pt on input line 203.
+(Font)              scaled to size 16.41594pt on input line 204.
 
 (src/main/resources/reports//generated_report.toc
 LaTeX Font Info:    External font `lmex10' loaded for size
@@ -638,84 +634,84 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 
 
 [2]
-Overfull \hbox (28.45274pt too wide) in paragraph at lines 258--259
+Overfull \hbox (28.45274pt too wide) in paragraph at lines 259--260
 [][] 
  []
 
 
-Overfull \hbox (28.45274pt too wide) in paragraph at lines 277--278
+Overfull \hbox (28.45274pt too wide) in paragraph at lines 278--279
 [][] 
  []
 
 
 
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 291.
+(Font)              <10> on input line 292.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 291.
+(Font)              <7> on input line 292.
 [3]
-Overfull \hbox (21.77357pt too wide) in paragraph at lines 295--298
+Overfull \hbox (21.77357pt too wide) in paragraph at lines 296--299
 [][] 
  []
 
 LaTeX Font Info:    Trying to load font information for TS1+phv on input line 3
-16.
+17.
 (c:/texlive/2024/texmf-dist/tex/latex/psnfss/ts1phv.fd
 File: ts1phv.fd 2020/03/25 scalable font definitions for TS1/phv.
 )
 LaTeX Font Info:    Font shape `TS1/phv/b/n' will be
-(Font)              scaled to size 11.39996pt on input line 316.
+(Font)              scaled to size 11.39996pt on input line 317.
 
 
 [4]
 LaTeX Font Info:    Font shape `TS1/phv/m/n' will be
-(Font)              scaled to size 11.39996pt on input line 352.
+(Font)              scaled to size 11.39996pt on input line 353.
 
-Underfull \hbox (badness 10000) in paragraph at lines 352--353
+Underfull \hbox (badness 10000) in paragraph at lines 353--354
 |[]
  []
 
 
-Overfull \hbox (1.84785pt too wide) in paragraph at lines 352--353
+Overfull \hbox (1.84785pt too wide) in paragraph at lines 353--354
 []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 358--359
+Underfull \hbox (badness 10000) in paragraph at lines 359--360
 |[]
  []
 
 
-Overfull \hbox (1.84785pt too wide) in paragraph at lines 358--359
+Overfull \hbox (1.84785pt too wide) in paragraph at lines 359--360
 []
  []
 
 [5]
 
 [6]
-Underfull \hbox (badness 10000) in paragraph at lines 380--381
+Underfull \hbox (badness 10000) in paragraph at lines 381--382
 |[]
  []
 
 
-Overfull \hbox (1.84785pt too wide) in paragraph at lines 380--381
+Overfull \hbox (1.84785pt too wide) in paragraph at lines 381--382
 []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 386--387
+Underfull \hbox (badness 10000) in paragraph at lines 387--388
 |[]
  []
 
 
-Overfull \hbox (1.84785pt too wide) in paragraph at lines 386--387
+Overfull \hbox (1.84785pt too wide) in paragraph at lines 387--388
 []
  []
 
 [7]
 
 [8]
-Overfull \hbox (4.08727pt too wide) in paragraph at lines 446--470
+Overfull \hbox (4.08727pt too wide) in paragraph at lines 447--471
 \T1/phv/m/n/12 A flu-o-ri-dok és fosz-for-sav ex-po-zí-ció meg-ha-tá-ro-zá-sá-h
 oz a min-ta-vé-telt az MDHS 70:1993
  []
@@ -725,7 +721,7 @@ oz a min-ta-vé-telt az MDHS 70:1993
 [9]
 
 [10]
-Overfull \hbox (4.29974pt too wide) in paragraph at lines 480--480
+Overfull \hbox (4.29974pt too wide) in paragraph at lines 481--481
 |[]\T1/phv/b/n/14.4 A VIZS-GÁ-LAT SO-RÁN AL-KAL-MA-ZOTT SZAB-VÁ-NYOK, EL-JÁ-RÁ-
 SOK| 
  []
@@ -734,44 +730,44 @@ SOK|
 
 [11]
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 556.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 557.
 LaTeX Font Info:    Font shape `T1/phv/m/sl' will be
-(Font)              scaled to size 9.49997pt on input line 556.
+(Font)              scaled to size 9.49997pt on input line 557.
 LaTeX Font Info:    Font shape `T1/phv/m/n' will be
-(Font)              scaled to size 6.64998pt on input line 565.
+(Font)              scaled to size 6.64998pt on input line 566.
 LaTeX Font Info:    Font shape `T1/phv/m/n' will be
-(Font)              scaled to size 4.74998pt on input line 565.
+(Font)              scaled to size 4.74998pt on input line 566.
 
-Overfull \hbox (19.72078pt too wide) in alignment at lines 562--568
+Overfull \hbox (19.72078pt too wide) in alignment at lines 563--569
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (19.72078pt too wide) in alignment at lines 568--573
+Overfull \hbox (19.72078pt too wide) in alignment at lines 569--574
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (19.72078pt too wide) in alignment at lines 573--577
+Overfull \hbox (19.72078pt too wide) in alignment at lines 574--578
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (19.72078pt too wide) in alignment at lines 577--580
+Overfull \hbox (19.72078pt too wide) in alignment at lines 578--581
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (19.72078pt too wide) in alignment at lines 580--624
+Overfull \hbox (19.72078pt too wide) in alignment at lines 581--625
  [] [] [] [] [] 
  []
 
 LaTeX Font Info:    Font shape `TS1/phv/m/n' will be
-(Font)              scaled to size 9.49997pt on input line 630.
+(Font)              scaled to size 9.49997pt on input line 631.
 ! Misplaced \crcr.
 \tbl_crcr:n ...l_count_missing_cells:n {#1}}\crcr 
                                                   
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I can't figure out why you would want to use a tab mark
 or \cr or \span just now. If something like a right brace
@@ -782,7 +778,7 @@ might try typing `S' now just to see what is salvageable.
 ! Misplaced \noalign.
 \endlongtable ...bl_crcr:n {endlongtable}\noalign 
                                                   {\UseTaggingSocket {tbl/lo...
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I expect to see \noalign only after the \cr of
 an alignment. Proceed, and I'll ignore this case.
@@ -790,7 +786,7 @@ an alignment. Proceed, and I'll ignore this case.
 ! Misplaced \crcr.
 \LT@echunk ->\crcr 
                    \LT@save@row \cr \egroup \global \setbox \LT@gbox \lastbo...
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I can't figure out why you would want to use a tab mark
 or \cr or \span just now. If something like a right brace
@@ -801,7 +797,7 @@ might try typing `S' now just to see what is salvageable.
 ! Misplaced alignment tab character &.
 <argument> &
             
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -813,7 +809,7 @@ might try typing `S' now just to see what is salvageable.
 ! Misplaced \omit.
 \LT@entry ...->\ifhmode \@firstofone {&}\fi \omit 
                                                   \ifnum #1=\c@LT@chunks \el...
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I expect to see \omit only after tab marks or the \cr of
 an alignment. Proceed, and I'll ignore this case.
@@ -821,7 +817,7 @@ an alignment. Proceed, and I'll ignore this case.
 ! Misplaced alignment tab character &.
 <argument> &
             
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -833,7 +829,7 @@ might try typing `S' now just to see what is salvageable.
 ! Misplaced \omit.
 \LT@entry ...->\ifhmode \@firstofone {&}\fi \omit 
                                                   \ifnum #1=\c@LT@chunks \el...
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I expect to see \omit only after tab marks or the \cr of
 an alignment. Proceed, and I'll ignore this case.
@@ -841,7 +837,7 @@ an alignment. Proceed, and I'll ignore this case.
 ! Misplaced alignment tab character &.
 <argument> &
             
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -853,7 +849,7 @@ might try typing `S' now just to see what is salvageable.
 ! Misplaced \omit.
 \LT@entry ...->\ifhmode \@firstofone {&}\fi \omit 
                                                   \ifnum #1=\c@LT@chunks \el...
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I expect to see \omit only after tab marks or the \cr of
 an alignment. Proceed, and I'll ignore this case.
@@ -861,7 +857,7 @@ an alignment. Proceed, and I'll ignore this case.
 ! Misplaced alignment tab character &.
 <argument> &
             
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -873,7 +869,7 @@ might try typing `S' now just to see what is salvageable.
 ! Misplaced \omit.
 \LT@entry ...->\ifhmode \@firstofone {&}\fi \omit 
                                                   \ifnum #1=\c@LT@chunks \el...
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I expect to see \omit only after tab marks or the \cr of
 an alignment. Proceed, and I'll ignore this case.
@@ -881,7 +877,7 @@ an alignment. Proceed, and I'll ignore this case.
 ! Misplaced alignment tab character &.
 <argument> &
             
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I can't figure out why you would want to use a tab mark
 here. If you just want an ampersand, the remedy is
@@ -893,7 +889,7 @@ might try typing `S' now just to see what is salvageable.
 ! Misplaced \omit.
 \LT@entry ...->\ifhmode \@firstofone {&}\fi \omit 
                                                   \ifnum #1=\c@LT@chunks \el...
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I expect to see \omit only after tab marks or the \cr of
 an alignment. Proceed, and I'll ignore this case.
@@ -901,7 +897,7 @@ an alignment. Proceed, and I'll ignore this case.
 ! Misplaced \cr.
 \LT@echunk ->\crcr \LT@save@row \cr 
                                     \egroup \global \setbox \LT@gbox \lastbo...
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I can't figure out why you would want to use a tab mark
 or \cr or \span just now. If something like a right brace
@@ -912,7 +908,7 @@ might try typing `S' now just to see what is salvageable.
 ! Extra }, or forgotten \endgroup.
 \LT@echunk ->\crcr \LT@save@row \cr \egroup 
                                             \global \setbox \LT@gbox \lastbo...
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
@@ -923,7 +919,7 @@ deleted material, e.g., by typing `I$}'.
 ! Extra }, or forgotten \endgroup.
 \LT@echunk ...x \LT@gbox \lastbox \unskip \egroup 
                                                   
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
@@ -938,7 +934,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -947,7 +943,7 @@ or  <return>  to continue without it.
 ! Extra \endgroup.
 <recently read> \endgroup 
                           
-l.631 			\end{longtable}
+l.632 			\end{longtable}
                         
 Things are pretty mixed up, but I think the worst is over.
 
@@ -958,7 +954,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.635 		\end{center}
+l.636 		\end{center}
                     
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -967,7 +963,7 @@ or  <return>  to continue without it.
 ! Extra \endgroup.
 <recently read> \endgroup 
                           
-l.635 		\end{center}
+l.636 		\end{center}
                     
 Things are pretty mixed up, but I think the worst is over.
 
@@ -975,34 +971,34 @@ Things are pretty mixed up, but I think the worst is over.
 
 [12{c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/texlive/2024/te
 xmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}]
-Overfull \hbox (19.72078pt too wide) in alignment at lines 642--648
+Overfull \hbox (19.72078pt too wide) in alignment at lines 643--649
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (19.72078pt too wide) in alignment at lines 648--653
+Overfull \hbox (19.72078pt too wide) in alignment at lines 649--654
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (19.72078pt too wide) in alignment at lines 653--657
+Overfull \hbox (19.72078pt too wide) in alignment at lines 654--658
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (19.72078pt too wide) in alignment at lines 657--660
+Overfull \hbox (19.72078pt too wide) in alignment at lines 658--661
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (19.72078pt too wide) in alignment at lines 660--740
+Overfull \hbox (19.72078pt too wide) in alignment at lines 661--741
  [] [] [] [] [] 
  []
 
 ! Misplaced \crcr.
 \tbl_crcr:n ...l_count_missing_cells:n {#1}}\crcr 
                                                   
-l.777 			\end{longtable}
+l.780 			\end{longtable}
                         
 I can't figure out why you would want to use a tab mark
 or \cr or \span just now. If something like a right brace
@@ -1013,7 +1009,7 @@ might try typing `S' now just to see what is salvageable.
 ! Misplaced \noalign.
 \endlongtable ...bl_crcr:n {endlongtable}\noalign 
                                                   {\UseTaggingSocket {tbl/lo...
-l.777 			\end{longtable}
+l.780 			\end{longtable}
                         
 I expect to see \noalign only after the \cr of
 an alignment. Proceed, and I'll ignore this case.
@@ -1021,7 +1017,7 @@ an alignment. Proceed, and I'll ignore this case.
 ! Misplaced \crcr.
 \LT@echunk ->\crcr 
                    \LT@save@row \cr \egroup \global \setbox \LT@gbox \lastbo...
-l.777 			\end{longtable}
+l.780 			\end{longtable}
                         
 I can't figure out why you would want to use a tab mark
 or \cr or \span just now. If something like a right brace
@@ -1032,7 +1028,7 @@ might try typing `S' now just to see what is salvageable.
 ! Misplaced \omit.
 \LT@entry ...->\ifhmode \@firstofone {&}\fi \omit 
                                                   \ifnum #1=\c@LT@chunks \el...
-l.777 			\end{longtable}
+l.780 			\end{longtable}
                         
 I expect to see \omit only after tab marks or the \cr of
 an alignment. Proceed, and I'll ignore this case.
@@ -1040,7 +1036,7 @@ an alignment. Proceed, and I'll ignore this case.
 ! Misplaced \omit.
 \LT@entry ...->\ifhmode \@firstofone {&}\fi \omit 
                                                   \ifnum #1=\c@LT@chunks \el...
-l.777 			\end{longtable}
+l.780 			\end{longtable}
                         
 I expect to see \omit only after tab marks or the \cr of
 an alignment. Proceed, and I'll ignore this case.
@@ -1048,7 +1044,7 @@ an alignment. Proceed, and I'll ignore this case.
 ! Misplaced \omit.
 \LT@entry ...->\ifhmode \@firstofone {&}\fi \omit 
                                                   \ifnum #1=\c@LT@chunks \el...
-l.777 			\end{longtable}
+l.780 			\end{longtable}
                         
 I expect to see \omit only after tab marks or the \cr of
 an alignment. Proceed, and I'll ignore this case.
@@ -1056,7 +1052,7 @@ an alignment. Proceed, and I'll ignore this case.
 ! Misplaced \omit.
 \LT@entry ...->\ifhmode \@firstofone {&}\fi \omit 
                                                   \ifnum #1=\c@LT@chunks \el...
-l.777 			\end{longtable}
+l.780 			\end{longtable}
                         
 I expect to see \omit only after tab marks or the \cr of
 an alignment. Proceed, and I'll ignore this case.
@@ -1064,7 +1060,7 @@ an alignment. Proceed, and I'll ignore this case.
 ! Misplaced \omit.
 \LT@entry ...->\ifhmode \@firstofone {&}\fi \omit 
                                                   \ifnum #1=\c@LT@chunks \el...
-l.777 			\end{longtable}
+l.780 			\end{longtable}
                         
 I expect to see \omit only after tab marks or the \cr of
 an alignment. Proceed, and I'll ignore this case.
@@ -1072,7 +1068,7 @@ an alignment. Proceed, and I'll ignore this case.
 ! Misplaced \cr.
 \LT@echunk ->\crcr \LT@save@row \cr 
                                     \egroup \global \setbox \LT@gbox \lastbo...
-l.777 			\end{longtable}
+l.780 			\end{longtable}
                         
 I can't figure out why you would want to use a tab mark
 or \cr or \span just now. If something like a right brace
@@ -1083,7 +1079,7 @@ might try typing `S' now just to see what is salvageable.
 ! Extra }, or forgotten \endgroup.
 \LT@echunk ->\crcr \LT@save@row \cr \egroup 
                                             \global \setbox \LT@gbox \lastbo...
-l.777 			\end{longtable}
+l.780 			\end{longtable}
                         
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
@@ -1094,7 +1090,7 @@ deleted material, e.g., by typing `I$}'.
 ! Extra }, or forgotten \endgroup.
 \LT@echunk ...x \LT@gbox \lastbox \unskip \egroup 
                                                   
-l.777 			\end{longtable}
+l.780 			\end{longtable}
                         
 I've deleted a group-closing symbol because it seems to be
 spurious, as in `$x}$'. But perhaps the } is legitimate and
@@ -1112,7 +1108,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.777 			\end{longtable}
+l.780 			\end{longtable}
                         
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1121,7 +1117,7 @@ or  <return>  to continue without it.
 ! Extra \endgroup.
 <recently read> \endgroup 
                           
-l.777 			\end{longtable}
+l.780 			\end{longtable}
                         
 Things are pretty mixed up, but I think the worst is over.
 
@@ -1132,7 +1128,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.781 		\end{center}
+l.784 		\end{center}
                     
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1141,7 +1137,7 @@ or  <return>  to continue without it.
 ! Extra \endgroup.
 <recently read> \endgroup 
                           
-l.781 		\end{center}
+l.784 		\end{center}
                     
 Things are pretty mixed up, but I think the worst is over.
 
@@ -1154,16 +1150,12 @@ enddocument/afterlastpage: lastpage setting LastPage.
 LaTeX2e <2024-06-01> patch level 2
 L3 programming layer <2024-09-10>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
  ) 
 Here is how much of TeX's memory you used:
- 7854 strings out of 473578
- 128680 string characters out of 5732241
+ 7853 strings out of 473578
+ 128663 string characters out of 5732241
  595764 words of memory out of 5000000
- 30565 multiletter control sequences out of 15000+600000
+ 30564 multiletter control sequences out of 15000+600000
  627320 words of font info for 91 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  70i,18n,67p,8606b,556s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1174,7 +1166,7 @@ ype1/public/lm/lmr7.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmtt8
 e/2024/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb><c:/texlive/2024/texmf-di
 st/fonts/type1/urw/helvetic/uhvro8a.pfb>
 Output written on src/main/resources/reports//generated_report.pdf (14 pages, 1
-34978 bytes).
+34753 bytes).
 PDF statistics:
  92 PDF objects out of 1000 (max. 8388607)
  59 compressed objects within 1 object stream

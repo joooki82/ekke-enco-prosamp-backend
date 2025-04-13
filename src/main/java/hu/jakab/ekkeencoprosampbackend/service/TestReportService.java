@@ -255,7 +255,7 @@ public class TestReportService {
         reportData.put("reportNumber", testReport.getReportNumber());
         reportData.put("title", testReport.getTitle());
         reportData.put("projectNumber", testReport.getProject().getProjectNumber());
-//        reportData.put("approvedBy", testReport.getApprovedBy().getUsername());
+        reportData.put("approvedBy", testReport.getApprovedBy().getUsername());
         reportData.put("issueDate", testReport.getIssueDate().toString());
 
         String samplersString = latexContentBuilder.generateSamplersList(testReport.getTestReportSamplers());
@@ -327,8 +327,8 @@ public class TestReportService {
         testReport.setIssueDate(LocalDate.now());
         reportData.put("issueDate", testReport.getIssueDate().toString());
 
-//        reportData.put("preparedBy", testReport.getPreparedBy().getUsername());
-//        reportData.put("checkedBy", testReport.getCheckedBy().getUsername());
+        reportData.put("preparedBy", testReport.getPreparedBy().getUsername());
+        reportData.put("checkedBy", testReport.getCheckedBy().getUsername());
 
         return reportData;
     }

@@ -235,7 +235,7 @@ INSERT INTO test_reports (report_number, title, approved_by, prepared_by, checke
                           determination_of_pollutant_concentration, issue_date, report_status)
 VALUES ('1-177 /2024', 'Robert Bosch Automotive Steering Kft. maklári telephelyén
 végzett munkahelyi légszennyezettség mérésekről', '22222222-2222-2222-2222-222222222222',
-        '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222',
+        '33333333-3333-3333-3333-333333333333', '11111111-1111-1111-1111-111111111111',
         'Munkahelyi légszennyezettség mérés', 1, 1, 1, 'A Robert Bosch Automotive Steering Kft. maklári telephelyén elektromos kormányművek,
 kormányművekhez fogaslécek és kormányanyák gyártását végzik. A vizsgált területek a
 festősor környezetében találhatóak.', 'vizsgálatok ideje alatt a telephelyen folyamatos, normál üzemmenetnek megfelelő
