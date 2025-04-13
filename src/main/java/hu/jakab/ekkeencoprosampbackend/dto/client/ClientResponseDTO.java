@@ -1,10 +1,10 @@
 package hu.jakab.ekkeencoprosampbackend.dto.client;
 
 import hu.jakab.ekkeencoprosampbackend.dto.project.ProjectListItemDTO;
-import hu.jakab.ekkeencoprosampbackend.model.Project;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToMany;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

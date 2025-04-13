@@ -2,26 +2,34 @@ package hu.jakab.ekkeencoprosampbackend.dto.client;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ClientRequestDTO {
-    @NotBlank(message = "Client name cannot be empty")
+
+    @NotBlank(message = "Az ügyfél neve kötelező.")
     private String name;
 
-    @NotBlank(message = "Contact person cannot be empty")
+    @NotBlank(message = "A kapcsolattartó megadása kötelező.")
     private String contactPerson;
 
-    @Email(message = "Invalid email format")
+    @Email(message = "Érvénytelen email formátum.")
     private String email;
 
     private String phone;
     private String address;
+
     private String country;
+
     private String city;
+
     private String postalCode;
+
     private String taxNumber;
 }
