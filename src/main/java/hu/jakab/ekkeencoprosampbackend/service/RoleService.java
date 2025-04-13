@@ -53,8 +53,8 @@ public class RoleService {
             Role savedRole = repository.save(role);
             return mapper.toCreatedDTO(savedRole);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving role: Duplicate 'role_name' detected");
-            throw new DuplicateResourceException("Failed to create role: Duplicate 'role_name' detected");
+            logger.error("Failed to save role with name '{}': Constraint violation - {}", dto.getRoleName(), e.getMessage(), e);
+            throw new DuplicateResourceException("A role with the name '" + dto.getRoleName() + "' already exists.");
         }
     }
 
@@ -62,16 +62,20 @@ public class RoleService {
     public RoleResponseDTO update(Long id, RoleRequestDTO dto) {
         logger.info("Updating role with ID: {}", id);
         Role existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Role with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Update failed: Role with ID {} not found", id);
+                    return new ResourceNotFoundException("Role with ID " + id + " not found.");
+                });
 
         if (dto.getRoleName() != null) existing.setRoleName(dto.getRoleName());
 
         try {
             Role updatedRole = repository.save(existing);
+            logger.info("Successfully updated role with ID: {}", id);
             return mapper.toResponseDTO(updatedRole);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update role: Duplicate 'role_name' detected");
-            throw new DuplicateResourceException("Update failed: Duplicate 'role_name' value");
+            logger.error("Failed to update role with ID {}, name '{}': Constraint violation - {}", id, dto.getRoleName(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: A role with the name '" + dto.getRoleName() + "' already exists.");
         }
     }
 
