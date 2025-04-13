@@ -69,14 +69,14 @@ public class SamplingRecordDatM200Service {
 
     @Transactional
     public SamplingRecordDatM200CreatedDTO save(SamplingRecordDatM200RequestDTO dto) {
-        logger.info("Creating a new SamplingRecordDatM200 with sampling date: {}", dto.getSamplingDate());
-        logger.info("Creating a new SamplingRecordDatM200 with tested plant: {}", dto.getTestedPlant());
+        logger.info("Creating SamplingRecordDatM200: samplingDate='{}', testedPlant='{}'", dto.getSamplingDate(), dto.getTestedPlant());
+
         SamplingRecordDatM200 samplingRecordDatM200 = mapper.toEntity(dto);
 
         List<SamplingRecordEquipment> equipmentLinks = dto.getEquipmentIds().stream()
                 .map(equipmentId -> {
                     Equipment equipment = equipmentRepository.findById(equipmentId)
-                            .orElseThrow(() -> new RuntimeException("Equipment not found: " + equipmentId));
+                            .orElseThrow(() -> new ResourceNotFoundException("Equipment with ID " + equipmentId + " not found."));
                     return SamplingRecordEquipment.builder()
                             .samplingRecord(samplingRecordDatM200)
                             .equipment(equipment)
@@ -90,14 +90,15 @@ public class SamplingRecordDatM200Service {
             SamplingRecordDatM200 savedSamplingRecordDatM200 = repository.save(samplingRecordDatM200);
             return mapper.toCreatedDTO(savedSamplingRecordDatM200);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving SamplingRecordDatM200: Duplicate field ");
-            throw new DuplicateResourceException("Failed to create SamplingRecordDatM200: Duplicate field ");
+            logger.error("Failed to save SamplingRecordDatM200 on date '{}': Constraint violation - {}", dto.getSamplingDate(), e.getMessage(), e);
+            throw new DuplicateResourceException("Sampling record already exists for the given date and company.");
         }
     }
 
     @Transactional
     public SamplingRecordDatM200ResponseDTO update(Long id, SamplingRecordDatM200RequestDTO dto) {
-        logger.info("Updating SamplingRecordDatM200 (ID: {}) with new details", id);
+        logger.info("Updating SamplingRecordDatM200 with ID: {}", id);
+
         SamplingRecordDatM200 existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("SamplingRecordDatM200 with ID " + id + " not found"));
 
@@ -167,14 +168,11 @@ public class SamplingRecordDatM200Service {
             }
 
             SamplingRecordDatM200 updatedSamplingRecordDatM200 = repository.save(existing);
-
+            logger.info("Successfully updated SamplingRecordDatM200 with ID: {}", id);
             return mapper.toResponseDTO(updatedSamplingRecordDatM200);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update SamplingRecordDatM200 (ID: {}): Duplicate field detected", id);
-            throw new DuplicateResourceException("Update failed: Duplicate field detected");
-        } catch (Exception e) {
-            logger.error("Unexpected error while updating SamplingRecordDatM200 (ID: {}): {}", id, e.getMessage());
-            throw new RuntimeException("Update failed: " + e.getMessage());
+            logger.error("Failed to update SamplingRecordDatM200 with ID {}: Constraint violation - {}", id, e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: Duplicate data found.");
         }
     }
 
