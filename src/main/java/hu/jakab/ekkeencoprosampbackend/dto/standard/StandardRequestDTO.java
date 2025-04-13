@@ -13,17 +13,16 @@ import lombok.*;
 @Builder
 public class StandardRequestDTO {
 
-    @NotBlank(message = "Standard number cannot be blank")
-    @Size(max = 255, message = "Standard number must be at most 255 characters long")
+    @NotBlank(message = "A szabvány száma nem lehet üres.")
+    @Size(max = 255, message = "A szabvány száma legfeljebb 255 karakter lehet.")
     private String standardNumber;
 
-    @Size(max = 65535, message = "Description is too long")
     private String description;
 
-    @NotNull(message = "Standard type cannot be null")
+    @NotNull(message = "A szabvány típusa megadása kötelező.")
     private StandardType standardType;
 
-    @NotBlank(message = "Identifier cannot be blank")
-    @Size(max = 255, message = "Identifier must be at most 255 characters long")
+    @NotBlank(message = "Az azonosító megadása kötelező.")
+    @Size(max = 255, message = "Az azonosító legfeljebb 255 karakter lehet.")
     private String identifier;
 }

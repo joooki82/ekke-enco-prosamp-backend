@@ -2,8 +2,6 @@ package hu.jakab.ekkeencoprosampbackend.dto.standard;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
