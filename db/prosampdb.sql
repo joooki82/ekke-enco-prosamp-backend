@@ -1,27 +1,10 @@
--- Enable necessary extensions
--- CREATE EXTENSION IF NOT EXISTS pg_trgm;
-
--- SELECT current_user, session_user;
 SET ROLE postgres;
 --
 DROP SCHEMA public CASCADE;
 --
 CREATE SCHEMA public;
---
--- -- SET session "app.current_user" = '22222222-2222-2222-2222-222222222222';
---
--- -- ALTER DATABASE prosampdb SET "app.current_user" = '33333333-3333-3333-3333-333333333333';
---
--- SELECT pg_reload_conf();
---
+
 SET ROLE prosamp;
-
--- SELECT current_user, session_user;
-
-
--- ALTER ROLE prosamp WITH SUPERUSER;
--- CREATE EXTENSION IF NOT EXISTS pgaudit;
--- ALTER ROLE prosamp WITH NOSUPERUSER;
 
 -- #############################################################################
 -- TABLE: Users
@@ -310,8 +293,8 @@ CREATE TABLE samples
     pressure                     NUMERIC(7, 2),
     sample_volume_flow_rate      NUMERIC(7, 4),
     sample_volume_flow_rate_unit BIGINT      NOT NULL REFERENCES measurement_units (id) ON DELETE RESTRICT,
-    start_time                   TIMESTAMP(0),                                                     -- Store only up to seconds
-    end_time                     TIMESTAMP(0),                                                     -- Store only up to seconds
+    start_time                   TIMESTAMP(0),
+    end_time                     TIMESTAMP(0),                                                     -
     sample_type                  VARCHAR(10) CHECK (sample_type IN ('AK', 'CK')) DEFAULT 'AK',
     status                       VARCHAR(50)                                     DEFAULT 'ACTIVE', -- Státusz: 'active', 'lost', 'broken', 'invalid'
     remarks                      VARCHAR(255),
@@ -360,9 +343,9 @@ CREATE TABLE laboratories
 CREATE TABLE analytical_lab_reports
 (
     id            BIGSERIAL PRIMARY KEY,
-    report_number VARCHAR(50) UNIQUE NOT NULL,                                                 -- External lab report identifier
-    issue_date    DATE               NOT NULL,                                                 -- The date when the lab issued the report
-    laboratory_id BIGINT             NOT NULL REFERENCES laboratories (id) ON DELETE RESTRICT, -- Which lab performed the tests
+    report_number VARCHAR(50) UNIQUE NOT NULL,
+    issue_date    DATE               NOT NULL,
+    laboratory_id BIGINT             NOT NULL REFERENCES laboratories (id) ON DELETE RESTRICT,
     created_at    TIMESTAMP DEFAULT NOW(),
     updated_at    TIMESTAMP DEFAULT NOW()
 );
@@ -521,7 +504,6 @@ EXECUTE FUNCTION apply_update_timestamp_trigger();
 -- #############################################################################
 -- INDICES
 -- #############################################################################
-
 CREATE INDEX idx_locations_company ON locations (company_id);
 
 CREATE INDEX idx_sampling_records_location_company ON sampling_records_dat_m200 (site_location_id, company_id);
@@ -548,21 +530,6 @@ CREATE INDEX idx_sampling_records_project ON sampling_records_dat_m200 (project_
 -- #############################################################################
 ALTER SYSTEM SET pgaudit.log = 'write, ddl';
 
--- CREATE TABLE IF NOT EXISTS audit_logs
--- (
---     id               BIGSERIAL PRIMARY KEY,
---     user_id          UUID REFERENCES users (id),
---     table_name       TEXT NOT NULL,
---     action           TEXT CHECK (action IN ('INSERT', 'UPDATE', 'DELETE')),
---     record_id_uuid   UUID,   -- Stores UUID-based IDs
---     record_id_bigint BIGINT, -- Stores BIGINT-based IDs
---     changes          JSONB,  -- Stores old and new values
---     timestamp        TIMESTAMP DEFAULT NOW(),
---     CHECK (
---         (record_id_uuid IS NOT NULL AND record_id_bigint IS NULL) OR
---         (record_id_bigint IS NOT NULL AND record_id_uuid IS NULL)
---         )                    -- Ensures only one is filled
--- );
 
 CREATE TABLE audit_logs
 (
@@ -570,11 +537,10 @@ CREATE TABLE audit_logs
     user_id    UUID REFERENCES users (id),
     table_name TEXT NOT NULL,
     action     TEXT CHECK (action IN ('INSERT', 'UPDATE', 'DELETE')),
-    record_id  TEXT, -- Store ID as text, handle type in application
+    record_id  TEXT,
     changes    JSONB,
     timestamp  TIMESTAMP DEFAULT NOW()
 );
-
 
 
 CREATE OR REPLACE FUNCTION get_current_user_id()
@@ -589,102 +555,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 
--- CREATE OR REPLACE FUNCTION audit_log()
---     RETURNS TRIGGER AS
--- $$
--- DECLARE
---     current_user_uuid UUID;
---     rec_uuid          UUID;
---     rec_bigint        BIGINT;
--- BEGIN
---     -- Retrieve current user UUID from session settings
---     BEGIN
---         SELECT current_setting('app.current_user')::UUID INTO current_user_uuid;
---     EXCEPTION
---         WHEN others THEN
---             current_user_uuid := '11111111-1111-1111-1111-111111111111'; -- Default Anonymous User
---     END;
---
---     -- Determine the ID type depending on the operation
---     IF TG_OP IN ('DELETE', 'UPDATE') THEN
---         IF pg_typeof(OLD.id)::text = 'uuid' THEN
---             rec_uuid := OLD.id;
---             rec_bigint := NULL;
---         ELSIF pg_typeof(OLD.id)::text = 'bigint' THEN
---             rec_bigint := OLD.id;
---             rec_uuid := NULL;
---         ELSE
---             rec_uuid := NULL;
---             rec_bigint := NULL;
---         END IF;
---     ELSE
---         IF pg_typeof(NEW.id)::text = 'uuid' THEN
---             rec_uuid := NEW.id;
---             rec_bigint := NULL;
---         ELSIF pg_typeof(NEW.id)::text = 'bigint' THEN
---             rec_bigint := NEW.id;
---             rec_uuid := NULL;
---         ELSE
---             rec_uuid := NULL;
---             rec_bigint := NULL;
---         END IF;
---     END IF;
---     -- Insert audit log only if a valid ID was found
---     IF rec_uuid IS NOT NULL OR rec_bigint IS NOT NULL THEN
---         INSERT INTO audit_logs (user_id,
---                                 table_name,
---                                 action,
---                                 record_id_uuid,
---                                 record_id_bigint,
---                                 changes)
---         VALUES (current_user_uuid,
---                 TG_TABLE_NAME,
---                 TG_OP,
---                 rec_uuid,
---                 rec_bigint,
---                 jsonb_build_object(
---                         'old', CASE WHEN TG_OP IN ('UPDATE', 'DELETE') THEN row_to_json(OLD) ELSE NULL END,
---                         'new', CASE WHEN TG_OP IN ('INSERT', 'UPDATE') THEN row_to_json(NEW) ELSE NULL END
---                 ));
---     ELSE
---         RAISE NOTICE 'Could not determine ID type for audit log entry on table %', TG_TABLE_NAME;
---     END IF;
---
---     -- Return the appropriate record
---     RETURN CASE WHEN TG_OP = 'DELETE' THEN OLD ELSE NEW END;
--- END;
--- $$ LANGUAGE plpgsql;
-
--- CREATE OR REPLACE FUNCTION audit_log()
---     RETURNS TRIGGER AS
--- $$
--- DECLARE
---     current_user_uuid UUID;
---     rec_id            TEXT;
--- BEGIN
---     -- Retrieve current user UUID from session settings
---     current_user_uuid := current_setting('session.currentUserId', true)::UUID;
---
---     -- Determine the ID as text
---     IF TG_OP IN ('DELETE', 'UPDATE') THEN
---         rec_id := OLD.id::TEXT;
---     ELSE
---         rec_id := NEW.id::TEXT;
---     END IF;
---
---     -- Insert audit log
---     INSERT INTO audit_logs (user_id, table_name, action, record_id, changes)
---     VALUES (current_user_uuid, TG_TABLE_NAME, TG_OP, rec_id,
---             jsonb_build_object(
---                     'old', CASE WHEN TG_OP IN ('UPDATE', 'DELETE') THEN row_to_json(OLD) ELSE NULL END,
---                     'new', CASE WHEN TG_OP IN ('INSERT', 'UPDATE') THEN row_to_json(NEW) ELSE NULL END
---             ));
---
---     -- Return the appropriate record
---     RETURN CASE WHEN TG_OP = 'DELETE' THEN OLD ELSE NEW END;
--- END;
--- $$ LANGUAGE plpgsql;
-
 CREATE OR REPLACE FUNCTION audit_log()
     RETURNS TRIGGER AS
 $$
@@ -692,23 +562,19 @@ DECLARE
     current_user_uuid UUID;
     rec_id            TEXT;
 BEGIN
-    -- Get the current user ID from the session variable
     current_user_uuid := current_setting('session.currentUserId', true)::UUID;
 
-    -- Check if the user exists before inserting the log
     IF NOT EXISTS (SELECT 1 FROM users WHERE id = current_user_uuid) THEN
         RAISE NOTICE 'User ID % not found, skipping audit log.', current_user_uuid;
         RETURN NEW;
     END IF;
 
-    -- Determine the record ID as text
     IF TG_OP IN ('DELETE', 'UPDATE') THEN
         rec_id := OLD.id::TEXT;
     ELSE
         rec_id := NEW.id::TEXT;
     END IF;
 
-    -- Insert the audit log record
     INSERT INTO audit_logs (user_id, table_name, action, record_id, changes)
     VALUES (current_user_uuid, TG_TABLE_NAME, TG_OP, rec_id,
             jsonb_build_object(
@@ -723,21 +589,8 @@ $$ LANGUAGE plpgsql;
 
 
 -- #############################################################################
--- # Solution: Auto-Apply Logging to New Tables
--- # Create an Event Trigger to Detect New Tables
--- #############################################################################
--- #############################################################################
--- Function: Auto-Apply Logging to New Tables
--- Detects New Tables and Adds an Audit Trigger
--- #############################################################################
--- #############################################################################
 -- Event Trigger: Automatically Applies Logging to New Tables
 -- #############################################################################
--- CREATE EVENT TRIGGER trigger_auto_audit
---     ON ddl_command_end
---     WHEN TAG IN ('CREATE TABLE')
--- EXECUTE FUNCTION apply_audit_trigger();
-
 
 DO
 $$
@@ -760,10 +613,3 @@ $$
             END LOOP;
     END;
 $$;
-
-
--- #####################################################
--- INSERT TEST DATA
--- #####################################################
-
--- Insert Users

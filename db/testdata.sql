@@ -1,3 +1,7 @@
+-- #####################################################
+-- INSERT TEST DATA
+-- #####################################################
+
 INSERT INTO users (id, username, email)
 VALUES ('11111111-1111-1111-1111-111111111111', 'Iga Benedek', 'anonymous@example.com')
 ON CONFLICT (id) DO NOTHING;
@@ -1594,5 +1598,3 @@ VALUES ('Ray PLC', 'Joe Dillon', 'fosterheather@gmail.com', '+1-569-753-0480',
         '421 Christopher Ford Apt. 313, Boydton, HI 96951', 'Malawi', 'Troytown', '37430', '59-6303754'),
        ('Smith Group', 'Andrew Thompson', 'carl92@fischer.com', '290-048-3926',
         '43412 Chad Camp Suite 634, Amymouth, NH 35373', 'Colombia', 'Haileyville', '69075', '72-8298330');
-
-
