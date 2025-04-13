@@ -62,7 +62,7 @@ public class TestReportController {
     @GetMapping("/{id}/generate")
     public ResponseEntity<byte[]> generateReport(@PathVariable Long id) {
         byte[] pdfBytes = service.generateReport(id);
-
+        logger.info("Generating PDF report for TestReport with ID: {}", id);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
@@ -70,4 +70,3 @@ public class TestReportController {
     }
 
 }
-

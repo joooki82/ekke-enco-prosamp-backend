@@ -14,7 +14,6 @@ spring:
       connection-timeout: 30000         # 30 seconds - maximum time to wait for a connection from the pool
       validation-timeout: 5000          # 5 seconds - time to wait for connection validation
       leak-detection-threshold: 20000   # 20 seconds - log a warning if a connection is open longer than this
-#      auto-commit: false                # Ensure manual transaction management for better control
   jpa:
     hibernate:
       ddl-auto: validate

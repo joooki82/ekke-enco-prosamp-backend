@@ -7,13 +7,13 @@
 \select@language {magyar} \contentsline {subsection}{\numberline {5.2}KÖRNYEZETI PARAMÉTEREK}{4}{}%
 \select@language {magyar} \contentsline {subsection}{\numberline {5.3}SZENNYEZŐ TECHNOLÓGIA}{4}{}%
 \select@language {magyar} \contentsline {subsection}{\numberline {5.4}MINTAVÉTELI KÖRÜLMÉNYEK, IDŐPONTOK}{4}{}%
-\select@language {magyar} \contentsline {section}{\numberline {6}FELHASZNÁLT ESZKÖZÖK, MINTAVÉTELI ÉS MÉRÉSI MÓDSZEREK}{7}{}%
-\select@language {magyar} \contentsline {subsection}{\numberline {6.1}A KÖRNYEZETI LEVEGŐ ÁLLAPOTJELZŐINEK MEGHATÁROZÁSA}{7}{}%
-\select@language {magyar} \contentsline {subsection}{\numberline {6.2}SZENNYEZŐANYAG KONCENTRÁCIÓ MEGHATÁROZÁSA}{7}{}%
-\select@language {magyar} \contentsline {section}{\numberline {7}A VIZSGÁLAT SORÁN ALKALMAZOTT SZABVÁNYOK, ELJÁRÁSOK}{9}{}%
-\select@language {magyar} \contentsline {section}{\numberline {8}VIZSGÁLATI EREDMÉNYEK}{10}{}%
-\select@language {magyar} \contentsline {subsection}{\numberline {8.1}ÁTLAGKONCENTRÁCIÓ MINTAVÉTELE}{10}{}%
-\select@language {magyar} \contentsline {subsection}{\numberline {8.2}CSÚCSKONCENTRÁCIÓ MINTAVÉTELE}{11}{}%
-\select@language {magyar} \contentsline {section}{\numberline {A}MELLÉKLETEK}{12}{}%
-\select@language {magyar} \contentsline {subsection}{\numberline {A.1}1. Melléklet - Mérési adatok}{12}{}%
-\select@language {magyar} \contentsline {subsection}{\numberline {A.2}2. Melléklet - Egyéb adatok}{12}{}%
+\select@language {magyar} \contentsline {section}{\numberline {6}FELHASZNÁLT ESZKÖZÖK, MINTAVÉTELI ÉS MÉRÉSI MÓDSZEREK}{9}{}%
+\select@language {magyar} \contentsline {subsection}{\numberline {6.1}A KÖRNYEZETI LEVEGŐ ÁLLAPOTJELZŐINEK MEGHATÁROZÁSA}{9}{}%
+\select@language {magyar} \contentsline {subsection}{\numberline {6.2}SZENNYEZŐANYAG KONCENTRÁCIÓ MEGHATÁROZÁSA}{9}{}%
+\select@language {magyar} \contentsline {section}{\numberline {7}A VIZSGÁLAT SORÁN ALKALMAZOTT SZABVÁNYOK, ELJÁRÁSOK}{11}{}%
+\select@language {magyar} \contentsline {section}{\numberline {8}VIZSGÁLATI EREDMÉNYEK}{12}{}%
+\select@language {magyar} \contentsline {subsection}{\numberline {8.1}ÁTLAGKONCENTRÁCIÓ MINTAVÉTELE}{12}{}%
+\select@language {magyar} \contentsline {subsection}{\numberline {8.2}CSÚCSKONCENTRÁCIÓ MINTAVÉTELE}{13}{}%
+\select@language {magyar} \contentsline {section}{\numberline {A}MELLÉKLETEK}{14}{}%
+\select@language {magyar} \contentsline {subsection}{\numberline {A.1}1. Melléklet - Mérési adatok}{14}{}%
+\select@language {magyar} \contentsline {subsection}{\numberline {A.2}2. Melléklet - Egyéb adatok}{14}{}%

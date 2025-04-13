@@ -25,7 +25,7 @@ public class SecurityConfig  {
     @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
     private String jwkSetUri;
 
-    @Value("${app.cors.allowedOrigins:http://localhost:4200}")
+    @Value("${app.cors.allowedOrigins}")
     private List<String> allowedOrigins;
 
 //    @Autowired
