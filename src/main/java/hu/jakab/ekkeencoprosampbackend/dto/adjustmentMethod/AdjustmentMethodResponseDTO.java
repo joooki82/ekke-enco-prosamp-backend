@@ -1,7 +1,6 @@
 package hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod;
 
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleListItemDTO;
-import hu.jakab.ekkeencoprosampbackend.model.Sample;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
