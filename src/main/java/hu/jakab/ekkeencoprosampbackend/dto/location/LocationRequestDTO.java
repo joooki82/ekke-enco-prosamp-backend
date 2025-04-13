@@ -3,25 +3,29 @@ package hu.jakab.ekkeencoprosampbackend.dto.location;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class LocationRequestDTO {
-    @NotNull(message = "Company ID cannot be null")
+
+    @NotNull(message = "A cég azonosítója kötelező.")
     private Long companyId;
 
-    @NotBlank(message = "Location name cannot be empty")
+    @NotBlank(message = "A telephely neve nem lehet üres.")
     private String name;
 
     private String address;
 
-    @NotBlank(message = "Contact person cannot be empty")
+    @NotBlank(message = "A kapcsolattartó megadása kötelező.")
     private String contactPerson;
 
-    @Email(message = "Invalid email format")
+    @Email(message = "Érvénytelen email formátum.")
     private String email;
 
     private String phone;
