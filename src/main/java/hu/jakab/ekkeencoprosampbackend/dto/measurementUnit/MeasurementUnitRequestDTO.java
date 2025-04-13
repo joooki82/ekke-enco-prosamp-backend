@@ -7,20 +7,21 @@ import java.math.BigDecimal;
 
 @Data
 public class MeasurementUnitRequestDTO {
-    private Long id; // Nullable for creation, required for updates
 
-    @NotBlank
-    private String unitCode; // e.g., "mg/m³", "ppm", "µg/L"
+    private Long id;
 
-    @NotBlank
-    private String description; // e.g., "Milligrams per cubic meter"
+    @NotBlank(message = "A mértékegység kód megadása kötelező.")
+    private String unitCode;
 
-    @NotBlank
-    private String unitCategory; // e.g., "Concentration", "Mass", "Volume"
+    @NotBlank(message = "A leírás megadása kötelező.")
+    private String description;
 
-    private Long baseUnitId; // ID reference to base unit (nullable)
+    @NotBlank(message = "A kategória megadása kötelező.")
+    private String unitCategory;
 
-    private BigDecimal conversionFactor; // Factor to convert to base unit
+    private Long baseUnitId;
 
-    private String standardBody; // e.g., "SI", "ISO", "ASTM", "EPA"
+    private BigDecimal conversionFactor;
+
+    private String standardBody;
 }
