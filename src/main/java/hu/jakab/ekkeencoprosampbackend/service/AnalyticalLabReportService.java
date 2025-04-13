@@ -58,8 +58,8 @@ public class AnalyticalLabReportService {
             AnalyticalLabReport savedAnalyticalLabReport = repository.save(AnalyticalLabReport);
             return mapper.toCreatedDTO(savedAnalyticalLabReport);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving AnalyticalLabReport: Duplicate report number");
-            throw new DuplicateResourceException("Failed to create AnalyticalLabReport: Duplicate report number");
+            logger.error("Failed to save AnalyticalLabReport with report number '{}': Constraint violation - {}", dto.getReportNumber(), e.getMessage(), e);
+            throw new DuplicateResourceException("An AnalyticalLabReport with report number '" + dto.getReportNumber() + "' already exists.");
         }
     }
 
@@ -67,21 +67,29 @@ public class AnalyticalLabReportService {
     public AnalyticalLabReportResponseDTO update(Long id, AnalyticalLabReportRequestDTO dto) {
         logger.info("Updating AnalyticalLabReport (ID: {}) with new details", id);
         AnalyticalLabReport existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("AnalyticalLabReport with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Update failed: AnalyticalLabReport with ID {} not found", id);
+                    return new ResourceNotFoundException("AnalyticalLabReport with ID " + id + " not found.");
+                });
 
-        Laboratory existingLaboratory = laboratoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("AnalyticalLabReport with ID " + id + " not found"));
+        if (dto.getLaboratoryId() != null) {
+            Laboratory lab = laboratoryRepository.findById(dto.getLaboratoryId())
+                    .orElseThrow(() -> {
+                        logger.warn("Update failed: Laboratory with ID {} not found", dto.getLaboratoryId());
+                        return new ResourceNotFoundException("Laboratory with ID " + dto.getLaboratoryId() + " not found.");
+                    });
+            existing.setLaboratory(lab);
+        }
 
         if (dto.getReportNumber() != null) existing.setReportNumber(dto.getReportNumber());
-        if (dto.getIssueDate() != null) existing.setLaboratory(existingLaboratory);
         if (dto.getIssueDate() != null) existing.setIssueDate(dto.getIssueDate());
 
         try {
             AnalyticalLabReport updatedAnalyticalLabReport = repository.save(existing);
             return mapper.toResponseDTO(updatedAnalyticalLabReport);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update AnalyticalLabReport: Duplicate report number detected");
-            throw new DuplicateResourceException("Update failed: Duplicate report number");
+            logger.error("Failed to update AnalyticalLabReport with ID {} and report number '{}': Constraint violation - {}", id, dto.getReportNumber(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: An AnalyticalLabReport with report number '" + dto.getReportNumber() + "' already exists.");
         }
     }
 
@@ -89,8 +97,8 @@ public class AnalyticalLabReportService {
     public void delete(Long id) {
         logger.info("Deleting AnalyticalLabReport with ID: {}", id);
         if (!repository.existsById(id)) {
-            logger.warn("Cannot delete: AnalyticalLabReport with ID {} not found", id);
-            throw new ResourceNotFoundException("AnalyticalLabReport with ID " + id + " not found");
+            logger.warn("Delete failed: AnalyticalLabReport with ID {} not found", id);
+            throw new ResourceNotFoundException("AnalyticalLabReport with ID " + id + " not found.");
         }
         repository.deleteById(id);
         logger.info("Successfully deleted AnalyticalLabReport with ID: {}", id);
