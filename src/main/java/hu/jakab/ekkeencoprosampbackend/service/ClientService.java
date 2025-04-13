@@ -47,14 +47,14 @@ public class ClientService {
 
     @Transactional
     public ClientCreatedDTO save(ClientRequestDTO dto) {
-        logger.info("Creating a new client with name: {}", dto.getName());
+        logger.info("Creating a new client with name: {} and tax number: {}", dto.getName(), dto.getTaxNumber());
         Client client = mapper.toEntity(dto);
         try {
             Client savedClient = repository.save(client);
             return mapper.toCreatedDTO(savedClient);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving client: Duplicate name or tax number");
-            throw new DuplicateResourceException("Failed to create client: Duplicate name or tax number");
+            logger.error("Failed to save client with name '{}' and tax number '{}': Constraint violation - {}", dto.getName(), dto.getTaxNumber(), e.getMessage(), e);
+            throw new DuplicateResourceException("A client with the same name or tax number already exists.");
         }
     }
 
@@ -62,7 +62,10 @@ public class ClientService {
     public ClientResponseDTO update(Long id, ClientRequestDTO dto) {
         logger.info("Updating client (ID: {}) with new details", id);
         Client existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Client with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Update failed: Client with ID {} not found", id);
+                    return new ResourceNotFoundException("Client with ID " + id + " not found.");
+                });
 
         if (dto.getName() != null) existing.setName(dto.getName());
         if (dto.getContactPerson() != null) existing.setContactPerson(dto.getContactPerson());
@@ -78,8 +81,8 @@ public class ClientService {
             Client updatedClient = repository.save(existing);
             return mapper.toResponseDTO(updatedClient);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update client: Duplicate name or tax number detected");
-            throw new DuplicateResourceException("Update failed: Duplicate name or tax number");
+            logger.error("Failed to update client with ID {} and tax number '{}': Constraint violation - {}", id, dto.getTaxNumber(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: A client with the same name or tax number already exists.");
         }
     }
 
@@ -87,8 +90,8 @@ public class ClientService {
     public void delete(Long id) {
         logger.info("Deleting client with ID: {}", id);
         if (!repository.existsById(id)) {
-            logger.warn("Cannot delete: Client with ID {} not found", id);
-            throw new ResourceNotFoundException("Client with ID " + id + " not found");
+            logger.warn("Delete failed: Client with ID {} not found", id);
+            throw new ResourceNotFoundException("Client with ID " + id + " not found.");
         }
         repository.deleteById(id);
         logger.info("Successfully deleted client with ID: {}", id);
