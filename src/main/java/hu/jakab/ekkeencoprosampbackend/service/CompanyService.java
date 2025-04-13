@@ -55,8 +55,8 @@ public class CompanyService {
             Company savedCompany = repository.save(Company);
             return mapper.toCreatedDTO(savedCompany);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving company: Duplicate name or tax number");
-            throw new DuplicateResourceException("Failed to create Company: Duplicate name or tax number");
+            logger.error("Failed to save company with name '{}': Constraint violation - {}", dto.getName(), e.getMessage(), e);
+            throw new DuplicateResourceException("A company with the same name already exists.");
         }
     }
 
@@ -64,7 +64,10 @@ public class CompanyService {
     public CompanyResponseDTO update(Long id, CompanyRequestDTO dto) {
         logger.info("Updating company (ID: {}) with new details", id);
         Company existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("company with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Update failed: Company with ID {} not found", id);
+                    return new ResourceNotFoundException("Company with ID " + id + " not found.");
+                });
 
         if (dto.getName() != null) existing.setName(dto.getName());
         if (dto.getAddress() != null) existing.setAddress(dto.getAddress());
@@ -79,8 +82,8 @@ public class CompanyService {
             Company updatedCompany = repository.save(existing);
             return mapper.toResponseDTO(updatedCompany);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update Company: Duplicate name or tax number detected");
-            throw new DuplicateResourceException("Update failed: Duplicate name or tax number");
+            logger.error("Failed to update company with ID {} and name '{}': Constraint violation - {}", id, dto.getName(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: A company with the same name already exists.");
         }
     }
 
