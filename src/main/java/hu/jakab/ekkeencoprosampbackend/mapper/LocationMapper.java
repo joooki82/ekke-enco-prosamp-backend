@@ -11,7 +11,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {EntityMapperHelper.class})
 public interface LocationMapper {
 
-    @Mapping(target = "id", ignore = true) // ID is auto-generated
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "company", source = "companyId", qualifiedByName = "mapCompany")

@@ -1,7 +1,6 @@
 package hu.jakab.ekkeencoprosampbackend.mapper;
 
 import hu.jakab.ekkeencoprosampbackend.dto.equipment.EquipmentListNameDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleIdentifierDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.standard.StandardListItemDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.user.UserDTO;

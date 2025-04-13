@@ -12,13 +12,13 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {EntityMapperHelper.class})
 public interface MeasurementUnitMapper {
 
-    @Mapping(target = "id", ignore = true) // ID is auto-generated
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "baseUnit", source = "baseUnitId", qualifiedByName = "mapMeasurementUnit")
     MeasurementUnit toEntity(MeasurementUnitRequestDTO dto);
 
-    @Mapping(target = "baseUnit", source = "baseUnit") // Explicit mapping
+    @Mapping(target = "baseUnit", source = "baseUnit")
     MeasurementUnitResponseDTO toResponseDTO(MeasurementUnit entity);
 
     MeasurementUnitCreatedDTO toCreatedDTO(MeasurementUnit entity);

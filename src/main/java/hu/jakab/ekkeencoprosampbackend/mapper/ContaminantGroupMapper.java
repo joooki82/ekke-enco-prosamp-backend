@@ -3,12 +3,7 @@ package hu.jakab.ekkeencoprosampbackend.mapper;
 import hu.jakab.ekkeencoprosampbackend.dto.contaminantGroup.ContaminantGroupCreatedDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.contaminantGroup.ContaminantGroupRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.contaminantGroup.ContaminantGroupResponseDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.project.ProjectCreatedDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.project.ProjectListItemDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.project.ProjectRequestDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.project.ProjectResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.model.ContaminantGroup;
-import hu.jakab.ekkeencoprosampbackend.model.Project;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

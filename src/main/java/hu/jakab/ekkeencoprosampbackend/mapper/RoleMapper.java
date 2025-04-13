@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {EntityMapperHelper.class})
 public interface RoleMapper {
 
-    @Mapping(target = "id", ignore = true) // ID is auto-generated
+    @Mapping(target = "id", ignore = true)
     Role toEntity(RoleRequestDTO dto);
 
     RoleResponseDTO toResponseDTO(Role entity);

@@ -5,8 +5,8 @@ import hu.jakab.ekkeencoprosampbackend.dto.samplingRecordDatM200.SamplingRecordD
 import hu.jakab.ekkeencoprosampbackend.dto.samplingRecordDatM200.SamplingRecordDatM200RequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.samplingRecordDatM200.SamplingRecordDatM200ResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.model.SamplingRecordDatM200;
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = {EntityMapperHelper.class})
 public interface SamplingRecordDatM200Mapper {
