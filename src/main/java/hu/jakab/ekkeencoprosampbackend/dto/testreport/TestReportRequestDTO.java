@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,12 +18,12 @@ import java.util.UUID;
 @Builder
 public class TestReportRequestDTO {
 
-    @NotBlank(message = "Report number cannot be blank")
-    @Size(max = 50, message = "Report number must be at most 50 characters long")
+    @NotBlank(message = "A jelentésszám megadása kötelező.")
+    @Size(max = 50, message = "A jelentésszám legfeljebb 50 karakter lehet.")
     private String reportNumber;
 
-    @NotBlank(message = "Title cannot be blank")
-    @Size(max = 255, message = "Title must be at most 255 characters long")
+    @NotBlank(message = "A cím megadása kötelező.")
+    @Size(max = 255, message = "A cím legfeljebb 255 karakter lehet.")
     private String title;
 
     private UUID approvedBy;
@@ -33,26 +32,26 @@ public class TestReportRequestDTO {
 
     private String aimOfTest;
 
-    @NotNull(message = "Project ID is required")
+    @NotNull(message = "A projekt azonosító megadása kötelező.")
     private Long projectId;
 
     private List<Long> testReportStandardIds;
     private List<UUID> testReportSamplerIds;
 
-    @NotNull(message = "Location ID is required")
+    @NotNull(message = "A helyszín azonosító megadása kötelező.")
     private Long locationId;
 
-    @NotNull(message = "Sampling Record ID is required")
+    @NotNull(message = "A mintavételi jegyzőkönyv azonosító megadása kötelező.")
     private Long samplingRecordId;
 
     private String technology;
     private String samplingConditionsDates;
     private String determinationOfPollutantConcentration;
 
-    @NotNull(message = "Issue date is required")
+    @NotNull(message = "A kiállítás dátuma kötelező.")
     private LocalDate issueDate;
 
-    @NotNull(message = "Report status is required")
+    @NotNull(message = "A jelentés státusz megadása kötelező.")
     private String reportStatus;
 
 }
