@@ -78,6 +78,7 @@ public class LaboratoryService {
 
         try {
             Laboratory updatedMethod = repository.save(existing);
+            logger.info("Successfully updated laboratory with ID: {}", id);
             return mapper.toResponseDTO(updatedMethod);
         } catch (DataIntegrityViolationException e) {
             logger.error("Failed to update laboratory with ID {}, name '{}': Constraint violation - {}", id, dto.getName(), e.getMessage(), e);

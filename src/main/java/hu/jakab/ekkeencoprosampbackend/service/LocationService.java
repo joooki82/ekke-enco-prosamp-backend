@@ -53,27 +53,44 @@ public class LocationService {
 
     @Transactional
     public LocationCreatedDTO save(LocationRequestDTO dto) {
-        logger.info("Creating a new location with name: {}", dto.getName());
-        Location Location = mapper.toEntity(dto);
+        logger.info("Creating a new location with name: '{}', company ID: {}", dto.getName(), dto.getCompanyId());
+        Location location = mapper.toEntity(dto);
+
+        location.setCompany(
+                companyRepository.findById(dto.getCompanyId())
+                        .orElseThrow(() -> {
+                            logger.warn("Save failed: Company with ID {} not found", dto.getCompanyId());
+                            return new ResourceNotFoundException("Company with ID " + dto.getCompanyId() + " not found.");
+                        })
+        );
+
         try {
-            Location savedLocation = repository.save(Location);
+            Location savedLocation = repository.save(location);
             return mapper.toCreatedDTO(savedLocation);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving location: Duplicate name ");
-            throw new DuplicateResourceException("Failed to create location: Duplicate name ");
+            logger.error("Failed to save location with name '{}': Constraint violation - {}", dto.getName(), e.getMessage(), e);
+            throw new DuplicateResourceException("A location with the name '" + dto.getName() + "' already exists.");
         }
     }
 
     @Transactional
     public LocationResponseDTO update(Long id, LocationRequestDTO dto) {
-        logger.info("Updating location (ID: {}) with new details", id);
+        logger.info("Updating location with ID: {}", id);
         Location existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Location with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Update failed: Location with ID {} not found", id);
+                    return new ResourceNotFoundException("Location with ID " + id + " not found.");
+                });
 
-        Company existingCompany = companyRepository.findById(dto.getCompanyId())
-                .orElseThrow(() -> new ResourceNotFoundException("Company with ID " + dto.getCompanyId() + " not found"));
+        if (dto.getCompanyId() != null) {
+            Company company = companyRepository.findById(dto.getCompanyId())
+                    .orElseThrow(() -> {
+                        logger.warn("Update failed: Company with ID {} not found", dto.getCompanyId());
+                        return new ResourceNotFoundException("Company with ID " + dto.getCompanyId() + " not found.");
+                    });
+            existing.setCompany(company);
+        }
 
-        if (dto.getCompanyId() != null) existing.setCompany(existingCompany);
         if (dto.getName() != null) existing.setName(dto.getName());
         if (dto.getAddress() != null) existing.setAddress(dto.getAddress());
         if (dto.getContactPerson() != null) existing.setContactPerson(dto.getContactPerson());
@@ -85,10 +102,11 @@ public class LocationService {
 
         try {
             Location updatedLocation = repository.save(existing);
+            logger.info("Successfully updated location with ID: {}", id);
             return mapper.toResponseDTO(updatedLocation);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update location: Duplicate name detected");
-            throw new DuplicateResourceException("Update failed: Duplicate name ");
+            logger.error("Failed to update location with ID {}, name '{}': Constraint violation - {}", id, dto.getName(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: A location with the name '" + dto.getName() + "' already exists.");
         }
     }
 
