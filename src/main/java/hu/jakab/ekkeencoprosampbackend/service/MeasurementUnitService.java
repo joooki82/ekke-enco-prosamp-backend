@@ -46,40 +46,50 @@ public class MeasurementUnitService {
 
     @Transactional
     public MeasurementUnitCreatedDTO save(MeasurementUnitRequestDTO dto) {
-        logger.info("Creating a new MeasurementUnit with MeasurementUnit code: {}", dto.getUnitCode());
+        logger.info("Creating new measurement unit with code: '{}'", dto.getUnitCode());
 
-        MeasurementUnit MeasurementUnit = mapper.toEntity(dto);
+        MeasurementUnit measurementUnit = mapper.toEntity(dto);
+
+        if (dto.getBaseUnitId() != null) {
+            MeasurementUnit baseUnit = repository.findById(dto.getBaseUnitId())
+                    .orElseThrow(() -> {
+                        logger.warn("Base unit with ID {} not found for new measurement unit", dto.getBaseUnitId());
+                        return new ResourceNotFoundException("Base unit with ID " + dto.getBaseUnitId() + " not found.");
+                    });
+            measurementUnit.setBaseUnit(baseUnit);
+        }
 
         try {
-            MeasurementUnit savedMeasurementUnit = repository.save(MeasurementUnit);
+            MeasurementUnit savedMeasurementUnit = repository.save(measurementUnit);
             return mapper.toCreatedDTO(savedMeasurementUnit);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving MeasurementUnit: Duplicate MeasurementUnit identifier detected");
-            throw new DuplicateResourceException("Failed to create MeasurementUnit: Duplicate MeasurementUnit identifier detected");
+            logger.error("Failed to save measurement unit with code '{}': Constraint violation - {}", dto.getUnitCode(), e.getMessage(), e);
+            throw new DuplicateResourceException("A measurement unit with code '" + dto.getUnitCode() + "' already exists.");
         }
     }
 
     @Transactional
     public MeasurementUnitResponseDTO update(Long id, MeasurementUnitRequestDTO dto) {
-        logger.info("Updating MeasurementUnit (ID: {}) with new details", id);
+        logger.info("Updating measurement unit with ID: {}", id);
         
         MeasurementUnit existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("MeasurementUnit with ID " + id + " not found"));
-
-        MeasurementUnit existingBaseUnit = repository.findById(dto.getBaseUnitId())
-                .orElseThrow(() -> new ResourceNotFoundException("MeasurementUnit base with ID " + id + " not found"));
-
+                .orElseThrow(() -> {
+                    logger.warn("Update failed: Measurement unit with ID {} not found", id);
+                    return new ResourceNotFoundException("Measurement unit with ID " + id + " not found.");
+                });
 
         if (dto.getUnitCode() != null) existing.setUnitCode(dto.getUnitCode());
         if (dto.getDescription() != null) existing.setDescription(dto.getDescription());
         if (dto.getUnitCategory() != null) existing.setUnitCategory(dto.getUnitCategory());
-        if (dto.getBaseUnitId() != null) existing.setBaseUnit(existingBaseUnit);
         if (dto.getConversionFactor() != null) existing.setConversionFactor(dto.getConversionFactor());
         if (dto.getStandardBody() != null) existing.setStandardBody(dto.getStandardBody());
 
         if (dto.getBaseUnitId() != null) {
             MeasurementUnit baseUnit = repository.findById(dto.getBaseUnitId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Base MeasurementUnit with ID " + dto.getBaseUnitId() + " not found"));
+                    .orElseThrow(() -> {
+                        logger.warn("Base unit with ID {} not found during update", dto.getBaseUnitId());
+                        return new ResourceNotFoundException("Base unit with ID " + dto.getBaseUnitId() + " not found.");
+                    });
             existing.setBaseUnit(baseUnit);
         }
 
@@ -88,11 +98,8 @@ public class MeasurementUnitService {
             logger.info("Successfully updated MeasurementUnit (ID: {})", id);
             return mapper.toResponseDTO(updatedMeasurementUnit);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update MeasurementUnit (ID: {}): Duplicate Unit Code detected", id);
-            throw new RuntimeException("Update failed: Duplicate unit code detected");
-        } catch (Exception e) {
-            logger.error("Unexpected error while updating MeasurementUnit (ID: {}): {}", id, e.getMessage());
-            throw new RuntimeException("Update failed: " + e.getMessage());
+            logger.error("Failed to update measurement unit with ID {}, code '{}': Constraint violation - {}", id, dto.getUnitCode(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: A measurement unit with code '" + dto.getUnitCode() + "' already exists.");
         }
     }
 
