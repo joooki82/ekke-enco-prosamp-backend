@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -26,8 +28,8 @@ public class SamplingTypeController {
     @GetMapping
     public ResponseEntity<List<SamplingTypeResponseDTO>> getAllSamplingTypes() {
         logger.info("Fetching all SamplingTypes");
-        List<SamplingTypeResponseDTO> SamplingTypes = service.getAll();
-        return SamplingTypes.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(SamplingTypes);
+        List<SamplingTypeResponseDTO> samplingTypes = service.getAll();
+        return ResponseEntity.ok(samplingTypes != null ? samplingTypes : Collections.emptyList());
     }
 
     @GetMapping("/{id}")

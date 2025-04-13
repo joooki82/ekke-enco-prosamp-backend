@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -28,9 +29,9 @@ public class TestReportController {
 
     @GetMapping
     public ResponseEntity<List<TestReportResponseDTO>> getAllTestReports() {
-        logger.info("Fetching all TestReports");
-        List<TestReportResponseDTO> TestReports = service.getAll();
-        return TestReports.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(TestReports);
+        logger.info("Fetching all testReports");
+        List<TestReportResponseDTO> testReports = service.getAll();
+        return ResponseEntity.ok(testReports != null ? testReports : Collections.emptyList());
     }
 
     @GetMapping("/{id}")

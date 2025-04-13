@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -27,8 +28,8 @@ public class LaboratoryController {
     @GetMapping
     public ResponseEntity<List<LaboratoryResponseDTO>> getAll() {
         logger.info("Fetching all laboratories");
-        List<LaboratoryResponseDTO> methods = service.getAll();
-        return methods.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(methods);
+        List<LaboratoryResponseDTO> laboratories = service.getAll();
+        return ResponseEntity.ok(laboratories != null ? laboratories : Collections.emptyList());
     }
 
     @GetMapping("/{id}")

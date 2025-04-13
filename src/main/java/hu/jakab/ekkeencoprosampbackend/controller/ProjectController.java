@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -27,7 +28,7 @@ public class ProjectController {
     public ResponseEntity<List<ProjectResponseDTO>> getAllProjects() {
         logger.info("Fetching all projects");
         List<ProjectResponseDTO> projects = service.getAll();
-        return projects.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(projects);
+        return ResponseEntity.ok(projects != null ? projects : Collections.emptyList());
     }
 
     @GetMapping("/{id}")

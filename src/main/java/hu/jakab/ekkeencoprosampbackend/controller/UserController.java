@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.sql.DataSource;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -19,15 +19,15 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService service;
 
-    public UserController(UserService service, DataSource dataSource) {
+    public UserController(UserService service ) {
         this.service = service;
     }
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> getUsers() {
         logger.info("Fetching all users");
-        List<UserDTO> Users = service.getAll();
-        return Users.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(Users);
+        List<UserDTO> users = service.getAll();
+        return ResponseEntity.ok(users != null ? users : Collections.emptyList());
     }
 
     @GetMapping("/{id}")

@@ -3,17 +3,15 @@ package hu.jakab.ekkeencoprosampbackend.controller;
 import hu.jakab.ekkeencoprosampbackend.dto.client.ClientCreatedDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.client.ClientRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.client.ClientResponseDTO;
-import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.service.ClientService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -31,7 +29,7 @@ public class ClientController  {
     public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
         logger.info("Fetching all clients");
         List<ClientResponseDTO> clients = service.getAll();
-        return clients.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(clients);
+        return ResponseEntity.ok(clients != null ? clients : Collections.emptyList());
     }
 
     @GetMapping("/{id}")

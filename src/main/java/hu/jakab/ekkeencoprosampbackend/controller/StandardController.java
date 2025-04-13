@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -26,9 +27,9 @@ public class StandardController {
 
     @GetMapping
     public ResponseEntity<List<StandardResponseDTO>> getAllStandards() {
-        logger.info("Fetching all Standards");
-        List<StandardResponseDTO> Standards = service.getAll();
-        return Standards.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(Standards);
+        logger.info("Fetching all standards");
+        List<StandardResponseDTO> standards = service.getAll();
+        return ResponseEntity.ok(standards != null ? standards : Collections.emptyList());
     }
 
     @GetMapping("/{id}")

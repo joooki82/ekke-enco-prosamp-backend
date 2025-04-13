@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 @RestController
 @RequestMapping("/api/samples")
@@ -27,7 +28,7 @@ public class SampleController {
     public ResponseEntity<List<SampleResponseDTO>> getAllSamples() {
         logger.info("Fetching all samples");
         List<SampleResponseDTO> samples = service.getAll();
-        return samples.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(samples);
+        return ResponseEntity.ok(samples != null ? samples : Collections.emptyList());
     }
 
     @GetMapping("/{id}")

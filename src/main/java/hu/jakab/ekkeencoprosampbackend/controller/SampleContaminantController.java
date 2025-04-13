@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/sample-contaminants")
 public class SampleContaminantController {
 
-    private static final Logger logger = LoggerFactory.getLogger(SampleAnalyticalResultController.class);
+    private static final Logger logger = LoggerFactory.getLogger(SampleContaminantController.class);
     private final SampleContaminantService sampleContaminantService;
 
     public SampleContaminantController(SampleContaminantService sampleContaminantService) {
