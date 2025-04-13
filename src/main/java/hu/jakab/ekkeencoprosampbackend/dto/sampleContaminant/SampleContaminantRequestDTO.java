@@ -9,9 +9,9 @@ import lombok.*;
 @Builder
 public class SampleContaminantRequestDTO {
 
-    @NotNull(message = "Sample ID cannot be null")
+    @NotNull(message = "A minta azonosító megadása kötelező.")
     private Long sampleId;
 
-    @NotNull(message = "Contaminant ID cannot be null")
+    @NotNull(message = "A szennyező anyag azonosító megadása kötelező.")
     private Long contaminantId;
 }
