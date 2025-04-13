@@ -24,7 +24,7 @@ public class ContaminantService {
     private static final Logger logger = LoggerFactory.getLogger(ContaminantService.class);
 
     private final ContaminantRepository repository;
-    private ContaminantGroupRepository contaminantGroupRepository;
+    private final ContaminantGroupRepository contaminantGroupRepository;
     private final ContaminantMapper mapper;
 
     @Autowired

@@ -55,8 +55,8 @@ public class LaboratoryService {
             Laboratory savedMethod = repository.save(Laboratory);
             return mapper.toCreatedDTO(savedMethod);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving laboratory: Duplicate 'code' detected");
-            throw new DuplicateResourceException("Failed to create laboratory: Duplicate 'code' detected");
+            logger.error("Failed to save laboratory with name '{}': Constraint violation - {}", dto.getName(), e.getMessage(), e);
+            throw new DuplicateResourceException("A laboratory with the name '" + dto.getName() + "' already exists.");
         }
     }
 
@@ -64,7 +64,10 @@ public class LaboratoryService {
     public LaboratoryResponseDTO update(Long id, LaboratoryRequestDTO dto) {
         logger.info("Updating laboratory with ID: {}", id);
         Laboratory existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("laboratory with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Update failed: Laboratory with ID {} not found", id);
+                    return new ResourceNotFoundException("Laboratory with ID " + id + " not found.");
+                });
 
         if (dto.getName() != null) existing.setName(dto.getName());
         if (dto.getAccreditation() != null) existing.setAccreditation(dto.getAccreditation());
@@ -77,8 +80,8 @@ public class LaboratoryService {
             Laboratory updatedMethod = repository.save(existing);
             return mapper.toResponseDTO(updatedMethod);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update laboratory: Duplicate 'code' detected");
-            throw new DuplicateResourceException("Update failed: Duplicate 'code' value");
+            logger.error("Failed to update laboratory with ID {}, name '{}': Constraint violation - {}", id, dto.getName(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: A laboratory with the name '" + dto.getName() + "' already exists.");
         }
     }
 
