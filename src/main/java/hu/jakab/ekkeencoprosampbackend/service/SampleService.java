@@ -3,6 +3,7 @@ package hu.jakab.ekkeencoprosampbackend.service;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleCreatedDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleResponseDTO;
+import hu.jakab.ekkeencoprosampbackend.exception.DuplicateResourceException;
 import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.mapper.SampleMapper;
 import hu.jakab.ekkeencoprosampbackend.model.Sample;
@@ -59,22 +60,22 @@ public class SampleService {
 
     @Transactional
     public SampleCreatedDTO save(SampleRequestDTO dto) {
-        logger.info("Creating a new sample: {}", dto);
+        logger.info("Creating new sample with identifier: '{}'", dto.getSampleIdentifier());
         Sample sample = mapper.toEntity(dto);
         try {
             Sample savedSample = repository.save(sample);
             return mapper.toCreatedDTO(savedSample);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving sample: Duplicate sample identifier detected");
-            throw new RuntimeException("Failed to create sample: Duplicate identifier detected");
+            logger.error("Failed to save sample with identifier '{}': Constraint violation - {}", dto.getSampleIdentifier(), e.getMessage(), e);
+            throw new DuplicateResourceException("A sample with identifier '" + dto.getSampleIdentifier() + "' already exists.");
         }
     }
 
     @Transactional
     public SampleResponseDTO update(Long id, SampleRequestDTO dto) {
-        logger.info("Updating sample with ID: {}, New Data: {}", id, dto);
+        logger.info("Updating sample with ID: {}, new identifier: {}", id, dto.getSampleIdentifier());
         Sample existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + id + " not found."));
 
         if (dto.getSampleIdentifier() != null) existing.setSampleIdentifier(dto.getSampleIdentifier());
         if (dto.getLocation() != null) existing.setLocation(dto.getLocation());
@@ -90,27 +91,28 @@ public class SampleService {
         if (dto.getRemarks() != null) existing.setRemarks(dto.getRemarks());
 
         existing.setSamplingRecord(samplingRecordRepository.findById(dto.getSamplingRecordId())
-                .orElseThrow(() -> new ResourceNotFoundException("Sampling Record with ID " + dto.getSamplingRecordId() + " not found")));
+                .orElseThrow(() -> new ResourceNotFoundException("Sampling Record with ID " + dto.getSamplingRecordId() + " not found.")));
 
         existing.setSampleVolumeFlowRateUnit(measurementUnitRepository.findById(dto.getSampleVolumeFlowRateUnitId())
                 .orElseThrow(() -> new ResourceNotFoundException("Measurement Unit with ID " + dto.getSampleVolumeFlowRateUnitId() + " not found")));
 
-        existing.setSamplingType(dto.getSamplingTypeId() != null
-                ? samplingTypeRepository.findById(dto.getSamplingTypeId())
-                .orElseThrow(() -> new ResourceNotFoundException("Sampling Type with ID " + dto.getSamplingTypeId() + " not found"))
-                : null);
+        if (dto.getSamplingTypeId() != null) {
+            existing.setSamplingType(samplingTypeRepository.findById(dto.getSamplingTypeId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Sampling Type with ID " + dto.getSamplingTypeId() + " not found.")));
+        }
 
-        existing.setAdjustmentMethod(dto.getAdjustmentMethodId() != null
-                ? adjustmentMethodRepository.findById(dto.getAdjustmentMethodId())
-                .orElseThrow(() -> new ResourceNotFoundException("Adjustment Method with ID " + dto.getAdjustmentMethodId() + " not found"))
-                : null);
+        if (dto.getAdjustmentMethodId() != null) {
+            existing.setAdjustmentMethod(adjustmentMethodRepository.findById(dto.getAdjustmentMethodId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Adjustment Method with ID " + dto.getAdjustmentMethodId() + " not found.")));
+        }
 
         try {
             Sample updatedSample = repository.save(existing);
+            logger.info("Successfully updated sample with ID: {}", id);
             return mapper.toResponseDTO(updatedSample);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update sample: Duplicate identifier detected");
-            throw new RuntimeException("Update failed: Duplicate identifier detected");
+            logger.error("Failed to update sample with ID {}, identifier '{}': Constraint violation - {}", id, dto.getSampleIdentifier(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: A sample with identifier '" + dto.getSampleIdentifier() + "' already exists.");
         }
     }
 
