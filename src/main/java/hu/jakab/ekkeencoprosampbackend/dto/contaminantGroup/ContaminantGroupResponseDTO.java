@@ -1,8 +1,10 @@
 package hu.jakab.ekkeencoprosampbackend.dto.contaminantGroup;
 
 import hu.jakab.ekkeencoprosampbackend.dto.contaminant.ContaminantListItemDTO;
-import hu.jakab.ekkeencoprosampbackend.model.Contaminant;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
