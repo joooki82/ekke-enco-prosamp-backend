@@ -47,7 +47,7 @@ public class SamplingTypeService {
 
     @Transactional
     public SamplingTypeCreatedDTO save(SamplingTypeRequestDTO dto) {
-        logger.info("Creating a new SamplingType with SamplingType code: {}", dto.getCode());
+        logger.info("Creating a new SamplingType with code: '{}'", dto.getCode());
 
         SamplingType SamplingType = mapper.toEntity(dto);
 
@@ -55,8 +55,8 @@ public class SamplingTypeService {
             SamplingType savedSamplingType = repository.save(SamplingType);
             return mapper.toCreatedDTO(savedSamplingType);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving SamplingType: Duplicate SamplingType code detected");
-            throw new DuplicateResourceException("Failed to create SamplingType: Duplicate SamplingType code detected");
+            logger.error("Failed to save SamplingType with code '{}': Constraint violation - {}", dto.getCode(), e.getMessage(), e);
+            throw new DuplicateResourceException("A sampling type with code '" + dto.getCode() + "' already exists.");
         }
     }
 
@@ -65,11 +65,15 @@ public class SamplingTypeService {
         logger.info("Updating SamplingType (ID: {}) with new details", id);
 
         SamplingType existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("SamplingType with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Update failed: SamplingType with ID {} not found", id);
+                    return new ResourceNotFoundException("SamplingType with ID " + id + " not found.");
+                });
 
         if (dto.getCode() != null && !dto.getCode().equals(existing.getCode())) {
             if (repository.existsByCode(dto.getCode())) {
-                throw new DataIntegrityViolationException("SamplingType with code " + dto.getCode() + " already exists");
+                logger.warn("Update conflict: SamplingType with code '{}' already exists", dto.getCode());
+                throw new DuplicateResourceException("A sampling type with code '" + dto.getCode() + "' already exists.");
             }
             existing.setCode(dto.getCode());
         }
@@ -80,10 +84,11 @@ public class SamplingTypeService {
 
         try {
             SamplingType updatedSamplingType = repository.save(existing);
+            logger.info("Successfully updated SamplingType with ID: {}", id);
             return mapper.toResponseDTO(updatedSamplingType);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update SamplingType (ID: {}): {}", id, e.getMessage());
-            throw new RuntimeException("Update failed: Duplicate SamplingType code detected");
+            logger.error("Failed to update SamplingType with ID {} and code '{}': Constraint violation - {}", id, dto.getCode(), e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: A sampling type with code '" + dto.getCode() + "' already exists.");
         }
     }
 
