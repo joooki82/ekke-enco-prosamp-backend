@@ -11,10 +11,11 @@ import lombok.*;
 @Builder
 public class SamplingTypeRequestDTO {
 
-    @NotBlank(message = "Code cannot be blank")
-    @Size(max = 10, message = "Code must be at most 10 characters")
+    @NotBlank(message = "A kód megadása kötelező.")
+    @Size(max = 10, message = "A kód legfeljebb 10 karakter lehet.")
     private String code;
 
-    @NotBlank(message = "Description cannot be blank")
+    @NotBlank(message = "A leírás megadása kötelező.")
+    @Size(max = 255, message = "A leírás legfeljebb 255 karakter lehet.")
     private String description;
 }
