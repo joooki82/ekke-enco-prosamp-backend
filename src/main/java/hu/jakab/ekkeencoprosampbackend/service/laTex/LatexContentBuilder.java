@@ -30,7 +30,7 @@ public class LatexContentBuilder {
     }
 
     public String generateSamplersList(List<TestReportSampler> samplers) {
-        StringBuilder samplersTable = new StringBuilder(); // Create new instance every time the method is invoked
+        StringBuilder samplersTable = new StringBuilder();
 
         for (TestReportSampler sampler : samplers) {
             samplersTable.append("& ")
@@ -41,7 +41,7 @@ public class LatexContentBuilder {
                     .append(" \\\\ ");
         }
 
-        return samplersTable.toString(); // Convert to a string before returning
+        return samplersTable.toString();
     }
 
     public String generateClientContact(Client client) {
@@ -61,11 +61,9 @@ public class LatexContentBuilder {
             return "No samples recorded.";
         }
 
-        // Group samples by the date of sampling
         Map<LocalDate, List<Sample>> groupedByDate = samples.stream()
                 .collect(Collectors.groupingBy(sample -> sample.getStartTime().toLocalDate()));
 
-        // Generate formatted schedule
         StringBuilder schedule = new StringBuilder();
 
         groupedByDate.forEach((date, sampleList) -> {
@@ -77,7 +75,6 @@ public class LatexContentBuilder {
                     .mapToInt(sample -> sample.getEndTime().getHour())
                     .max().orElse(0);
 
-            // Format date in Hungarian style (e.g., "2024. április 3.")
             String formattedDate = formatDateInHungarian(date);
 
             schedule.append("& ")
@@ -100,17 +97,15 @@ public class LatexContentBuilder {
         StringBuilder sampleDetails = new StringBuilder();
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.ENGLISH);
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("H:mm"); // Fixed pattern
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("H:mm");
 
         for (Sample sample : samples) {
-            // Extract and format data
             String formattedDate = sample.getStartTime().format(dateFormatter);
             String formattedStartTime = sample.getStartTime().format(timeFormatter)
-                    .replace(":", "\\textsuperscript{") + "}"; // Fix LaTeX superscript
+                    .replace(":", "\\textsuperscript{") + "}";
             String formattedEndTime = sample.getEndTime().format(timeFormatter)
                     .replace(":", "\\textsuperscript{") + "}";
 
-            // Collect contaminant groups into a comma-separated string
             String contaminantGroups = sample.getSampleContaminants().stream()
                     .map(SampleContaminant::getContaminant)
                     .map(Contaminant::getContaminantGroup)
@@ -153,8 +148,8 @@ public class LatexContentBuilder {
     }
 
     public String formatBigDecimal(BigDecimal value, int scale) {
-        if (value == null) return "-"; // Return placeholder if value is missing
-        return value.setScale(scale, RoundingMode.HALF_UP).toString(); // Round to 1 decimal place
+        if (value == null) return "-";
+        return value.setScale(scale, RoundingMode.HALF_UP).toString();
     }
 
     public String generateEquipmentList(TestReport testReport) {
@@ -194,7 +189,6 @@ public class LatexContentBuilder {
             equipmentListBuilder.append("\t\\end{tabular}\n")
                     .append("\\end{adjustwidth}\n");
         }
-//        logger.info(equipmentListBuilder.toString());
 
         return equipmentListBuilder.toString();
     }
@@ -277,7 +271,6 @@ public class LatexContentBuilder {
             }
         }
 
-        // End LaTeX table
         sampleResults.append("\\end{longtable}\n");
 
         return sampleResults.toString();

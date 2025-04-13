@@ -70,7 +70,7 @@ public class ProjectService {
     @Transactional
     public ProjectResponseDTO update(Long id, ProjectRequestDTO dto) {
         logger.info("Updating project (ID: {}) with new details", id);
-        
+
         Project existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Project with ID " + id + " not found"));
 

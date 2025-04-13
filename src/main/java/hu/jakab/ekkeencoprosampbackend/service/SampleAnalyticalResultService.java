@@ -1,7 +1,5 @@
 package hu.jakab.ekkeencoprosampbackend.service;
 
-
-
 import hu.jakab.ekkeencoprosampbackend.dto.sampleAnalyticalResult.SampleAnalyticalResultCreatedDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sampleAnalyticalResult.SampleAnalyticalResultRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sampleAnalyticalResult.SampleAnalyticalResultResponseDTO;
@@ -104,18 +102,15 @@ public class SampleAnalyticalResultService {
     public SampleAnalyticalResultResponseDTO update(Long id, SampleAnalyticalResultRequestDTO dto) {
         logger.info("Updating SampleAnalyticalResult (ID: {}) with new details", id);
 
-        // Fetch the existing SampleAnalyticalResult
         SampleAnalyticalResult existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("SampleAnalyticalResult with ID " + id + " not found"));
 
-        // Update Lab Report if provided in DTO
         if (dto.getLabReportId() != null) {
             AnalyticalLabReport labReport = analyticalLabReportRepository.findById(dto.getLabReportId())
                     .orElseThrow(() -> new ResourceNotFoundException("LabReport with ID " + dto.getLabReportId() + " not found"));
             existing.setLabReport(labReport);
         }
 
-        // Update other fields if provided in DTO
         if (dto.getSampleContaminantId() != null) {
             SampleContaminant sampleContaminant = sampleContaminantRepository.findById(dto.getSampleContaminantId())
                     .orElseThrow(() -> new ResourceNotFoundException("SampleContaminant with ID " + dto.getSampleContaminantId() + " not found"));

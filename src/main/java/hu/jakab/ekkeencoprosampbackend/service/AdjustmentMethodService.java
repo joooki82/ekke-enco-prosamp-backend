@@ -65,7 +65,6 @@ public class AdjustmentMethodService {
         AdjustmentMethod existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Adjustment method with ID " + id + " not found"));
 
-        // Prevent overwriting with null values
         if (dto.getCode() != null) existing.setCode(dto.getCode());
         if (dto.getDescription() != null) existing.setDescription(dto.getDescription());
 
@@ -89,7 +88,6 @@ public class AdjustmentMethodService {
         repository.deleteById(id);
         logger.info("Successfully deleted adjustment method with ID: {}", id);
     }
-
 
 
 }

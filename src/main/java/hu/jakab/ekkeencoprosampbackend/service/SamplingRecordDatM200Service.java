@@ -73,7 +73,6 @@ public class SamplingRecordDatM200Service {
         logger.info("Creating a new SamplingRecordDatM200 with tested plant: {}", dto.getTestedPlant());
         SamplingRecordDatM200 samplingRecordDatM200 = mapper.toEntity(dto);
 
-        // Fetch equipment entities and create SamplingRecordEquipment entries
         List<SamplingRecordEquipment> equipmentLinks = dto.getEquipmentIds().stream()
                 .map(equipmentId -> {
                     Equipment equipment = equipmentRepository.findById(equipmentId)
@@ -99,12 +98,10 @@ public class SamplingRecordDatM200Service {
     @Transactional
     public SamplingRecordDatM200ResponseDTO update(Long id, SamplingRecordDatM200RequestDTO dto) {
         logger.info("Updating SamplingRecordDatM200 (ID: {}) with new details", id);
-        // Fetch the existing record
         SamplingRecordDatM200 existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("SamplingRecordDatM200 with ID " + id + " not found"));
 
         try {
-            // Apply updates from DTO
             existing.setSamplingDate(dto.getSamplingDate());
             existing.setExposureTime(dto.getExposureTime());
             existing.setTestedPlant(dto.getTestedPlant());
@@ -124,7 +121,6 @@ public class SamplingRecordDatM200Service {
             existing.setSerialNumbersOfSamples(dto.getSerialNumbersOfSamples());
             existing.setRemarks(dto.getRemarks());
 
-            // Update related entities using IDs
             if (dto.getConductedById() != null) {
                 User conductedBy = userRepository.findById(dto.getConductedById())
                         .orElseThrow(() -> new ResourceNotFoundException("User with ID " + dto.getConductedById() + " not found"));
@@ -153,15 +149,12 @@ public class SamplingRecordDatM200Service {
                 existing.setStatus(SamplingRecordStatus.valueOf(dto.getStatus()));
             }
 
-            // ✅ Fix: Handle Equipment List Update Correctly
             if (dto.getEquipmentIds() != null) {
                 List<Equipment> selectedEquipments = equipmentRepository.findAllById(dto.getEquipmentIds());
 
-                // Remove old mappings that are no longer in the new list
                 existing.getSamplingRecordEquipments().removeIf(equipmentMapping ->
                         !dto.getEquipmentIds().contains(equipmentMapping.getEquipment().getId()));
 
-                // Add new mappings
                 for (Equipment equipment : selectedEquipments) {
                     if (existing.getSamplingRecordEquipments().stream()
                             .noneMatch(mapping -> mapping.getEquipment().getId().equals(equipment.getId()))) {
@@ -173,10 +166,8 @@ public class SamplingRecordDatM200Service {
                 }
             }
 
-            // Save updated entity
             SamplingRecordDatM200 updatedSamplingRecordDatM200 = repository.save(existing);
 
-            // Convert to response DTO
             return mapper.toResponseDTO(updatedSamplingRecordDatM200);
         } catch (DataIntegrityViolationException e) {
             logger.error("Failed to update SamplingRecordDatM200 (ID: {}): Duplicate field detected", id);

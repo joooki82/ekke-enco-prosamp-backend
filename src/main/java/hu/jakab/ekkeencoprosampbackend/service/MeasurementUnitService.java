@@ -70,7 +70,6 @@ public class MeasurementUnitService {
                 .orElseThrow(() -> new ResourceNotFoundException("MeasurementUnit base with ID " + id + " not found"));
 
 
-        // Update fields only if provided in DTO
         if (dto.getUnitCode() != null) existing.setUnitCode(dto.getUnitCode());
         if (dto.getDescription() != null) existing.setDescription(dto.getDescription());
         if (dto.getUnitCategory() != null) existing.setUnitCategory(dto.getUnitCategory());
@@ -78,7 +77,6 @@ public class MeasurementUnitService {
         if (dto.getConversionFactor() != null) existing.setConversionFactor(dto.getConversionFactor());
         if (dto.getStandardBody() != null) existing.setStandardBody(dto.getStandardBody());
 
-        // Handle Base Unit reference update
         if (dto.getBaseUnitId() != null) {
             MeasurementUnit baseUnit = repository.findById(dto.getBaseUnitId())
                     .orElseThrow(() -> new ResourceNotFoundException("Base MeasurementUnit with ID " + dto.getBaseUnitId() + " not found"));
@@ -86,7 +84,6 @@ public class MeasurementUnitService {
         }
 
         try {
-            // Save updated entity
             MeasurementUnit updatedMeasurementUnit = repository.save(existing);
             logger.info("Successfully updated MeasurementUnit (ID: {})", id);
             return mapper.toResponseDTO(updatedMeasurementUnit);

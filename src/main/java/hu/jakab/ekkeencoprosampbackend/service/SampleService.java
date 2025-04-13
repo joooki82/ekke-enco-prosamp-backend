@@ -1,28 +1,20 @@
 package hu.jakab.ekkeencoprosampbackend.service;
 
-import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodCreatedDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodRequestDTO;
-import hu.jakab.ekkeencoprosampbackend.dto.adjustmentMethod.AdjustmentMethodResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleCreatedDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.sample.SampleResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
-import hu.jakab.ekkeencoprosampbackend.mapper.AdjustmentMethodMapper;
 import hu.jakab.ekkeencoprosampbackend.mapper.SampleMapper;
-import hu.jakab.ekkeencoprosampbackend.model.AdjustmentMethod;
 import hu.jakab.ekkeencoprosampbackend.model.Sample;
 import hu.jakab.ekkeencoprosampbackend.repository.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class SampleService {
@@ -84,7 +76,6 @@ public class SampleService {
         Sample existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Sample with ID " + id + " not found"));
 
-        // Update fields only if they are not null
         if (dto.getSampleIdentifier() != null) existing.setSampleIdentifier(dto.getSampleIdentifier());
         if (dto.getLocation() != null) existing.setLocation(dto.getLocation());
         if (dto.getEmployeeName() != null) existing.setEmployeeName(dto.getEmployeeName());
@@ -98,7 +89,6 @@ public class SampleService {
         if (dto.getStatus() != null) existing.setStatus(dto.getStatus());
         if (dto.getRemarks() != null) existing.setRemarks(dto.getRemarks());
 
-        // Set references to other entities
         existing.setSamplingRecord(samplingRecordRepository.findById(dto.getSamplingRecordId())
                 .orElseThrow(() -> new ResourceNotFoundException("Sampling Record with ID " + dto.getSamplingRecordId() + " not found")));
 

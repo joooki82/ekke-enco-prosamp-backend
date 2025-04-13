@@ -74,12 +74,10 @@ public class TestReportService {
     public TestReportCreatedDTO save(TestReportRequestDTO dto) {
         logger.info("Creating a new TestReport with TestReport TestReportNumber: {}", dto.getReportNumber());
 
-        // Check for duplicate report number
         if (repository.existsByReportNumber(dto.getReportNumber())) {
             throw new DuplicateResourceException("Failed to create TestReport: Duplicate report number detected");
         }
 
-        // Fetch required entities in batch
         Map<Long, Project> projectMap = projectRepository.findAllById(Collections.singletonList(dto.getProjectId()))
                 .stream().collect(Collectors.toMap(Project::getId, Function.identity()));
 
@@ -89,7 +87,6 @@ public class TestReportService {
         Map<Long, SamplingRecordDatM200> samplingRecordMap = samplingRecordRepository.findAllById(Collections.singletonList(dto.getSamplingRecordId()))
                 .stream().collect(Collectors.toMap(SamplingRecordDatM200::getId, Function.identity()));
 
-        // Validate fetched entities
         Project project = Optional.ofNullable(projectMap.get(dto.getProjectId()))
                 .orElseThrow(() -> new ResourceNotFoundException("Project with ID " + dto.getProjectId() + " not found"));
 
@@ -99,7 +96,6 @@ public class TestReportService {
         SamplingRecordDatM200 samplingRecord = Optional.ofNullable(samplingRecordMap.get(dto.getSamplingRecordId()))
                 .orElseThrow(() -> new ResourceNotFoundException("Sampling Record with ID " + dto.getSamplingRecordId() + " not found"));
 
-        // Use mapper to convert DTO to Entity
         TestReport testReport = mapper.toEntity(dto);
         testReport.setProject(project);
         testReport.setLocation(location);
@@ -107,13 +103,10 @@ public class TestReportService {
         testReport.setReportStatus(TestReportStatus.valueOf(dto.getReportStatus()));
 
         try {
-            // Save test report first
             TestReport savedTestReport = repository.save(testReport);
 
-            // Fetch standards in bulk
             List<Standard> standards = standardRepository.findAllById(dto.getTestReportStandardIds());
 
-            // Convert to TestReportStandard entities
             List<TestReportStandard> testReportStandards = standards.stream()
                     .map(standard -> TestReportStandard.builder()
                             .testReport(savedTestReport)
@@ -123,7 +116,6 @@ public class TestReportService {
 
             testReportStandardRepository.saveAll(testReportStandards);
 
-            // Fetch users in bulk for samplers
             if (dto.getTestReportSamplerIds() != null && !dto.getTestReportSamplerIds().isEmpty()) {
                 List<User> samplers = userRepository.findAllById(dto.getTestReportSamplerIds());
 
@@ -137,7 +129,6 @@ public class TestReportService {
                 testReportSamplerRepository.saveAll(testReportSamplers);
             }
 
-            // Convert entity to DTO using mapper
             return mapper.toCreatedDTO(savedTestReport);
         } catch (DataIntegrityViolationException e) {
             logger.error("Error saving TestReport: {}", e.getMessage());
@@ -152,7 +143,6 @@ public class TestReportService {
         TestReport existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("TestReport with ID " + id + " not found"));
 
-        // Check for duplicate report number if changed
         if (dto.getReportNumber() != null && !dto.getReportNumber().equals(existing.getReportNumber())) {
             if (repository.existsByReportNumber(dto.getReportNumber())) {
                 throw new DataIntegrityViolationException("TestReport with report number " + dto.getReportNumber() + " already exists");
@@ -160,10 +150,8 @@ public class TestReportService {
             existing.setReportNumber(dto.getReportNumber());
         }
 
-        // Use mapper to update non-null fields in existing entity
         mapper.updateEntityFromDTO(dto, existing);
 
-        // Fetch and update project, location, and sampling record if provided
         if (dto.getProjectId() != null) {
             existing.setProject(projectRepository.findById(dto.getProjectId())
                     .orElseThrow(() -> new ResourceNotFoundException("Project with ID " + dto.getProjectId() + " not found")));
@@ -177,16 +165,13 @@ public class TestReportService {
                     .orElseThrow(() -> new ResourceNotFoundException("Sampling record with ID " + dto.getSamplingRecordId() + " not found")));
         }
 
-        // Update related standards if provided
         if (dto.getTestReportStandardIds() != null) {
             Set<Long> newStandardIds = new HashSet<>(dto.getTestReportStandardIds());
             List<TestReportStandard> currentStandards = existing.getTestReportStandards();
 
-            // Remove standards that are not in the new list
             currentStandards.removeIf(existingStandard ->
                     !newStandardIds.contains(existingStandard.getStandard().getId()));
 
-            // Add new standards that do not already exist in the list
             for (Long standardId : newStandardIds) {
                 boolean exists = currentStandards.stream()
                         .anyMatch(existingStandard -> existingStandard.getStandard().getId().equals(standardId));
@@ -203,16 +188,13 @@ public class TestReportService {
             existing.setTestReportStandards(currentStandards);
         }
 
-        // Update related samplers if provided
         if (dto.getTestReportSamplerIds() != null) {
             Set<UUID> newSamplerIds = new HashSet<>(dto.getTestReportSamplerIds());
             List<TestReportSampler> currentSamplers = existing.getTestReportSamplers();
 
-            // Remove samplers that are not in the new list
             currentSamplers.removeIf(existingSampler ->
                     !newSamplerIds.contains(existingSampler.getUser().getId()));
 
-            // Add new samplers that do not already exist in the list
             for (UUID samplerId : newSamplerIds) {
                 boolean exists = currentSamplers.stream()
                         .anyMatch(existingSampler -> existingSampler.getUser().getId().equals(samplerId));
@@ -250,11 +232,9 @@ public class TestReportService {
     }
 
     public byte[] generateReport(Long id) {
-        // Fetch report data from the database
         TestReport testReport = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("TestReport with ID " + id + " not found"));
 
-        // Prepare the data map for LaTeX placeholders
         Map<String, String> reportData = new HashMap<>();
         reportData.put("companyName", testReport.getSamplingRecord().getCompany().getName());
         reportData.put("city", testReport.getSamplingRecord().getSiteLocation().getCity());
@@ -295,14 +275,14 @@ public class TestReportService {
         List<Sample> samples = testReport.getSamplingRecord().getSamples();
 
         List<Sample> samplesAverage = samples.stream()
-                .filter(sample -> "AK" .equals(sample.getSampleType()))
+                .filter(sample -> "AK".equals(sample.getSampleType()))
                 .sorted(Comparator.comparing(Sample::getLocation)
                         .thenComparing(Sample::getSampleIdentifier)) // Sort by Location, then by Identifier
                 .toList();
         reportData.put("sampleDetailsAverage", latexContentBuilder.generateSampleDetails(samplesAverage));
 
         List<Sample> samplesPeak = samples.stream()
-                .filter(sample -> "CK" .equals(sample.getSampleType()))
+                .filter(sample -> "CK".equals(sample.getSampleType()))
                 .sorted(Comparator.comparing(Sample::getLocation)
                         .thenComparing(Sample::getSampleIdentifier)) // Sort by Location, then by Identifier
                 .toList();
@@ -360,6 +340,4 @@ public class TestReportService {
         }
     }
 
-
 }
-

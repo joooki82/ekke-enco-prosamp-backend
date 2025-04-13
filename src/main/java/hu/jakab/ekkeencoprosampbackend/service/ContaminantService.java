@@ -63,7 +63,7 @@ public class ContaminantService {
     @Transactional
     public ContaminantResponseDTO update(Long id, ContaminantRequestDTO dto) {
         logger.info("Updating Contaminant (ID: {}) with new details", id);
-        
+
         Contaminant existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Contaminant with ID " + id + " not found"));
 

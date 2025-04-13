@@ -67,7 +67,6 @@ public class StandardService {
         Standard existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Standard with ID " + id + " not found"));
 
-        // Update identifier only if it's different and unique
         if (dto.getIdentifier() != null && !dto.getIdentifier().equals(existing.getIdentifier())) {
             if (repository.existsByIdentifier(dto.getIdentifier())) {
                 throw new DataIntegrityViolationException("Standard with identifier " + dto.getIdentifier() + " already exists");
@@ -75,7 +74,6 @@ public class StandardService {
             existing.setIdentifier(dto.getIdentifier());
         }
 
-        // Update fields if new values are provided
         if (dto.getStandardNumber() != null) {
             existing.setStandardNumber(dto.getStandardNumber());
         }

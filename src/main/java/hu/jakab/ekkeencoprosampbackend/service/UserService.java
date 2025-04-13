@@ -149,10 +149,8 @@ public class UserService {
             existing.setFirstName(user.getFirstName());
             existing.setLastName(user.getLastName());
 
-            // Save the user first to ensure it exists
             userRepository.save(existing);
 
-            // Update roles after user insertion
             existing.getRoleAssignments().clear();
             user.getRoleAssignments().forEach(roleAssignment -> {
                 roleAssignment.setUser(existing);
@@ -161,7 +159,6 @@ public class UserService {
 
             userRepository.save(existing);
         } else {
-            // Save the user first to guarantee its existence
             user.getRoleAssignments().forEach(roleAssignment -> roleAssignment.setUser(user));
             userRepository.save(user);
         }
