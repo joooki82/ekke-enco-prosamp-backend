@@ -1,10 +1,10 @@
 package hu.jakab.ekkeencoprosampbackend.service;
 
-
 import hu.jakab.ekkeencoprosampbackend.dto.testreport.TestReportCreatedDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.testreport.TestReportRequestDTO;
 import hu.jakab.ekkeencoprosampbackend.dto.testreport.TestReportResponseDTO;
 import hu.jakab.ekkeencoprosampbackend.exception.DuplicateResourceException;
+import hu.jakab.ekkeencoprosampbackend.exception.ReportGenerationException;
 import hu.jakab.ekkeencoprosampbackend.exception.ResourceNotFoundException;
 import hu.jakab.ekkeencoprosampbackend.mapper.TestReportMapper;
 import hu.jakab.ekkeencoprosampbackend.model.*;
@@ -21,8 +21,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class TestReportService {
@@ -72,29 +70,19 @@ public class TestReportService {
 
     @Transactional
     public TestReportCreatedDTO save(TestReportRequestDTO dto) {
-        logger.info("Creating a new TestReport with TestReport TestReportNumber: {}", dto.getReportNumber());
+        logger.info("Creating new TestReport with reportNumber: '{}'", dto.getReportNumber());
 
         if (repository.existsByReportNumber(dto.getReportNumber())) {
-            throw new DuplicateResourceException("Failed to create TestReport: Duplicate report number detected");
+            logger.warn("Duplicate report number: '{}'", dto.getReportNumber());
+            throw new DuplicateResourceException("A TestReport with report number '" + dto.getReportNumber() + "' already exists.");
         }
 
-        Map<Long, Project> projectMap = projectRepository.findAllById(Collections.singletonList(dto.getProjectId()))
-                .stream().collect(Collectors.toMap(Project::getId, Function.identity()));
-
-        Map<Long, Location> locationMap = locationRepository.findAllById(Collections.singletonList(dto.getLocationId()))
-                .stream().collect(Collectors.toMap(Location::getId, Function.identity()));
-
-        Map<Long, SamplingRecordDatM200> samplingRecordMap = samplingRecordRepository.findAllById(Collections.singletonList(dto.getSamplingRecordId()))
-                .stream().collect(Collectors.toMap(SamplingRecordDatM200::getId, Function.identity()));
-
-        Project project = Optional.ofNullable(projectMap.get(dto.getProjectId()))
+        Project project = projectRepository.findById(dto.getProjectId())
                 .orElseThrow(() -> new ResourceNotFoundException("Project with ID " + dto.getProjectId() + " not found"));
-
-        Location location = Optional.ofNullable(locationMap.get(dto.getLocationId()))
+        Location location = locationRepository.findById(dto.getLocationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Location with ID " + dto.getLocationId() + " not found"));
-
-        SamplingRecordDatM200 samplingRecord = Optional.ofNullable(samplingRecordMap.get(dto.getSamplingRecordId()))
-                .orElseThrow(() -> new ResourceNotFoundException("Sampling Record with ID " + dto.getSamplingRecordId() + " not found"));
+        SamplingRecordDatM200 samplingRecord = samplingRecordRepository.findById(dto.getSamplingRecordId())
+                .orElseThrow(() -> new ResourceNotFoundException("Sampling record with ID " + dto.getSamplingRecordId() + " not found"));
 
         TestReport testReport = mapper.toEntity(dto);
         testReport.setProject(project);
@@ -105,47 +93,40 @@ public class TestReportService {
         try {
             TestReport savedTestReport = repository.save(testReport);
 
-            List<Standard> standards = standardRepository.findAllById(dto.getTestReportStandardIds());
-
-            List<TestReportStandard> testReportStandards = standards.stream()
-                    .map(standard -> TestReportStandard.builder()
-                            .testReport(savedTestReport)
-                            .standard(standard)
-                            .build())
-                    .collect(Collectors.toList());
-
-            testReportStandardRepository.saveAll(testReportStandards);
+            if (dto.getTestReportStandardIds() != null) {
+                List<Standard> standards = standardRepository.findAllById(dto.getTestReportStandardIds());
+                List<TestReportStandard> linkedStandards = standards.stream()
+                        .map(s -> TestReportStandard.builder().testReport(savedTestReport).standard(s).build())
+                        .toList();
+                testReportStandardRepository.saveAll(linkedStandards);
+            }
 
             if (dto.getTestReportSamplerIds() != null && !dto.getTestReportSamplerIds().isEmpty()) {
                 List<User> samplers = userRepository.findAllById(dto.getTestReportSamplerIds());
-
-                List<TestReportSampler> testReportSamplers = samplers.stream()
-                        .map(user -> TestReportSampler.builder()
-                                .testReport(savedTestReport)
-                                .user(user)
-                                .build())
-                        .collect(Collectors.toList());
-
-                testReportSamplerRepository.saveAll(testReportSamplers);
+                List<TestReportSampler> linkedSamplers = samplers.stream()
+                        .map(u -> TestReportSampler.builder().testReport(savedTestReport).user(u).build())
+                        .toList();
+                testReportSamplerRepository.saveAll(linkedSamplers);
             }
-
+            logger.info("TestReport created successfully with ID: {}", savedTestReport.getId());
             return mapper.toCreatedDTO(savedTestReport);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Error saving TestReport: {}", e.getMessage());
-            throw new DuplicateResourceException("Failed to create TestReport: Duplicate report number detected");
+            logger.error("Failed to save TestReport with reportNumber '{}': {}", dto.getReportNumber(), e.getMessage(), e);
+            throw new DuplicateResourceException("Failed to create TestReport: Duplicate constraint on reportNumber or linked entities.");
         }
     }
 
     @Transactional
     public TestReportResponseDTO update(Long id, TestReportRequestDTO dto) {
-        logger.info("Updating TestReport (ID: {}) with new details", id);
+        logger.info("Updating TestReport with ID: {}", id);
 
         TestReport existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("TestReport with ID " + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("TestReport with ID " + id + " not found."));
 
         if (dto.getReportNumber() != null && !dto.getReportNumber().equals(existing.getReportNumber())) {
             if (repository.existsByReportNumber(dto.getReportNumber())) {
-                throw new DataIntegrityViolationException("TestReport with report number " + dto.getReportNumber() + " already exists");
+                logger.warn("Update conflict: Duplicate report number '{}'", dto.getReportNumber());
+                throw new DuplicateResourceException("A TestReport with report number '" + dto.getReportNumber() + "' already exists.");
             }
             existing.setReportNumber(dto.getReportNumber());
         }
@@ -165,6 +146,21 @@ public class TestReportService {
                     .orElseThrow(() -> new ResourceNotFoundException("Sampling record with ID " + dto.getSamplingRecordId() + " not found")));
         }
 
+        updateLinkedStandards(existing, dto);
+        updateLinkedSamplers(existing, dto);
+
+
+        try {
+            TestReport updatedTestReport = repository.save(existing);
+            logger.info("TestReport updated successfully with ID: {}", updatedTestReport.getId());
+            return mapper.toResponseDTO(updatedTestReport);
+        } catch (DataIntegrityViolationException e) {
+            logger.error("Failed to update TestReport with ID {}: {}", id, e.getMessage(), e);
+            throw new DuplicateResourceException("Update failed: Constraint violation on report number or relationships.");
+        }
+    }
+
+    private void updateLinkedStandards(TestReport existing, TestReportRequestDTO dto) {
         if (dto.getTestReportStandardIds() != null) {
             Set<Long> newStandardIds = new HashSet<>(dto.getTestReportStandardIds());
             List<TestReportStandard> currentStandards = existing.getTestReportStandards();
@@ -185,9 +181,12 @@ public class TestReportService {
                             .build());
                 }
             }
+
             existing.setTestReportStandards(currentStandards);
         }
+    }
 
+    private void updateLinkedSamplers(TestReport existing, TestReportRequestDTO dto) {
         if (dto.getTestReportSamplerIds() != null) {
             Set<UUID> newSamplerIds = new HashSet<>(dto.getTestReportSamplerIds());
             List<TestReportSampler> currentSamplers = existing.getTestReportSamplers();
@@ -208,17 +207,11 @@ public class TestReportService {
                             .build());
                 }
             }
+
             existing.setTestReportSamplers(currentSamplers);
         }
-
-        try {
-            TestReport updatedTestReport = repository.save(existing);
-            return mapper.toResponseDTO(updatedTestReport);
-        } catch (DataIntegrityViolationException e) {
-            logger.error("Failed to update TestReport (ID: {}): {}", id, e.getMessage());
-            throw new RuntimeException("Update failed: Duplicate TestReport report number or standard detected");
-        }
     }
+
 
     @Transactional
     public void delete(Long id) {
@@ -232,18 +225,37 @@ public class TestReportService {
     }
 
     public byte[] generateReport(Long id) {
-        TestReport testReport = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("TestReport with ID " + id + " not found"));
+        logger.info("Generating report for TestReport ID: {}", id);
 
+        TestReport testReport = repository.findById(id)
+                .orElseThrow(() -> {
+                    logger.warn("Report generation failed: TestReport with ID {} not found", id);
+                    return new ResourceNotFoundException("TestReport with ID " + id + " not found.");
+                });
+
+        try {
+            Map<String, String> reportData = buildReportData(testReport);
+            return latexReportService.generatePdfReport(reportData);
+
+        } catch (IOException | InterruptedException e) {
+            logger.error("Report generation failed for TestReport ID {} due to system error: {}", id, e.getMessage(), e);
+            throw new ReportGenerationException("Failed to generate report for TestReport ID " + id, e);
+        } catch (Exception e) {
+            logger.error("Unexpected error during report generation for TestReport ID {}: {}", id, e.getMessage(), e);
+            throw new ReportGenerationException("Unexpected error during report generation", e);
+        }
+    }
+
+    private Map<String, String> buildReportData(TestReport testReport) {
         Map<String, String> reportData = new HashMap<>();
+
         reportData.put("companyName", testReport.getSamplingRecord().getCompany().getName());
         reportData.put("city", testReport.getSamplingRecord().getSiteLocation().getCity());
         reportData.put("aimOfTest", testReport.getAimOfTest());
         reportData.put("reportNumber", testReport.getReportNumber());
         reportData.put("title", testReport.getTitle());
         reportData.put("projectNumber", testReport.getProject().getProjectNumber());
-        reportData.put("approvedBy", testReport.getApprovedBy().getUsername());
-//        reportData.put("approvedByRole", testReport.getApprovedBy().getRole());
+//        reportData.put("approvedBy", testReport.getApprovedBy().getUsername());
         reportData.put("issueDate", testReport.getIssueDate().toString());
 
         String samplersString = latexContentBuilder.generateSamplersList(testReport.getTestReportSamplers());
@@ -256,35 +268,30 @@ public class TestReportService {
         reportData.put("locationAddress", testReport.getLocation().getAddress());
 
         Client contact = testReport.getProject().getClient();
-        String clientContactString = latexContentBuilder.generateClientContact(contact);
-        reportData.put("clientContact", clientContactString);
+        reportData.put("clientContact", latexContentBuilder.generateClientContact(contact));
 
-        String samplingSchedule = latexContentBuilder.generateSamplingSchedule(testReport);
-        reportData.put("samplingSchedule", samplingSchedule);
+        reportData.put("samplingSchedule", latexContentBuilder.generateSamplingSchedule(testReport));
 
-        String samplingDate = latexContentBuilder.formatDateInHungarian(testReport.getSamplingRecord().getSamplingDate().toLocalDate());
-        reportData.put("samplingDate", samplingDate);
+        reportData.put("samplingDate", latexContentBuilder.formatDateInHungarian(testReport.getSamplingRecord().getSamplingDate().toLocalDate()));
         reportData.put("temperature", latexContentBuilder.formatBigDecimal(testReport.getSamplingRecord().getTemperature(), 0));
         reportData.put("humidity", latexContentBuilder.formatBigDecimal(testReport.getSamplingRecord().getHumidity(), 0));
         reportData.put("pressure", latexContentBuilder.formatBigDecimal(testReport.getSamplingRecord().getPressure1(), 0));
+
         reportData.put("technology", testReport.getTechnology());
         reportData.put("samplingConditions", testReport.getSamplingConditionsDates());
         reportData.put("determinationOfPollutantConcentration", testReport.getDeterminationOfPollutantConcentration());
-
 
         List<Sample> samples = testReport.getSamplingRecord().getSamples();
 
         List<Sample> samplesAverage = samples.stream()
                 .filter(sample -> "AK".equals(sample.getSampleType()))
-                .sorted(Comparator.comparing(Sample::getLocation)
-                        .thenComparing(Sample::getSampleIdentifier)) // Sort by Location, then by Identifier
+                .sorted(Comparator.comparing(Sample::getLocation).thenComparing(Sample::getSampleIdentifier))
                 .toList();
         reportData.put("sampleDetailsAverage", latexContentBuilder.generateSampleDetails(samplesAverage));
 
         List<Sample> samplesPeak = samples.stream()
                 .filter(sample -> "CK".equals(sample.getSampleType()))
-                .sorted(Comparator.comparing(Sample::getLocation)
-                        .thenComparing(Sample::getSampleIdentifier)) // Sort by Location, then by Identifier
+                .sorted(Comparator.comparing(Sample::getLocation).thenComparing(Sample::getSampleIdentifier))
                 .toList();
         reportData.put("sampleDetailsPeak", latexContentBuilder.generateSampleDetails(samplesPeak));
 
@@ -293,51 +300,38 @@ public class TestReportService {
         List<Standard> samplingStandards = testReport.getTestReportStandards().stream()
                 .map(TestReportStandard::getStandard)
                 .filter(standard -> standard.getStandardType().toString().contains("SAMPLING"))
-                .collect(Collectors.toList());
-
+                .toList();
         reportData.put("samplingStandards", latexContentBuilder.generateStandardList(samplingStandards));
 
         List<Standard> encotechStandards = testReport.getTestReportStandards().stream()
                 .map(TestReportStandard::getStandard)
                 .filter(standard -> standard.getLaboratoryStandards().stream()
                         .map(LaboratoryStandard::getLaboratory)
-                        .anyMatch(laboratory -> laboratory.getName().contains("Encotech")))
+                        .anyMatch(lab -> lab.getName().contains("Encotech")))
                 .filter(standard -> standard.getStandardType().toString().contains("ANALYSES"))
-                .collect(Collectors.toList());
-
+                .toList();
         reportData.put("encotechStandards", latexContentBuilder.generateStandardList(encotechStandards));
 
         List<Standard> balintStandards = testReport.getTestReportStandards().stream()
                 .map(TestReportStandard::getStandard)
                 .filter(standard -> standard.getLaboratoryStandards().stream()
                         .map(LaboratoryStandard::getLaboratory)
-                        .anyMatch(laboratory -> laboratory.getName().contains("Bálint")))
+                        .anyMatch(lab -> lab.getName().contains("Bálint")))
                 .filter(standard -> standard.getStandardType().toString().contains("ANALYSES"))
-                .collect(Collectors.toList());
-
+                .toList();
         reportData.put("balintStandards", latexContentBuilder.generateStandardList(balintStandards));
 
         reportData.put("averageConcentration", latexContentBuilder.generateSampleResults(samplesAverage));
-
         reportData.put("peakConcentration", latexContentBuilder.generateSampleResults(samplesPeak));
 
         testReport.setIssueDate(LocalDate.now());
-
         reportData.put("issueDate", testReport.getIssueDate().toString());
 
-        reportData.put("preparedBy", testReport.getPreparedBy().getUsername());
+//        reportData.put("preparedBy", testReport.getPreparedBy().getUsername());
+//        reportData.put("checkedBy", testReport.getCheckedBy().getUsername());
 
-//        reportData.put("preparedByRole", testReport.getPreparedBy().getRole());
-
-        reportData.put("checkedBy", testReport.getCheckedBy().getUsername());
-
-//        reportData.put("checkedByRole", testReport.getCheckedBy().getRole());
-
-        try {
-            return latexReportService.generatePdfReport(reportData);
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Failed to generate the report", e);
-        }
+        return reportData;
     }
+
 
 }

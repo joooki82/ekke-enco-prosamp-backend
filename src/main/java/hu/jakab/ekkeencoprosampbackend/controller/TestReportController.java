@@ -64,7 +64,7 @@ public class TestReportController {
         byte[] pdfBytes = service.generateReport(id);
         logger.info("Generating PDF report for TestReport with ID: {}", id);
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report.pdf")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report" + id + ".pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdfBytes);
     }
