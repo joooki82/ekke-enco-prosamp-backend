@@ -34,7 +34,9 @@ public class LatexContentBuilder {
 
         for (TestReportSampler sampler : samplers) {
             samplersTable.append("& ")
-                    .append(sampler.getUser().getUsername())
+                    .append(sampler.getUser().getFirstName())
+                    .append(" ")
+                    .append(sampler.getUser().getLastName())
                     .append(", ")
 //                    .append(sampler.getUser().getRole())
                     .append("Vizsgáló mérnök")
