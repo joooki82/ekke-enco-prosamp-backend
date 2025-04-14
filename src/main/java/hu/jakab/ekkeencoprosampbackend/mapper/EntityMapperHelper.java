@@ -186,7 +186,7 @@ public class EntityMapperHelper {
             return null;
         }
         return samplerList.stream()
-                .map(sampler -> new UserDTO(sampler.getUser().getId(), sampler.getUser().getUsername()))
+                .map(sampler -> new UserDTO(sampler.getUser().getId(), sampler.getUser().getUsername(), sampler.getUser().getFirstName(), sampler.getUser().getLastName()))
                 .toList();
     }
 
